@@ -1,0 +1,12 @@
+.idea/
+*.iml
+.vscode/
+
+.env
+.env.*
+
+*.jks
+*.keystore
+
+Thumbs.db
+.DS_Store
