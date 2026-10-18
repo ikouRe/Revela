@@ -1,0 +1,22 @@
+# Lancement : docker compose --env-file backend/.env up -d
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      # ":?" fait échouer compose si la variable manque, au lieu de démarrer avec une valeur vide (RG-60)
+      POSTGRES_DB: ${DB_NAME:?DB_NAME manquant dans backend/.env}
+      POSTGRES_USER: ${DB_USERNAME:?DB_USERNAME manquant dans backend/.env}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD manquant dans backend/.env}
+    ports:
+      - "5433:5432" # 5432 est déjà pris par le Postgres Windows
+    volumes:
+      - revela-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      # $$ : variable lue dans le conteneur, pas interpolée par compose
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  revela-pgdata:
