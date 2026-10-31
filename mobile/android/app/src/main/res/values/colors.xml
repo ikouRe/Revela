@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Revela Nuit: native launch matches the Flutter splash, no white flash -->
+    <color name="revela_nuit">#16122B</color>
+</resources>
