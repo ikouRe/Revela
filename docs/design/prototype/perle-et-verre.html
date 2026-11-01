@@ -1,0 +1,1246 @@
+<title>Revela Perle et verre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Zen+Maru+Gothic:wght@500;700;900&display=swap">
+<style>
+/* One phone, one liquid layer under the interface. */
+:root {
+  color-scheme: light;
+  --perle: #fbf1f0;
+  --peche: #ffc4ab;
+  --rose: #f8b3c8;
+  --lilas: #dcd0f4;
+  --encre: #3a1a2b;
+  --encre-2: #6b4557;
+  --accent: #b92b52;
+  --accent-fort: #961f41;
+  --blanc: #fffbfa;
+  --bon: #1c6e53;
+  --bon-fond: #dff2e9;
+  --prudence: #8c4c00;
+  --prudence-fond: #fdecd2;
+  --mauvais: #a8261f;
+  --mauvais-fond: #fce1de;
+  --inconnu: #5e4d57;
+  --inconnu-fond: #eee6ea;
+  --titre: "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "Arial Rounded MT Bold", system-ui, sans-serif;
+  --texte: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ombre: 0 12px 28px rgba(122, 48, 80, .12);
+  --ease-out: cubic-bezier(.23, 1, .32, 1);
+  --ease-drawer: cubic-bezier(.32, .72, 0, 1);
+  --degrade: linear-gradient(150deg, #ffb296, #d64a72 60%, #961f41);
+}
+html, body { height: 100%; }
+body {
+  background: #f4e4e6;
+  color: var(--encre);
+  font: 400 16px/1.45 var(--texte);
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: var(--rose); color: var(--encre); }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+h1, h2, h3, p, ul { margin: 0; padding: 0; }
+ul { list-style: none; }
+svg.i { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+.scene { min-height: 100%; display: flex; align-items: center; justify-content: center; gap: 56px; padding: 16px; box-sizing: border-box; }
+.legende { width: 280px; display: grid; gap: 12px; }
+.legende h1 { font: 700 34px/1.1 var(--titre); text-wrap: balance; }
+.legende p { color: var(--encre-2); }
+
+.tel {
+  position: relative; flex: none; width: 390px; height: min(844px, calc(100dvh - 32px));
+  overflow: clip; isolation: isolate; border-radius: 44px; box-shadow: 0 28px 70px rgba(90, 34, 60, .28), 0 0 0 8px #fffbfa;
+  background:
+    radial-gradient(70% 38% at 88% 4%, var(--peche) 0, transparent 72%),
+    radial-gradient(70% 34% at 2% 30%, var(--rose) 0, transparent 74%),
+    radial-gradient(90% 36% at 80% 98%, var(--lilas) 0, transparent 76%),
+    var(--perle);
+}
+#gl, .couche { position: absolute; inset: 0; pointer-events: none; }
+#gl { width: 100%; height: 100%; z-index: 2; }
+.couche { z-index: 3; overflow: hidden; }
+.goutte { position: absolute; left: -50px; top: -50px; width: 100px; height: 100px; display: grid; place-content: center; text-align: center; color: var(--encre); will-change: transform; }
+.nogl .goutte { border-radius: 50%; background: radial-gradient(circle at 34% 28%, #fff 0 8%, rgba(255, 255, 255, .55) 22%, rgba(255, 196, 171, .6) 62%, rgba(214, 110, 145, .75) 100%); }
+.note { white-space: nowrap; font: 900 40px/1 var(--titre); letter-spacing: -.02em; opacity: 0; transition: opacity .25s; font-variant-numeric: tabular-nums; }
+.note small { font: 700 13px/1 var(--titre); letter-spacing: 0; color: var(--encre-2); margin-left: 1px; }
+.goutte.vue .note { opacity: 1; }
+
+.ecran { position: absolute; inset: 0; z-index: 4; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; opacity: 0; visibility: hidden; transform: translateY(10px); transition: opacity .28s cubic-bezier(.16, 1, .3, 1), transform .4s cubic-bezier(.16, 1, .3, 1), visibility 0s .28s; }
+.ecran::-webkit-scrollbar { display: none; }
+.ecran.actif { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
+.corps { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; padding: 56px 20px 124px; }
+
+.marque { width: 104px; height: 39px; margin: -6px 0 -14px -1px; }
+.marque-legende { width: 180px; height: 68px; }
+.heros { position: relative; min-height: 196px; display: grid; align-content: start; gap: 10px; }
+.heros h1 { font: 700 42px/1.05 var(--titre); letter-spacing: -.02em; }
+.heros p { max-width: 15ch; color: var(--encre-2); font-size: 17px; line-height: 1.35; }
+.emplacement-heros { position: absolute; right: -6px; top: 8px; width: 170px; height: 180px; }
+.cta { min-height: 56px; display: flex; align-items: center; justify-content: center; gap: 10px; border-radius: 28px; background: var(--accent); color: #fff; font-weight: 700; font-size: 17px; box-shadow: 0 10px 22px rgba(185, 43, 82, .3); transition: transform .16s cubic-bezier(.16, 1, .3, 1), background .16s; }
+.cta:active { transform: scale(.97); background: var(--accent-fort); }
+.cta[hidden] { display: none; }
+.verre { background: rgba(255, 251, 250, .62); border: 1px solid rgba(255, 255, 255, .8); border-radius: 28px; box-shadow: var(--ombre); -webkit-backdrop-filter: blur(16px) saturate(1.3); backdrop-filter: blur(16px) saturate(1.3); }
+.routine { width: 100%; min-height: 76px; box-sizing: border-box; display: flex; align-items: center; gap: 14px; padding: 12px 16px; text-align: left; }
+.routine .pastille { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: rgba(248, 179, 200, .55); color: var(--accent-fort); flex: none; }
+.routine span { min-width: 0; flex: 1; }
+.routine b { display: block; font-weight: 600; }
+.routine em { font-style: normal; font-size: 14px; color: var(--encre-2); }
+.bloc { display: grid; gap: 10px; }
+.bloc h2 { font: 700 21px/1.2 var(--titre); }
+.titre-bloc { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.titre-bloc small { font-size: 14px; color: var(--encre-2); white-space: nowrap; }
+.vide { padding: 18px 2px; color: var(--encre-2); text-align: center; }
+.liste { background: var(--blanc); border-radius: 28px; box-shadow: var(--ombre); padding: 4px 16px; }
+.liste li + li { border-top: 1px solid #f2e3e4; }
+.ligne { width: 100%; min-height: 68px; display: flex; align-items: center; gap: 12px; text-align: left; padding: 10px 0; }
+.ligne .nom { flex: 1; min-width: 0; font-weight: 600; overflow-wrap: anywhere; }
+.ligne .nom small { display: block; font-weight: 400; font-size: 14px; color: var(--encre-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sg { position: relative; flex: none; width: 46px; height: 54px; display: grid; place-items: end center; padding-bottom: 9px; box-sizing: border-box; }
+.sg svg { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 4px 6px rgba(122, 48, 80, .18)); }
+.sg b { position: relative; font: 900 18px/1 var(--titre); font-variant-numeric: tabular-nums; }
+.verdict { display: flex; align-items: center; gap: 4px; margin-top: 3px; font-size: 14px; font-weight: 600; white-space: nowrap; }
+.vg { width: 20px; height: 20px; flex: none; }
+.v-bon { color: var(--bon); }
+.v-prudence { color: var(--prudence); }
+.v-mauvais { color: var(--mauvais); }
+.v-inconnu { color: var(--inconnu); }
+.aide { font-size: 14px; color: var(--encre-2); }
+
+.ecran-scan { background: radial-gradient(60% 34% at 50% 40%, #6d3a52 0, transparent 100%), #26101d; color: #fff; }
+.corps-scan { min-height: 100%; box-sizing: border-box; display: flex; flex-direction: column; gap: 18px; padding: 56px 20px 124px; }
+.corps-scan h1 { font: 700 34px/1.1 var(--titre); }
+.corps-scan > p { color: #f2dfe6; }
+.viseur { position: relative; flex: 1; min-height: 180px; display: grid; place-items: center; }
+.cadre { position: relative; width: min(264px, 100%); aspect-ratio: 264 / 168; transition: transform .16s cubic-bezier(.23, 1, .32, 1); }
+.cadre svg { display: block; width: 100%; height: 100%; }
+.coins { fill: none; stroke: #fff; stroke-width: 3; stroke-linecap: round; transition: stroke .16s; }
+.barres rect { fill: #ddd; fill-opacity: .55; }
+.balayage { position: absolute; left: 12%; right: 12%; top: 24%; height: 2px; border-radius: 2px; background: var(--peche); box-shadow: 0 0 12px 2px rgba(255, 196, 171, .6); animation: balayage 1.5s ease-in-out infinite alternate; }
+@keyframes balayage { to { transform: translateY(84px); } }
+.viseur.saisi .balayage { display: none; }
+.viseur.saisi .cadre { transform: scale(.94); }
+.viseur.saisi .coins { stroke: var(--peche); }
+.consigne { text-align: center; }
+.consigne b { display: block; font-size: 18px; font-weight: 600; color: #fff; }
+.consigne small { display: block; margin-top: 4px; font-size: 14px; color: #f2dfe6; font-variant-numeric: tabular-nums; }
+.liens { display: flex; flex-wrap: wrap; justify-content: center; gap: 0 20px; margin-top: -8px; }
+.lien { min-height: 48px; color: #fff; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+
+.barre-haut { display: flex; align-items: center; gap: 8px; margin: -8px 0 -8px -12px; }
+.retour { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 50%; }
+.barre-haut h1 { font: 700 18px/1 var(--titre); flex: 1; }
+.exemple { font-size: 13px; font-weight: 600; color: var(--encre-2); background: rgba(255, 251, 250, .7); padding: 5px 10px; border-radius: 12px; }
+.produit { display: flex; align-items: center; gap: 16px; }
+.photo { flex: none; width: 112px; height: 148px; display: grid; place-items: center; border-radius: 28px; background: var(--blanc); box-shadow: var(--ombre); }
+.photo svg { width: 72px; height: 124px; }
+.produit h2 { font: 700 30px/1.1 var(--titre); letter-spacing: -.01em; }
+.produit p { color: var(--encre-2); }
+.vignette { flex: none; width: 48px; height: 48px; display: grid; place-items: center; border-radius: 16px; background: #fbeeee; }
+.vignette svg { width: 26px; height: 42px; }
+.gouttes { display: grid; grid-template-columns: 1fr; justify-items: center; gap: 0; }
+.emplacement { width: 196px; height: 196px; }
+.etiquette { font-weight: 600; text-align: center; }
+.gouttes.deux { grid-template-columns: 150px 150px; justify-content: center; }
+.gouttes.deux .emplacement { width: 150px; height: 160px; }
+.gouttes .b { display: none; }
+.gouttes.deux .b { display: block; }
+.carte-verdict { display: flex; gap: 12px; padding: 16px; border-radius: 28px; background: var(--prudence-fond); color: #5c3200; box-shadow: var(--ombre); }
+.carte-verdict[hidden] { display: none; }
+.carte-verdict h2 { font: 700 21px/1.2 var(--titre); color: var(--prudence); }
+.carte-verdict .vg { width: 34px; height: 34px; color: var(--prudence); }
+.apparait { animation: apparait .5s cubic-bezier(.16, 1, .3, 1) both; }
+@keyframes apparait { from { opacity: 0; transform: translateY(10px); } }
+.raison summary { display: flex; gap: 12px; padding: 13px 0; cursor: pointer; list-style: none; }
+.raison summary::-webkit-details-marker { display: none; }
+.raison summary > div { flex: 1; min-width: 0; }
+.raison .fleche { width: 20px; height: 20px; margin-top: 4px; color: var(--encre-2); transition: transform .3s cubic-bezier(.16, 1, .3, 1); }
+.raison[open] .fleche { transform: rotate(90deg); }
+.raison .detail { padding: 0 0 14px 40px; color: var(--encre); font-size: 15px; }
+.signe { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; flex: none; margin-top: 1px; }
+.signe .vg { width: 24px; height: 24px; }
+.raison b { display: block; font-weight: 600; }
+.raison summary > div > span { color: var(--encre-2); font-size: 15px; }
+.raison small { display: block; font-size: 13px; color: var(--encre-2); margin-top: 2px; }
+
+.onglets { position: absolute; z-index: 6; left: 0; right: 0; bottom: 0; height: 86px; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); padding: 0 14px env(safe-area-inset-bottom, 0px); }
+.onglets::before { content: ""; position: absolute; left: 0; right: 0; top: -44px; height: 83px; background: linear-gradient(transparent, var(--perle) 72%); pointer-events: none; }
+.tel[data-ecran="scanner"] .onglets::before { display: none; }
+.ombre-barre { position: absolute; inset: 0; filter: drop-shadow(0 -6px 14px rgba(70, 24, 46, .13)); pointer-events: none; }
+.cadre-barre { position: absolute; inset: 0; overflow: clip; border-radius: 28px 28px 0 0; }
+.fond-barre { position: absolute; left: 0; top: 0; fill: var(--blanc); will-change: transform; }
+.bulle { position: absolute; left: 0; top: 0; width: 54px; height: 54px; display: grid; place-items: center; border-radius: 50%; color: #fff; background: var(--degrade); box-shadow: 0 8px 16px rgba(150, 31, 65, .34), inset 0 1px 1px rgba(255, 255, 255, .55); will-change: transform; pointer-events: none; }
+.onglet { position: relative; min-width: 0; display: grid; justify-items: center; align-content: end; gap: 3px; padding-bottom: 14px; color: var(--encre-2); font-size: 12px; font-weight: 500; transition: color .18s; }
+.onglet svg { transition: opacity .14s, transform .12s var(--ease-out); }
+.onglet[aria-current="page"] { color: var(--accent-fort); font-weight: 700; }
+.onglet[aria-current="page"] svg { opacity: 0; }
+.onglet:active svg { transform: scale(.88); }
+.ligne:active, .routine:active, .etape:active, .tuile:active { transform: scale(.97); }
+.ligne, .routine, .etape, .tuile { transition: transform .16s cubic-bezier(.16, 1, .3, 1); }
+[data-goutte] { touch-action: none; cursor: grab; }
+.tel { -webkit-user-select: none; user-select: none; }
+.statut { position: absolute; z-index: 6; top: 16px; left: 36px; font-weight: 600; font-size: 15px; pointer-events: none; transition: color .2s; }
+.tel[data-ecran="scanner"] .statut { color: #fff; }
+.toast { position: absolute; z-index: 10; left: 24px; right: 24px; bottom: 104px; padding: 12px 16px; border-radius: 20px; background: var(--encre); color: #fff; text-align: center; font-size: 15px; opacity: 0; transform: translateY(8px); transition: opacity .2s, transform .3s cubic-bezier(.16, 1, .3, 1); pointer-events: none; }
+.toast.vu { opacity: 1; transform: none; }
+
+.tete-ecran { position: relative; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; min-height: 112px; }
+.tete-ecran > div:first-child { min-width: 0; display: grid; gap: 6px; }
+.tete-ecran h1 { font: 700 38px/1.05 var(--titre); letter-spacing: -.02em; overflow-wrap: anywhere; }
+.tete-ecran p { color: var(--encre-2); max-width: 24ch; }
+.tete-ecran.simple { min-height: 0; }
+.tete-ecran > div.auteur:first-child { display: flex; align-items: center; gap: 14px; }
+.tete-ecran > .auteur h1 { font-size: 32px; }
+.emplacement-routine { flex: none; width: 122px; height: 122px; margin: -8px -2px 0 0; }
+.emplacement-profil { flex: none; width: 92px; height: 96px; margin: -6px 0 0 0; }
+.bascule { position: relative; display: grid; grid-template-columns: 1fr 1fr; padding: 4px; border-radius: 26px; background: rgba(255, 251, 250, .7); box-shadow: var(--ombre); }
+.bascule-repere { position: absolute; left: 4px; top: 4px; bottom: 4px; width: calc(50% - 4px); border-radius: 22px; background: var(--encre); transition: transform .24s var(--ease-out); }
+.bascule button { position: relative; min-height: 44px; font-weight: 600; transition: color .18s; }
+.bascule button[aria-pressed="true"] { color: #fff; }
+.etapes { display: grid; gap: 8px; list-style: none; margin: 0; padding: 0; }
+.etape { width: 100%; min-height: 72px; box-sizing: border-box; display: flex; align-items: center; gap: 12px; padding: 10px 16px 10px 12px; border-radius: 24px; background: var(--blanc); box-shadow: var(--ombre); text-align: left; }
+.etape .nom { flex: 1; min-width: 0; font-weight: 600; overflow-wrap: anywhere; }
+.etape .nom small { display: block; font-weight: 400; font-size: 14px; color: var(--encre-2); }
+.etape .coche { flex: none; width: 28px; height: 28px; color: #8a6f7d; transition: color .18s; }
+.etape[aria-pressed="true"] .coche { color: var(--bon); }
+.etape[aria-pressed="true"] .nom { color: var(--encre-2); }
+.etagere { display: flex; gap: 10px; overflow-x: auto; margin: 0 -20px; padding: 4px 20px 14px; scroll-snap-type: x proximity; scroll-padding-left: 20px; scrollbar-width: none; }
+.etagere::-webkit-scrollbar { display: none; }
+.etagere li { flex: none; scroll-snap-align: start; }
+.tuile { position: relative; width: 136px; height: 186px; box-sizing: border-box; display: flex; flex-direction: column; gap: 6px; padding: 12px; border-radius: 24px; background: var(--blanc); box-shadow: 0 8px 18px rgba(122, 48, 80, .1); text-align: left; }
+.tuile .sg { position: absolute; right: 8px; top: 8px; }
+.tuile .vignette { width: 56px; height: 56px; }
+.tuile b { font-weight: 600; font-size: 15px; line-height: 1.25; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.tuile .verdict { margin-top: auto; }
+.tuile.ajout { align-items: center; justify-content: center; text-align: center; color: var(--accent-fort); font-weight: 600; background: rgba(255, 251, 250, .55); box-shadow: inset 0 0 0 1.5px rgba(185, 43, 82, .35); }
+
+.filtres { display: flex; gap: 8px; overflow-x: auto; margin: 0 -20px; padding: 2px 20px; scrollbar-width: none; }
+.filtres::-webkit-scrollbar { display: none; }
+.filtre, .choix { flex: none; min-height: 44px; padding: 0 16px; border-radius: 22px; background: rgba(255, 251, 250, .75); font-weight: 600; font-size: 15px; transition: background-color .18s, color .18s, transform .12s var(--ease-out); }
+.filtre:active, .choix:active { transform: scale(.96); }
+.filtre[aria-pressed="true"], .choix[aria-pressed="true"] { background: var(--encre); color: #fff; }
+.fil { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.post { display: grid; gap: 10px; padding: 14px 16px 6px; border-radius: 28px; background: var(--blanc); box-shadow: var(--ombre); min-width: 0; }
+.auteur { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.avatar { flex: none; width: 42px; height: 42px; display: grid; place-items: center; border-radius: 50%; color: #fff; background: var(--degrade); font: 700 18px/1 var(--titre); }
+.avatar.grand { width: 72px; height: 72px; font-size: 32px; }
+.auteur div { flex: 1; min-width: 0; }
+.auteur b { display: block; font-weight: 600; overflow-wrap: anywhere; }
+.auteur small { display: block; font-size: 14px; color: var(--encre-2); overflow-wrap: anywhere; }
+.plus { flex: none; width: 44px; height: 44px; margin-right: -10px; display: grid; place-items: center; border-radius: 50%; color: var(--encre-2); }
+.texte-post { overflow-wrap: anywhere; }
+.produit-lie { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 20px; background: #fbeeee; text-align: left; min-width: 0; }
+.produit-lie .nom { flex: 1; min-width: 0; font-weight: 600; font-size: 15px; overflow-wrap: anywhere; }
+.produit-lie .vignette { width: 40px; height: 40px; background: var(--blanc); border-radius: 14px; }
+.produit-lie .vignette svg { width: 22px; height: 36px; }
+.produit-lie .sg { transform: scale(.82); margin: -4px -2px; }
+.avap { position: relative; height: 196px; overflow: clip; border-radius: 20px; touch-action: pan-y; }
+.peau { position: absolute; inset: 0; }
+.avant { background: radial-gradient(12% 10% at 30% 42%, rgba(190, 62, 70, .5), transparent 100%), radial-gradient(9% 8% at 44% 60%, rgba(190, 62, 70, .42), transparent 100%), radial-gradient(10% 9% at 66% 38%, rgba(190, 62, 70, .46), transparent 100%), radial-gradient(14% 12% at 72% 66%, rgba(190, 62, 70, .4), transparent 100%), radial-gradient(70% 90% at 60% 30%, #eec3a8, #d29a7d 100%); }
+.apres { background: radial-gradient(70% 90% at 60% 30%, #f3cdb4, #d8a487 100%); clip-path: inset(0 0 0 50%); }
+.trait { position: absolute; top: 0; bottom: 0; left: 0; width: 2px; margin-left: -1px; background: #fff; transform: translateX(var(--x, 0)); pointer-events: none; }
+.trait::after { content: ""; position: absolute; left: 50%; top: 50%; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; background: #fff; box-shadow: 0 3px 8px rgba(70, 24, 46, .3); }
+.marque-av { position: absolute; bottom: 8px; padding: 3px 9px; border-radius: 10px; background: rgba(58, 26, 43, .72); color: #fff; font-size: 13px; font-weight: 600; pointer-events: none; }
+.marque-av.g { left: 8px; } .marque-av.d { right: 8px; }
+.avap:has(input:focus-visible) { outline: 3px solid var(--accent); outline-offset: 2px; }
+.avap input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; touch-action: pan-y; }
+.actions { display: flex; gap: 4px; margin-left: -10px; }
+.action { min-height: 44px; display: inline-flex; align-items: center; gap: 6px; padding: 0 10px; border-radius: 22px; color: var(--encre-2); font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.action svg { transition: color .18s; }
+.action[aria-pressed="true"] { color: var(--accent); }
+.action[aria-pressed="true"] .goutte-vide { fill: currentColor; }
+.coms { display: grid; gap: 8px; padding: 0 0 10px; font-size: 15px; }
+.coms[hidden] { display: none; }
+.coms b { font-weight: 600; }
+.coms li { overflow-wrap: anywhere; }
+
+.chiffres { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.chiffre { min-height: 72px; display: grid; align-content: center; justify-items: center; border-radius: 22px; background: rgba(255, 251, 250, .7); box-shadow: var(--ombre); font-size: 14px; color: var(--encre-2); transition: transform .12s var(--ease-out); }
+.chiffre:active { transform: scale(.97); }
+.chiffre b { font: 900 25px/1.1 var(--titre); color: var(--encre); font-variant-numeric: tabular-nums; }
+.carte-peau { display: grid; gap: 10px; padding: 16px; border-radius: 28px; background: var(--blanc); box-shadow: var(--ombre); }
+.carte-peau h3 { font-size: 15px; font-weight: 600; color: var(--encre-2); margin-top: 4px; }
+.choix-groupe { display: flex; flex-wrap: wrap; gap: 8px; }
+.choix { background: #fbeeee; }
+.reglage { width: 100%; min-height: 60px; display: flex; align-items: center; gap: 12px; text-align: left; padding: 8px 0; color: var(--encre); }
+.reglage > svg.i:first-child { color: var(--accent-fort); }
+.reglage span { flex: 1; min-width: 0; font-weight: 500; }
+.reglage small { display: block; font-size: 14px; font-weight: 400; color: var(--encre-2); }
+.reglage .suite { color: var(--encre-2); width: 20px; height: 20px; }
+.interrupteur { flex: none; position: relative; width: 50px; height: 30px; border-radius: 15px; background: #9c8390; transition: background-color .18s; }
+.interrupteur::after { content: ""; position: absolute; left: 3px; top: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(70, 24, 46, .3); transition: transform .2s var(--ease-out); }
+[aria-checked="true"] .interrupteur { background: var(--bon); }
+[aria-checked="true"] .interrupteur::after { transform: translateX(20px); }
+
+.voile { position: absolute; inset: 0; z-index: 8; background: rgba(38, 16, 29, .46); opacity: 0; pointer-events: none; transition: opacity .24s var(--ease-out); }
+.voile.vu { opacity: 1; pointer-events: auto; }
+.feuille { position: absolute; z-index: 9; left: 0; right: 0; bottom: 0; max-height: 82%; overflow-y: auto; box-sizing: border-box; padding: 8px 20px max(24px, env(safe-area-inset-bottom, 0px)); border-radius: 28px 28px 0 0; background: var(--blanc); transform: translateY(105%); transition: transform .32s var(--ease-drawer); }
+.feuille.ouverte { transform: none; box-shadow: 0 -14px 34px rgba(58, 26, 43, .2); }
+.poignee { display: grid; place-items: center; height: 28px; touch-action: none; cursor: grab; }
+.poignee::after { content: ""; width: 40px; height: 5px; border-radius: 3px; background: #e2cfd6; }
+.feuille h2 { font: 700 21px/1.2 var(--titre); margin-bottom: 10px; touch-action: none; }
+.feuille label { display: block; font-weight: 600; margin-bottom: 6px; }
+.feuille textarea { width: 100%; min-height: 128px; box-sizing: border-box; padding: 12px 14px; border: 1.5px solid #9c8390; border-radius: 18px; background: #fff; color: var(--encre); font: inherit; resize: none; -webkit-user-select: text; user-select: text; caret-color: var(--accent); }
+.feuille textarea:focus-visible { outline: 3px solid var(--accent); outline-offset: 0; }
+.champ { width: 100%; min-height: 56px; box-sizing: border-box; padding: 0 16px; border: 1.5px solid #9c8390; border-radius: 18px; background: #fff; color: var(--encre); font: 500 18px/1 var(--texte); letter-spacing: .04em; font-variant-numeric: tabular-nums; -webkit-user-select: text; user-select: text; caret-color: var(--accent); }
+.champ:focus-visible { outline: 3px solid var(--accent); outline-offset: 0; }
+.champ[aria-invalid="true"] { border-color: var(--mauvais); }
+#codeAide.erreur { color: var(--mauvais); font-weight: 500; }
+.entete { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.verre.bouton-rond { flex: none; width: 48px; height: 48px; display: grid; place-items: center; border-radius: 50%; color: var(--accent-fort); }
+.bouton-rond:active { transform: scale(.94); }
+.verdict-feuille { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 20px; margin-bottom: 6px; }
+.verdict-feuille .vg { width: 32px; height: 32px; flex: none; }
+.verdict-feuille b { display: block; font: 700 18px/1.2 var(--titre); }
+.verdict-feuille span { font-size: 15px; color: var(--encre-2); }
+.verifs li { display: flex; gap: 10px; padding: 12px 0; }
+.verifs li + li { border-top: 1px solid #f2e3e4; }
+.verifs b { display: block; font-weight: 600; }
+.verifs div span { font-size: 15px; color: var(--encre-2); }
+.chiffre-co2 { font: 900 40px/1 var(--titre); letter-spacing: -.01em; }
+.chiffre-co2 small { font: 700 18px/1 var(--titre); margin-left: 4px; }
+.fourchette { color: var(--encre-2); font-size: 15px; margin: 6px 0 14px; }
+.repartition { display: flex; height: 14px; gap: 3px; border-radius: 7px; overflow: hidden; }
+.repartition i { display: block; }
+.legende-co2 li { display: flex; align-items: center; gap: 10px; padding: 9px 0; font-size: 15px; }
+.legende-co2 i { width: 12px; height: 12px; border-radius: 4px; flex: none; }
+.legende-co2 span { flex: 1; }
+.legende-co2 b { font-weight: 600; font-variant-numeric: tabular-nums; }
+.fil-chat { display: grid; gap: 10px; margin-bottom: 12px; }
+.bulle-chat { max-width: 84%; padding: 10px 14px; border-radius: 18px; font-size: 15px; line-height: 1.4; overflow-wrap: anywhere; }
+.bulle-chat.ia { justify-self: start; background: #fbeeee; border-bottom-left-radius: 6px; }
+.bulle-chat.moi { justify-self: end; background: var(--encre); color: #fff; border-bottom-right-radius: 6px; }
+.questions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.questions .filtre { flex: 0 1 auto; padding: 8px 14px; background: #fbeeee; text-align: left; }
+.ligne-chat { display: flex; gap: 8px; }
+.ligne-chat .champ { flex: 1; min-width: 0; min-height: 48px; font-size: 16px; letter-spacing: 0; }
+.feuille .ligne-chat .cta { width: auto; margin: 0; padding: 0 18px; min-height: 48px; font-size: 16px; }
+.tag-phase { display: inline-block; margin-bottom: 10px; padding: 3px 9px; border-radius: 10px; background: #fbeeee; color: var(--encre-2); font-size: 13px; font-weight: 600; }
+.feuille .cta { width: 100%; margin-top: 12px; }
+.feuille .cta:disabled { background: #d9c6cf; color: #5e4d57; box-shadow: none; cursor: not-allowed; }
+.compteur { display: flex; justify-content: space-between; gap: 12px; margin-top: 6px; font-size: 14px; color: var(--encre-2); font-variant-numeric: tabular-nums; }
+
+@media (prefers-reduced-transparency: reduce) {
+  .verre, .bascule, .chiffre, .filtre { background: var(--blanc); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+@supports (corner-shape: squircle) {
+  .verre, .liste, .carte-verdict, .post, .carte-peau { corner-shape: squircle; border-radius: 44px; }
+}
+@media (max-width: 760px) {
+  .legende { display: none; }
+  .scene { padding: 0; height: 100%; }
+  .tel { width: 100%; height: 100%; border-radius: 0; box-shadow: none; }
+  .statut { display: none; }
+  .corps, .corps-scan { padding-top: 28px; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ecran, .cadre, .cta, .toast, .bascule-repere, .feuille, .interrupteur::after { transition-duration: .01s; }
+  .ecran { transform: none; }
+  .apparait, .balayage { animation: none; }
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-scan" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M8 7v10"/><path d="M12 7v10"/><path d="M17 7v10"/></symbol>
+  <symbol id="i-routine" viewBox="0 0 24 24"><path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"/><path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"/></symbol>
+  <symbol id="i-accueil" viewBox="0 0 24 24"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+  <symbol id="i-discussion" viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></symbol>
+  <symbol id="i-profil" viewBox="0 0 24 24"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></symbol>
+  <symbol id="v-bon" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.5C12 2.5 19.5 9.6 19.5 14.6A7.5 7.5 0 0 1 4.5 14.6C4.5 9.6 12 2.5 12 2.5Z"/><path fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="m8.6 14.8 2.4 2.4 4.4-4.6"/></symbol>
+  <symbol id="v-prudence" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M12 2.5C12 2.5 19.5 9.6 19.5 14.6A7.5 7.5 0 0 1 4.5 14.6C4.5 9.6 12 2.5 12 2.5Z"/><path fill="currentColor" d="M4.6 14c2.4-1.4 4.4 1.4 7.4.2s5-1.2 7.4-.2a7.5 7.5 0 1 1-14.8 0Z"/></symbol>
+  <symbol id="v-mauvais" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M12 2.5C12 2.5 19.5 9.6 19.5 14.6A7.5 7.5 0 0 1 4.5 14.6C4.5 9.6 12 2.5 12 2.5Z"/><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M4 21.5 20 4.5"/></symbol>
+  <symbol id="v-inconnu" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-dasharray="2.6 2.8" stroke-linecap="round" d="M12 2.5C12 2.5 19.5 9.6 19.5 14.6A7.5 7.5 0 0 1 4.5 14.6C4.5 9.6 12 2.5 12 2.5Z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 15.5h.01"/></symbol>
+  <symbol id="v-vide" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M12 2.5C12 2.5 19.5 9.6 19.5 14.6A7.5 7.5 0 0 1 4.5 14.6C4.5 9.6 12 2.5 12 2.5Z"/></symbol>
+  <symbol id="i-goutte" viewBox="0 0 24 24"><path class="goutte-vide" d="M12 2.5C12 2.5 19.5 9.6 19.5 14.6A7.5 7.5 0 0 1 4.5 14.6C4.5 9.6 12 2.5 12 2.5Z"/></symbol>
+  <symbol id="sg-bon" viewBox="0 0 46 54"><path fill="url(#gn-bon)" d="M23 2C23 2 42 20 42 33A19 19 0 0 1 4 33C4 20 23 2 23 2Z"/><path fill="none" stroke="#fff" stroke-opacity=".75" stroke-width="1.5" d="M23 2C23 2 42 20 42 33A19 19 0 0 1 4 33C4 20 23 2 23 2Z"/><ellipse cx="15" cy="27" rx="3.2" ry="5.6" fill="#fff" fill-opacity=".75" transform="rotate(24 15 27)"/></symbol>
+  <symbol id="sg-prudence" viewBox="0 0 46 54"><path fill="url(#gn-prudence)" d="M23 2C23 2 42 20 42 33A19 19 0 0 1 4 33C4 20 23 2 23 2Z"/><path fill="none" stroke="#fff" stroke-opacity=".75" stroke-width="1.5" d="M23 2C23 2 42 20 42 33A19 19 0 0 1 4 33C4 20 23 2 23 2Z"/><ellipse cx="15" cy="27" rx="3.2" ry="5.6" fill="#fff" fill-opacity=".75" transform="rotate(24 15 27)"/></symbol>
+  <symbol id="sg-mauvais" viewBox="0 0 46 54"><path fill="url(#gn-mauvais)" d="M23 2C23 2 42 20 42 33A19 19 0 0 1 4 33C4 20 23 2 23 2Z"/><path fill="none" stroke="#fff" stroke-opacity=".75" stroke-width="1.5" d="M23 2C23 2 42 20 42 33A19 19 0 0 1 4 33C4 20 23 2 23 2Z"/><ellipse cx="15" cy="27" rx="3.2" ry="5.6" fill="#fff" fill-opacity=".75" transform="rotate(24 15 27)"/></symbol>
+  <symbol id="sg-inconnu" viewBox="0 0 46 54"><path fill="url(#gn-inconnu)" d="M23 2C23 2 42 20 42 33A19 19 0 0 1 4 33C4 20 23 2 23 2Z"/><path fill="none" stroke="#fff" stroke-opacity=".75" stroke-width="1.5" d="M23 2C23 2 42 20 42 33A19 19 0 0 1 4 33C4 20 23 2 23 2Z"/><ellipse cx="15" cy="27" rx="3.2" ry="5.6" fill="#fff" fill-opacity=".75" transform="rotate(24 15 27)"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></symbol>
+  <symbol id="i-points" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></symbol>
+  <symbol id="i-favori" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></symbol>
+  <symbol id="i-historique" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></symbol>
+  <symbol id="i-cadenas" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+  <symbol id="i-cloche" viewBox="0 0 24 24"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></symbol>
+  <symbol id="i-drapeau" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></symbol>
+  <symbol id="i-bloquer" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></symbol>
+  <symbol id="i-masquer" viewBox="0 0 24 24"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.53 13.53 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><path d="m2 2 20 20"/></symbol>
+  <symbol id="i-sortie" viewBox="0 0 24 24"><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></symbol>
+  <symbol id="i-retour" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+  <symbol id="i-bouclier" viewBox="0 0 24 24"><path d="M12 3 5 6v5.5c0 4.4 2.9 7.8 7 9.5 4.1-1.7 7-5.1 7-9.5V6Z"/><path d="m9 12 2.2 2.2L15 10.4"/></symbol>
+  <symbol id="i-feuille" viewBox="0 0 24 24"><path d="M5 19c0-8 5-13 15-14 0 10-4 15-11 15-1.6 0-3-.4-4-1Z"/><path d="M5 20c2-5 5-8 9-10"/></symbol>
+  <symbol id="i-assistant" viewBox="0 0 24 24"><path d="M11 4c.7 4.200 2.800 6.300 7 7-4.200.7-6.300 2.800-7 7-.7-4.200-2.800-6.300-7-7 4.200-.7 6.300-2.800 7-7Z"/><path d="M18.500 3v3.500M20.200 4.800h-3.500"/></symbol>
+  <symbol id="i-suite" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="logo" viewBox="0 0 672 256"><path fill="#3A1A2B" fill-rule="evenodd" d="M250 140A62 62 0 1 0 231.84 183.84A12 12 0 0 0 214.87 166.87A38 38 0 0 1 151.94 152H238A12 12 0 0 0 250 140ZM151.94 128H224.06A38 38 0 0 0 151.94 128ZM261.86 94.46A12 12 0 0 1 284.14 85.54L313 157.7L341.86 85.54A12 12 0 0 1 364.14 94.46L324.14 194.46A12 12 0 0 1 301.86 194.46ZM498 140A62 62 0 1 0 479.84 183.84A12 12 0 0 0 462.87 166.87A38 38 0 0 1 399.94 152H486A12 12 0 0 0 498 140ZM399.94 128H472.06A38 38 0 0 0 399.94 128ZM510.00 44.00A12.00 12.00 0 0 1 534.00 44.00V190.00A12.00 12.00 0 0 1 510.00 190.00ZM548 140a62 62 0 1 1 124 0a62 62 0 1 1 -124 0ZM572 140a38 38 0 1 0 76 0a38 38 0 1 0 -76 0Z"/><path fill="#3A1A2B" d="M648.00 90.00A12.00 12.00 0 0 1 672.00 90.00V190.00A12.00 12.00 0 0 1 648.00 190.00Z"/><path fill="#3A1A2B" d="M0.00 90.07A12.04 12.04 0 0 1 24.09 90.07V190.08A12.04 12.04 0 0 1 0.00 190.08ZM20.44 126.20C36.50 95.54 58.40 75.10 86.14 75.10L87.60 96.27C68.62 95.54 42.34 113.06 22.63 156.86ZM86.14 75.10C103.66 75.10 113.88 94.08 113.88 113.06A18.98 18.98 0 1 1 75.92 113.06C75.92 105.76 81.76 101.38 87.60 96.27Z"/></symbol>
+  <defs>
+    <linearGradient id="verre-rose" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd9c8"/><stop offset=".55" stop-color="#f4a7ba"/><stop offset="1" stop-color="#c9587e"/></linearGradient>
+    <linearGradient id="gn-bon" x1="0" y1="0" x2=".6" y2="1"><stop offset="0" stop-color="#eefaf3"/><stop offset="1" stop-color="#9fd8bd"/></linearGradient>
+    <linearGradient id="gn-prudence" x1="0" y1="0" x2=".6" y2="1"><stop offset="0" stop-color="#fff4e2"/><stop offset="1" stop-color="#f8ca8c"/></linearGradient>
+    <linearGradient id="gn-mauvais" x1="0" y1="0" x2=".6" y2="1"><stop offset="0" stop-color="#ffeae6"/><stop offset="1" stop-color="#f4a79e"/></linearGradient>
+    <linearGradient id="gn-inconnu" x1="0" y1="0" x2=".6" y2="1"><stop offset="0" stop-color="#f7f1f4"/><stop offset="1" stop-color="#d6c9d1"/></linearGradient>
+    <linearGradient id="reflet" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".65"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+    <pattern id="barres" width="9" height="10" patternUnits="userSpaceOnUse"><rect width="2" height="10" fill="#26101d"/><rect x="3" width="1" height="10" fill="#26101d"/><rect x="5.5" width="2.5" height="10" fill="#26101d"/></pattern>
+  </defs>
+  <symbol id="p-serum" viewBox="0 0 120 200">
+    <rect x="47" y="2" width="26" height="34" rx="13" fill="#3a1a2b"/>
+    <rect x="39" y="33" width="42" height="20" rx="5" fill="#e9c9b4"/>
+    <rect x="45" y="51" width="30" height="10" fill="#f4a7ba"/>
+    <rect x="16" y="58" width="88" height="140" rx="22" fill="url(#verre-rose)"/>
+    <rect x="23" y="66" width="10" height="120" rx="5" fill="url(#reflet)"/>
+    <rect x="27" y="88" width="66" height="88" rx="9" fill="#fffbfa"/>
+    <text x="60" y="108" text-anchor="middle" font-family="Zen Maru Gothic, sans-serif" font-weight="700" font-size="12" fill="#3a1a2b">Sérum</text>
+    <text x="60" y="122" text-anchor="middle" font-family="Zen Maru Gothic, sans-serif" font-weight="700" font-size="12" fill="#3a1a2b">Éclat</text>
+    <rect x="35" y="137" width="50" height="28" fill="url(#barres)"/>
+  </symbol>
+  <symbol id="p-tube" viewBox="0 0 120 200">
+    <path d="M22 6h76l-10 150H32z" fill="#bfe3d6"/><path d="M34 6h12l4 150h-8z" fill="url(#reflet)"/>
+    <rect x="30" y="154" width="60" height="42" rx="8" fill="#1c6e53"/>
+  </symbol>
+  <symbol id="p-pot" viewBox="0 0 120 200">
+    <rect x="12" y="66" width="96" height="40" rx="10" fill="#3a1a2b"/>
+    <rect x="16" y="102" width="88" height="64" rx="16" fill="#f7d5c6"/><rect x="24" y="110" width="10" height="48" rx="5" fill="url(#reflet)"/>
+  </symbol>
+  <symbol id="p-baume" viewBox="0 0 120 200">
+    <path d="M42 62c0-26 18-44 36-50v50z" fill="#dcd0f4"/><rect x="38" y="58" width="44" height="40" fill="#e9c9b4"/>
+    <rect x="30" y="94" width="60" height="100" rx="8" fill="#6b4557"/>
+  </symbol>
+</svg>
+
+<div class="scene">
+  <aside class="legende">
+    <svg class="marque-legende" role="img" aria-label="Revela"><use href="#logo"/></svg>
+    <h1>Perle et verre</h1>
+    <p>Tous les onglets sont dessinés. Touche le menu, coche ta routine, compare un avant-après, et attrape les gouttes.</p>
+    <p>Produits et notes d'exemple, inventés pour la maquette.</p>
+  </aside>
+
+  <main class="tel" id="tel" data-ecran="accueil">
+    <canvas id="gl" aria-hidden="true"></canvas>
+    <div class="couche" aria-hidden="true">
+      <div class="goutte" id="ga"><div class="note"><span id="na">14</span><small id="sa">/20</small></div></div>
+      <div class="goutte" id="gb"><div class="note"><span id="nb">11</span><small>/20</small></div></div>
+    </div>
+    <div class="statut" aria-hidden="true">9:41</div>
+
+    <section class="ecran actif" id="accueil" aria-label="Accueil">
+      <div class="corps">
+        <div class="entete"><svg class="marque" role="img" aria-label="Revela"><use href="#logo"/></svg><button class="verre bouton-rond" data-plus="assistant" aria-label="Demander à l'assistant"><svg class="i"><use href="#i-assistant"/></svg></button></div>
+        <div class="heros">
+          <h1>Bonjour<br><span id="prenom">Léa</span></h1>
+          <p>Scanne un produit. On te dit la vérité.</p>
+          <div class="emplacement-heros" data-goutte="a"></div>
+        </div>
+        <button class="cta" data-va="scanner"><svg class="i"><use href="#i-scan"/></svg>Scanner un produit</button>
+        <button class="verre routine" data-onglet="routine">
+          <span class="pastille"><svg class="i"><use href="#i-routine"/></svg></span>
+          <span><b>Routine du soir</b><em id="routine-accueil">Prochaine étape : crème de nuit</em></span>
+          <svg class="i"><use href="#i-suite"/></svg>
+        </button>
+        <div class="bloc">
+          <div class="titre-bloc"><h2>Derniers scans</h2><small>notes produit sur 20</small></div>
+          <ul class="liste" id="derniers"></ul>
+        </div>
+        <p class="aide">Produits d'exemple, inventés pour la maquette. Information, pas un avis médical.</p>
+      </div>
+    </section>
+
+    <section class="ecran ecran-scan" id="scanner" aria-label="Scanner">
+      <div class="corps-scan">
+        <h1>Scanner</h1>
+        <div class="viseur" id="viseur">
+          <div class="cadre"><svg viewBox="-2 -2 268 172" aria-hidden="true"><g class="barres"><rect x="46.0" y="42" width="3.4" height="84"/><rect x="51.7" y="42" width="2.2" height="84"/><rect x="57.4" y="42" width="2.2" height="84"/><rect x="63.1" y="42" width="3.4" height="84"/><rect x="68.8" y="42" width="2.2" height="84"/><rect x="74.5" y="42" width="2.2" height="84"/><rect x="80.2" y="42" width="3.4" height="84"/><rect x="85.9" y="42" width="2.2" height="84"/><rect x="91.6" y="42" width="2.2" height="84"/><rect x="97.3" y="42" width="3.4" height="84"/><rect x="103.0" y="42" width="2.2" height="84"/><rect x="108.7" y="42" width="2.2" height="84"/><rect x="114.4" y="42" width="3.4" height="84"/><rect x="120.1" y="42" width="2.2" height="84"/><rect x="125.8" y="42" width="2.2" height="84"/><rect x="131.5" y="42" width="3.4" height="84"/><rect x="137.2" y="42" width="2.2" height="84"/><rect x="142.9" y="42" width="2.2" height="84"/><rect x="148.6" y="42" width="3.4" height="84"/><rect x="154.3" y="42" width="2.2" height="84"/><rect x="160.0" y="42" width="2.2" height="84"/><rect x="165.7" y="42" width="3.4" height="84"/><rect x="171.4" y="42" width="2.2" height="84"/><rect x="177.1" y="42" width="2.2" height="84"/><rect x="182.8" y="42" width="3.4" height="84"/><rect x="188.5" y="42" width="2.2" height="84"/><rect x="194.2" y="42" width="2.2" height="84"/><rect x="199.9" y="42" width="3.4" height="84"/><rect x="205.6" y="42" width="2.2" height="84"/><rect x="211.3" y="42" width="2.2" height="84"/><rect x="217.0" y="42" width="3.4" height="84"/></g><path class="coins" d="M0 36V14a14 14 0 0 1 14-14H36M228 0H250a14 14 0 0 1 14 14V36M264 132V154a14 14 0 0 1-14 14H228M36 168H14a14 14 0 0 1-14-14V132"/></svg><div class="balayage"></div></div>
+        </div>
+        <p class="consigne" id="etat" aria-live="polite"><b>Vise le code-barres du produit</b><small>Garde le téléphone stable</small></p>
+        <button class="cta" id="scan">Simuler le scan</button>
+        <div class="liens">
+          <button class="lien" id="saisir">Saisir le code</button>
+          <button class="lien" data-bientot="L'analyse par photo">Analyser une photo</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="ecran" id="resultat" aria-label="Résultat">
+      <div class="corps">
+        <div class="barre-haut">
+          <button class="retour" data-va="scanner" aria-label="Retour au scanner"><svg class="i"><use href="#i-retour"/></svg></button>
+          <h1>Résultat</h1>
+          <span class="exemple">Exemple</span>
+        </div>
+        <div class="produit">
+          <div class="photo" id="photo"><svg role="img" aria-label="Photo du produit"><use href="#p-serum"/></svg></div>
+          <div><h2>Sérum Éclat</h2><p>Maison Fictive · 30 ml</p><p>24 ingrédients</p></div>
+        </div>
+        <div>
+          <div class="gouttes" id="gouttes">
+            <div class="emplacement" data-goutte="a"></div>
+            <div class="emplacement b" data-goutte="b"></div>
+            <p class="etiquette">Note produit</p>
+            <p class="etiquette b">Ma peau</p>
+          </div>
+          <p class="sr" id="annonce" aria-live="polite">Note produit : 14 sur 20.</p>
+        </div>
+        <div class="carte-verdict" id="verdict" hidden>
+          <svg class="vg"><use href="#v-prudence"/></svg>
+          <div><h2>Prudence</h2><p>Bonne formule, mais deux ingrédients peuvent irriter ta peau sensible.</p></div>
+        </div>
+        <button class="cta" id="compat">Voir si ça me convient</button>
+        <div class="bloc" id="raisons-peau" hidden>
+          <h2>Pourquoi Prudence</h2>
+          <ul class="liste">
+            <li><details class="raison"><summary><span class="signe v-prudence"><svg class="vg"><use href="#v-prudence"/></svg></span><div><b>Parfum</b><span>Ta peau est sensible, et le parfum peut l'irriter.</span></div><svg class="i fleche"><use href="#i-suite"/></svg></summary><p class="detail">Tu as indiqué une peau sensible dans ton profil. Ici le parfum est en 9e position sur 24.<small>Source : table Revela</small></p></details></li>
+            <li><details class="raison"><summary><span class="signe v-prudence"><svg class="vg"><use href="#v-prudence"/></svg></span><div><b>Alcohol Denat.</b><span>Peut assécher une peau sensible.</span></div><svg class="i fleche"><use href="#i-suite"/></svg></summary><p class="detail">Il arrive en 4e position sur 24, donc en quantité notable.<small>Source : table Revela</small></p></details></li>
+          </ul>
+        </div>
+        <div class="bloc">
+          <h2>Pourquoi 14 sur 20</h2>
+          <ul class="liste">
+            <li><details class="raison"><summary><span class="signe v-bon"><svg class="vg"><use href="#v-bon"/></svg></span><div><b>Niacinamide</b><span>Actif bien documenté, placé haut dans la liste.</span></div><svg class="i fleche"><use href="#i-suite"/></svg></summary><p class="detail">Il arrive en 3e position sur 24.<small>Source : CosIng</small></p></details></li>
+            <li><details class="raison"><summary><span class="signe v-bon"><svg class="vg"><use href="#v-bon"/></svg></span><div><b>Glycerin</b><span>Hydratant courant et bien toléré.</span></div><svg class="i fleche"><use href="#i-suite"/></svg></summary><p class="detail">Il arrive en 2e position sur 24.<small>Source : CosIng</small></p></details></li>
+            <li><details class="raison"><summary><span class="signe v-prudence"><svg class="vg"><use href="#v-prudence"/></svg></span><div><b>Parfum</b><span>Composition non détaillée sur l'étiquette.</span></div><svg class="i fleche"><use href="#i-suite"/></svg></summary><p class="detail">L'étiquette ne dit pas de quoi il est fait.<small>Source : Open Beauty Facts</small></p></details></li>
+          </ul>
+        </div>
+        <div class="bloc">
+          <h2>Aller plus loin</h2>
+          <ul class="liste">
+            <li><button class="reglage" data-plus="authenticite"><svg class="i"><use href="#i-bouclier"/></svg><span>Authenticité<small>Aucun signe de contrefaçon relevé</small></span><svg class="i suite"><use href="#i-suite"/></svg></button></li>
+            <li><button class="reglage" data-plus="carbone"><svg class="i"><use href="#i-feuille"/></svg><span>Impact carbone<small>Environ 1,8 kg CO₂e, estimation</small></span><svg class="i suite"><use href="#i-suite"/></svg></button></li>
+            <li><button class="reglage" data-plus="assistant" data-produit="1"><svg class="i"><use href="#i-assistant"/></svg><span>Poser une question<small>L'assistant connaît ce produit et ta peau</small></span><svg class="i suite"><use href="#i-suite"/></svg></button></li>
+          </ul>
+        </div>
+        <p class="aide">Information, pas un avis médical.</p>
+      </div>
+    </section>
+
+    <section class="ecran" id="routine" aria-label="Routine">
+      <div class="corps">
+        <div class="tete-ecran">
+          <div><h1>Routine</h1><p id="routine-etat" aria-live="polite">Prochaine étape : crème de nuit</p></div>
+          <div class="emplacement-routine" data-goutte="a"></div>
+        </div>
+        <div class="bascule" role="group" aria-label="Moment de la routine">
+          <span class="bascule-repere" id="basculeRepere"></span>
+          <button data-moment="matin" aria-pressed="false">Matin</button>
+          <button data-moment="soir" aria-pressed="true">Soir</button>
+        </div>
+        <ol class="etapes" id="etapes"></ol>
+        <div class="bloc">
+          <h2>Ma salle de bain</h2>
+          <ul class="etagere" id="etagere"></ul>
+        </div>
+        <p class="aide">Produits d'exemple, inventés pour la maquette. Information, pas un avis médical.</p>
+      </div>
+    </section>
+
+    <section class="ecran" id="discussion" aria-label="Discussion">
+      <div class="corps">
+        <div class="tete-ecran simple">
+          <div><h1>Discussion</h1><p>Ce que d'autres ont vécu avec leurs produits.</p></div>
+          <span class="exemple">Exemple</span>
+        </div>
+        <button class="cta" id="ecrire"><svg class="i"><use href="#i-plus"/></svg>Partager mon avis</button>
+        <div class="filtres" id="filtres" role="group" aria-label="Filtrer les avis">
+          <button class="filtre" data-filtre="tout" aria-pressed="true">Pour toi</button>
+          <button class="filtre" data-filtre="sensible" aria-pressed="false">Peau sensible</button>
+          <button class="filtre" data-filtre="avant" aria-pressed="false">Avant-après</button>
+          <button class="filtre" data-filtre="routine" aria-pressed="false">Routines</button>
+        </div>
+        <ul class="fil" id="fil"></ul>
+        <p class="aide">Des expériences personnelles, pas un avis médical.</p>
+      </div>
+    </section>
+
+    <section class="ecran" id="profil" aria-label="Profil">
+      <div class="corps">
+        <div class="tete-ecran simple">
+          <div class="auteur"><span class="avatar grand" id="profilAvatar" aria-hidden="true">L</span><div><h1 id="profilNom">Léa</h1><small id="profilPeau" aria-live="polite">Peau mixte et sensible</small></div></div>
+          <div class="emplacement-profil" data-goutte="a"></div>
+        </div>
+        <div class="chiffres">
+          <button class="chiffre" data-liste="historique"><b>4</b>scans</button>
+          <button class="chiffre" data-liste="favoris"><b>2</b>favoris</button>
+          <button class="chiffre" data-liste="avis"><b id="nbAvis">0</b><span id="motAvis">avis</span></button>
+        </div>
+        <div class="bloc">
+          <h2>Ma peau</h2>
+          <div class="carte-peau">
+            <p class="aide">Tes verdicts dépendent de ces réponses.</p>
+            <h3 id="t-type">Type de peau</h3>
+            <div class="choix-groupe" role="group" aria-labelledby="t-type" data-unique>
+              <button class="choix" aria-pressed="false">Sèche</button>
+              <button class="choix" aria-pressed="true">Mixte</button>
+              <button class="choix" aria-pressed="false">Grasse</button>
+              <button class="choix" aria-pressed="false">Normale</button>
+            </div>
+            <h3 id="t-part">Particularités</h3>
+            <div class="choix-groupe" role="group" aria-labelledby="t-part">
+              <button class="choix" aria-pressed="true">Sensible</button>
+              <button class="choix" aria-pressed="false">Rougeurs</button>
+              <button class="choix" aria-pressed="false">Imperfections</button>
+              <button class="choix" aria-pressed="false">Déshydratée</button>
+            </div>
+          </div>
+        </div>
+        <div class="bloc">
+          <h2>Mon compte</h2>
+          <ul class="liste">
+            <li><button class="reglage" role="switch" aria-checked="true"><svg class="i"><use href="#i-cadenas"/></svg><span>Photos privées<small>Rien n'est visible sans ton accord</small></span><i class="interrupteur"></i></button></li>
+            <li><button class="reglage" role="switch" aria-checked="false"><svg class="i"><use href="#i-cloche"/></svg><span>Rappels de routine</span><i class="interrupteur"></i></button></li>
+            <li><button class="reglage" data-liste="favoris"><svg class="i"><use href="#i-favori"/></svg><span>Favoris</span><svg class="i suite"><use href="#i-suite"/></svg></button></li>
+            <li><button class="reglage" data-liste="historique"><svg class="i"><use href="#i-historique"/></svg><span>Historique des scans</span><svg class="i suite"><use href="#i-suite"/></svg></button></li>
+            <li><button class="reglage" id="deconnexion"><svg class="i"><use href="#i-sortie"/></svg><span>Se déconnecter</span></button></li>
+          </ul>
+        </div>
+        <p class="aide">Information, pas un avis médical.</p>
+      </div>
+    </section>
+
+    <nav class="onglets" id="onglets" aria-label="Navigation principale">
+      <div class="ombre-barre"><div class="cadre-barre"><svg class="fond-barre" id="fondBarre" width="1600" height="120" viewBox="-800 0 1600 120" aria-hidden="true"><path d="M-800 0H-50C-36 0-33 7-28 17C-21 33-12 39 0 39C12 39 21 33 28 17C33 7 36 0 50 0H800V120H-800Z"/></svg></div></div>
+      <button class="onglet" data-onglet="accueil"><svg class="i"><use href="#i-accueil"/></svg>Accueil</button>
+      <button class="onglet" data-onglet="routine"><svg class="i"><use href="#i-routine"/></svg>Routine</button>
+      <button class="onglet" data-onglet="scanner"><svg class="i"><use href="#i-scan"/></svg>Scanner</button>
+      <button class="onglet" data-onglet="discussion"><svg class="i"><use href="#i-discussion"/></svg>Discussion</button>
+      <button class="onglet" data-onglet="profil"><svg class="i"><use href="#i-profil"/></svg>Profil</button>
+      <span class="bulle" id="bulle" aria-hidden="true"><svg class="i"><use id="bulleIcone" href="#i-accueil"/></svg></span>
+    </nav>
+    <div class="voile" id="voile"></div>
+    <section class="feuille" id="feuille" role="dialog" aria-modal="true" aria-labelledby="feuilleTitre" inert>
+      <div class="poignee" aria-hidden="true"></div>
+      <h2 id="feuilleTitre"></h2>
+      <div id="feuilleCorps"></div>
+    </section>
+    <div class="toast" id="toast" role="status"></div>
+  </main>
+</div>
+
+<script id="frag" type="x-shader/x-fragment">
+precision highp float;
+uniform float uT, uIri, uK, uWob, uLum;
+uniform vec4 uA, uB; // x, y, rayon, pointe
+uniform vec3 uDoigt, uOnde; // x, y, force ; x, y, âge
+
+float smin(float a, float b, float k) { float h = max(k - abs(a - b), 0.) / k; return min(a, b) - h * h * k * .25; }
+
+float goutte(vec3 p, vec4 g) {
+  vec3 q = p - vec3(g.xy, 0.);
+  float r = g.z, t = g.w;
+  float w = uWob * r * .022 * (sin(q.y / r * 4.5 + uT * 2.1) + sin(q.x / r * 3.7 - uT * 1.7));
+  vec2 vers = p.xy - uDoigt.xy;
+  w -= uDoigt.z * r * .15 * exp(-dot(vers, vers) / (r * r * .4));
+  if (uOnde.z < 2.5) {
+    float l = length(p.xy - uOnde.xy) / r;
+    w += r * .045 * sin(l * 13. - uOnde.z * 17.) * exp(-uOnde.z * 2.6 - l * 1.1);
+  }
+  float corps = length(q) - r + w;
+  float pointe = length(q - vec3(0., r * (.35 + .95 * t), 0.)) - r * .1;
+  return smin(corps, pointe, r * (.2 + .75 * t));
+}
+
+float carte(vec3 p) {
+  float d = 1e5;
+  if (uA.z > .5) d = goutte(p, uA);
+  if (uB.z > .5) d = smin(d, goutte(p, uB), uK);
+  return d;
+}
+
+vec3 normale(vec3 p) {
+  vec2 e = vec2(.6, -.6);
+  return normalize(e.xyy * carte(p + e.xyy) + e.yyx * carte(p + e.yyx) + e.yxy * carte(p + e.yxy) + e.xxx * carte(p + e.xxx));
+}
+
+float ombre(vec2 p, vec4 g) {
+  if (g.z < .5) return 0.;
+  vec2 s = (p - g.xy - vec2(g.z * .12, -g.z * 1.14)) / vec2(g.z * .92, g.z * .24);
+  return exp(-dot(s, s)) * .2;
+}
+
+void main() {
+  vec2 p = gl_FragCoord.xy;
+  // Les pixels loin des gouttes sortent tout de suite, c'est ce qui garde le shader tenable sur téléphone.
+  float da = uA.z > .5 ? length(p - uA.xy - vec2(0., uA.z * .3)) / uA.z : 9.;
+  float db = uB.z > .5 ? length(p - uB.xy - vec2(0., uB.z * .3)) / uB.z : 9.;
+  if (min(da, db) > 2.3) { gl_FragColor = vec4(0.); return; }
+
+  float zMax = max(uA.z, uB.z) * 1.7;
+  float z = zMax, proche = 1e5, zProche = z;
+  for (int i = 0; i < 34; i++) {
+    float d = carte(vec3(p, z));
+    if (d < proche) { proche = d; zProche = z; }
+    if (d < .2) break;
+    z -= d * .85;
+    if (z < -zMax) break;
+  }
+  float couvre = clamp(1. - proche, 0., 1.);
+  float o = ombre(p, uA) + ombre(p, uB);
+  vec4 sol = vec4(vec3(.72, .3, .42) * o, o);
+  if (couvre <= 0.) { gl_FragColor = sol; return; }
+
+  vec3 n = normale(vec3(p, zProche));
+  vec3 v = vec3(0., 0., 1.);
+  vec3 r = reflect(-v, n);
+  float fres = pow(1. - clamp(n.z, 0., 1.), 2.1);
+
+  vec3 ciel = mix(vec3(1., .79, .7), vec3(.98, .72, .84), .5 + .5 * r.y);
+  vec3 c = mix(vec3(1., .975, .965), ciel, .28 + .55 * fres);
+
+  float caustique = pow(max(dot(n, normalize(vec3(.34, -.78, .52))), 0.), 3.);
+  c += vec3(1., .62, .46) * caustique * .34;
+
+  float film = (1. - n.z) * 3.2 + r.x * 1.4 + r.y * .8 + uT * .18 + uLum * length(p - uDoigt.xy) / 260.;
+  vec3 irise = .68 + .32 * cos(6.2832 * (film + vec3(0., .33, .67)));
+  c = mix(c, irise, uIri * smoothstep(.02, .7, fres + .12));
+
+  c = mix(c, vec3(.66, .3, .44), pow(fres, 3.2) * .62);
+
+  vec3 lumiere = mix(vec3(-.5, .72, .62), vec3((uDoigt.xy - p) / (max(uA.z, uB.z) * 1.5), .8), uLum);
+  vec3 h = normalize(normalize(lumiere) + v);
+  float spec = pow(max(dot(n, h), 0.), 170.) + pow(max(dot(n, h), 0.), 26.) * .16;
+  float spec2 = pow(max(dot(n, normalize(normalize(vec3(.6, -.5, .55)) + v)), 0.), 90.) * .4;
+
+  float a = mix(.42, .97, smoothstep(0., .8, fres)) + caustique * .14;
+  a = clamp(a, 0., 1.);
+  vec3 pre = c * a + vec3(1.) * (spec + spec2);
+  float alpha = clamp(a + spec + spec2, 0., 1.);
+  vec4 g = vec4(min(pre, vec3(alpha)), alpha);
+  gl_FragColor = mix(sol, g, couvre);
+}
+</script>
+
+<script>
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const calme = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const tel = $("#tel"), toile = $("#gl");
+const dpr = Math.min(devicePixelRatio || 1, 2);
+
+const gl = toile.getContext("webgl", { alpha: true, premultipliedAlpha: true, antialias: false, powerPreference: "low-power" });
+let U = null;
+if (gl) {
+  const shader = (type, src) => {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src); gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(s));
+    return s;
+  };
+  const prog = gl.createProgram();
+  gl.attachShader(prog, shader(gl.VERTEX_SHADER, "attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}"));
+  gl.attachShader(prog, shader(gl.FRAGMENT_SHADER, $("#frag").textContent));
+  gl.linkProgram(prog); gl.useProgram(prog);
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  const position = gl.getAttribLocation(prog, "a");
+  gl.enableVertexAttribArray(position);
+  gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
+  U = Object.fromEntries(["uDoigt", "uOnde", "uLum", "uT", "uIri", "uK", "uWob", "uA", "uB"].map(n => [n, gl.getUniformLocation(prog, n)]));
+} else {
+  tel.classList.add("nogl");
+}
+
+let W = 390, H = 844;
+const dimensionner = () => {
+  W = tel.clientWidth; H = tel.clientHeight;
+  toile.width = W * dpr; toile.height = H * dpr;
+  if (gl) gl.viewport(0, 0, toile.width, toile.height);
+};
+new ResizeObserver(dimensionner).observe(tel);
+dimensionner();
+
+const goutte = el => ({ el, x: 195, y: -160, r: 0, p: 0, vx: 0, vy: 0, vr: 0, lx: 0, ly: 0, cale: false, base: 0 });
+const A = goutte($("#ga")), B = goutte($("#gb"));
+const barre = { x: 0, v: 0, vise: 0, pret: false };
+const fondBarre = $("#fondBarre"), bulle = $("#bulle");
+const anim = { iri: 0, iriV: .0, k: 1, wob: 1, wobRepos: 1 };
+const doigt = { x: 0, y: 0, la: false, force: 0, lum: 0 };
+const onde = { x: 0, y: 0, t: -1e4 };
+let tiree = null;
+
+const cible = (lettre) => {
+  const e = $(`.ecran.actif [data-goutte="${lettre}"]`);
+  if (!e || !e.offsetParent) return null;
+  const c = e.getBoundingClientRect(), t = tel.getBoundingClientRect();
+  return { x: c.left - t.left + c.width / 2, y: c.top - t.top + c.height / 2, r: Math.min(c.width, c.height) * .46 };
+};
+
+const ressort = (g, c, dt) => {
+  if (!c) c = { x: g.x, y: g.y, r: 0 };
+  if (g.cale || calme) { Object.assign(g, { x: c.x, y: c.y, r: c.r, vx: 0, vy: 0, vr: 0 }); return; }
+  const k = 150, a = 15;
+  g.vx += (k * (c.x - g.x) - a * g.vx) * dt; g.x += g.vx * dt;
+  g.vy += (k * (c.y - g.y) - a * g.vy) * dt; g.y += g.vy * dt;
+  g.vr += (240 * (c.r - g.r) - 24 * g.vr) * dt; g.r = Math.max(0, g.r + g.vr * dt);
+  if (g !== tiree && Math.hypot(c.x - g.x, c.y - g.y, g.vx / 20, g.vy / 20) < .6 && Math.abs(c.r - g.r) < .4) g.cale = true;
+};
+
+const placer = e => { const t = tel.getBoundingClientRect(); doigt.x = e.clientX - t.left; doigt.y = e.clientY - t.top; doigt.la = true; };
+tel.addEventListener("pointermove", placer);
+tel.addEventListener("pointerleave", () => { if (!tiree) doigt.la = false; });
+tel.addEventListener("pointerdown", e => {
+  placer(e);
+  if (e.target.closest(".feuille, .onglets, .voile")) return;
+  tiree = [A, B].find(g => g.r > 10 && Math.hypot(doigt.x - g.x, doigt.y - g.y) < g.r * 1.1) || null;
+  if (tiree) { tiree.cale = false; tel.setPointerCapture(e.pointerId); }
+});
+const lacher = e => {
+  if (tiree) {
+    tiree.cale = false; tiree = null;
+    Object.assign(onde, { x: doigt.x, y: doigt.y, t: performance.now() });
+    anim.wob = 3;
+  }
+  if (e.pointerType !== "mouse") doigt.la = false;
+};
+tel.addEventListener("pointerup", lacher);
+tel.addEventListener("pointercancel", lacher);
+
+const lancer = (g) => { g.cale = false; };
+let ecran = "accueil";
+let dernier = performance.now();
+
+// Spring on transform only, so a second tap retargets from the live position and speed.
+function bouger(dt) {
+  if (!barre.pret) return;
+  if (calme) { barre.x = barre.vise; barre.v = 0; }
+  else {
+    barre.v += (240 * (barre.vise - barre.x) - 25 * barre.v) * dt;
+    barre.x += barre.v * dt;
+    if (Math.abs(barre.vise - barre.x) < .1 && Math.abs(barre.v) < 2) { barre.x = barre.vise; barre.v = 0; }
+  }
+  const vitesse = Math.abs(barre.v);
+  const large = 1 + Math.min(.24, vitesse / 4200);
+  fondBarre.style.transform = `translate3d(${barre.x - 800}px,0,0)`;
+  // The bubble sinks into the bar while it travels and rises as it lands.
+  bulle.style.transform = `translate3d(${barre.x - 27}px,${-24 + Math.min(26, vitesse / 60)}px,0) scale(${large},${1 / large})`;
+}
+const viser = () => {
+  const o = $('.onglet[aria-current="page"]');
+  if (!o) return;
+  barre.vise = o.offsetLeft + o.offsetWidth / 2;
+  if (!barre.pret) { barre.x = barre.vise; barre.pret = true; }
+};
+
+function image(t) {
+  const dt = Math.min((t - dernier) / 1000, 1 / 30); dernier = t;
+  const vers = (g, c) => g === tiree && c ? { ...c, x: doigt.x, y: doigt.y } : c;
+  ressort(A, vers(A, cible("a")), dt); ressort(B, vers(B, cible("b")), dt);
+  const flotte = (ecran === "accueil" || ecran === "profil") && !calme ? Math.sin(t / 1100) * 4 : 0;
+  let proche = false;
+  for (const g of [A, B]) {
+    const vise = g.base + Math.min(.85, Math.abs(g.vy) / 1100);
+    g.p += (vise - g.p) * Math.min(1, dt * 14);
+    const dx = doigt.x - g.x, dy = doigt.y - g.y, d = Math.hypot(dx, dy);
+    const pres = doigt.la && g.r > 10 && d < g.r * 1.7 && !calme;
+    proche ||= pres;
+    g.lx += ((pres ? dx * .13 : 0) - g.lx) * Math.min(1, dt * 9);
+    g.ly += ((pres ? dy * .13 : 0) - g.ly) * Math.min(1, dt * 9);
+    const x = g.x + g.lx, y = g.y + g.ly + flotte, s = g.r / 50;
+    g.el.style.transform = `translate(${x}px,${y}px) scale(${s})`;
+    if (U) gl.uniform4f(g === A ? U.uA : U.uB, x * dpr, (H - y) * dpr, g.r * dpr, g.p);
+  }
+  anim.iri += (Math.max(anim.iriV, proche ? .5 : 0) - anim.iri) * Math.min(1, dt * 5);
+  anim.k += ((B.r > 2 ? 30 : 1) - anim.k) * Math.min(1, dt * 4);
+  anim.wob += (anim.wobRepos - anim.wob) * Math.min(1, dt * 2.5);
+  doigt.force += ((proche ? 1 : 0) - doigt.force) * Math.min(1, dt * 8);
+  doigt.lum += ((doigt.la ? 1 : 0) - doigt.lum) * Math.min(1, dt * 6);
+  bouger(dt);
+  if (U) {
+    gl.uniform3f(U.uDoigt, doigt.x * dpr, (H - doigt.y) * dpr, doigt.force);
+    gl.uniform3f(U.uOnde, onde.x * dpr, (H - onde.y) * dpr, calme ? 9 : (t - onde.t) / 1000);
+    gl.uniform1f(U.uLum, doigt.lum);
+    gl.uniform1f(U.uT, calme ? 0 : t / 1000);
+    gl.uniform1f(U.uIri, anim.iri);
+    gl.uniform1f(U.uK, anim.k * dpr);
+    gl.uniform1f(U.uWob, calme ? 0 : anim.wob);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  }
+  requestAnimationFrame(image);
+}
+
+const consigne = (titre, detail) => { $("#etat").innerHTML = `<b>${titre}</b><small>${detail}</small>`; };
+const CODE_DEMO = "8809416470009";
+function detecter() {
+  const v = $("#viseur");
+  v.classList.add("saisi");
+  consigne("Code détecté", CODE_DEMO);
+  setTimeout(() => { v.classList.remove("saisi"); aller("resultat", { chute: true }); }, calme ? 0 : 700);
+}
+
+const compter = (el, fin, then) => {
+  if (calme) { el.textContent = fin; return then?.(); }
+  const debut = performance.now(), duree = 700;
+  (function pas(t) {
+    const q = Math.min((t - debut) / duree, 1);
+    el.textContent = Math.round(fin * (1 - Math.pow(1 - q, 4)));
+    q < 1 ? requestAnimationFrame(pas) : then?.();
+  })(debut);
+};
+const eclat = () => { anim.iriV = 1; setTimeout(() => { anim.iriV = .3; }, 900); };
+
+let minuteurs = [];
+const plus_tard = (f, ms) => minuteurs.push(setTimeout(f, calme ? 0 : ms));
+
+function resetResultat() {
+  $("#gouttes").classList.remove("deux");
+  $("#verdict").hidden = true; $("#raisons-peau").hidden = true; $("#compat").hidden = false;
+  A.el.classList.remove("vue"); B.el.classList.remove("vue");
+  $("#annonce").textContent = "Note produit : 14 sur 20.";
+}
+
+function aller(nom, { chute = false, compat = false } = {}) {
+  minuteurs.forEach(clearTimeout); minuteurs = [];
+  ecran = nom; tel.dataset.ecran = nom;
+  $$(".ecran").forEach(e => { const a = e.id === nom; e.classList.toggle("actif", a); e.inert = !a; if (a) e.scrollTop = 0; });
+  $$(".onglet").forEach(o => o.removeAttribute("aria-current"));
+  const actif = $(`.onglet[data-onglet="${nom === "resultat" ? "scanner" : nom}"]`);
+  actif.setAttribute("aria-current", "page");
+  const icone = actif.querySelector("use").getAttribute("href");
+  if ($("#bulleIcone").getAttribute("href") !== icone) {
+    $("#bulleIcone").setAttribute("href", icone);
+    if (!calme) bulle.firstElementChild.animate([{ opacity: .2, filter: "blur(2px)" }, { opacity: 1, filter: "blur(0)" }], { duration: 180, easing: "cubic-bezier(.23, 1, .32, 1)" });
+  }
+  viser();
+  try { history.replaceState(null, "", `${location.search}#${nom}`); } catch {}
+  resetResultat();
+  $("#sa").textContent = "/20";
+  tiree = null;
+  consigne("Vise le code-barres du produit", "Garde le téléphone stable");
+  lancer(A); lancer(B);
+  A.base = nom === "accueil" || nom === "profil" ? .9 : nom === "routine" ? .45 : 0;
+  anim.wobRepos = nom === "accueil" || nom === "profil" ? 1 : .35;
+  if (nom === "routine") { majRoutine(); A.el.classList.add("vue"); }
+  anim.iriV = 0;
+  if (nom === "resultat") {
+    if (chute) {
+      A.x = W / 2; A.y = -150; A.vy = 200; A.vx = 0; A.r = 56;
+      const photo = $("#photo");
+      photo.classList.remove("apparait"); void photo.offsetWidth; photo.classList.add("apparait");
+    }
+    plus_tard(() => { A.el.classList.add("vue"); compter($("#na"), 14); eclat(); }, chute ? 620 : 240);
+    if (compat) plus_tard(voirCompat, 300);
+  }
+}
+
+function voirCompat() {
+  $("#gouttes").classList.add("deux");
+  $("#compat").hidden = true;
+  lancer(A); lancer(B);
+  B.x = W + 120; B.y = A.y; B.vx = 0; B.vy = 0; B.r = 40;
+  A.el.classList.add("vue");
+  $("#na").textContent = 14;
+  plus_tard(() => {
+    B.el.classList.add("vue");
+    compter($("#nb"), 11);
+    eclat();
+    const v = $("#verdict"), r = $("#raisons-peau");
+    v.hidden = false; r.hidden = false;
+    v.classList.add("apparait"); r.classList.add("apparait");
+    $("#annonce").textContent = "Ma peau : 11 sur 20. Verdict : Prudence.";
+  }, 560);
+}
+
+let minuteToast;
+const annoncer = texte => {
+  const t = $("#toast");
+  t.textContent = texte; t.classList.add("vu");
+  clearTimeout(minuteToast); minuteToast = setTimeout(() => t.classList.remove("vu"), 2200);
+};
+
+document.addEventListener("click", e => {
+  const b = e.target.closest("button");
+  if (!b) return;
+  if (b.dataset.va || b.dataset.onglet) { fermer(); aller(b.dataset.va || b.dataset.onglet); }
+  else if (b.dataset.fiche !== undefined) annoncer("Seule la fiche de Sérum Éclat est dessinée dans la maquette.");
+  else if (b.dataset.moment) choisirMoment(b.dataset.moment);
+  else if (b.dataset.etape) cocher(+b.dataset.etape);
+  else if (b.dataset.filtre) { filtre = b.dataset.filtre; $$(".filtre").forEach(f => f.setAttribute("aria-pressed", f === b)); rendreFil(); poserTraits(); }
+  else if (b.dataset.jaime) aimer(b);
+  else if (b.dataset.coms) { const l = $(`#coms-${b.dataset.coms}`); l.hidden = !l.hidden; b.setAttribute("aria-expanded", !l.hidden); }
+  else if (b.dataset.menu) menuPost(POSTS.find(p => p.id === +b.dataset.menu), b);
+  else if (b.dataset.action) agirPost(b.dataset.action);
+  else if (b.dataset.liste) ouvrirListe(b.dataset.liste, b);
+  else if (b.matches(".choix")) choisir(b);
+  else if (b.getAttribute("role") === "switch") b.setAttribute("aria-checked", b.getAttribute("aria-checked") !== "true");
+  else if (b.id === "ecrire") ouvrirEcrire(b);
+  else if (b.id === "publier") publier();
+  else if (b.id === "deconnexion") annoncer("La connexion sera dessinée avec l'écran d'entrée.");
+  else if (b.dataset.bientot) annoncer(`${b.dataset.bientot} arrive dans la suite des maquettes.`);
+  else if (b.id === "scan") detecter();
+  else if (b.id === "saisir") ouvrirCode(b);
+  else if (b.dataset.plus) PLUS[b.dataset.plus](b);
+  else if (b.dataset.question) repondre(+b.dataset.question);
+  else if (b.id === "compat") voirCompat();
+});
+document.addEventListener("submit", e => {
+  e.preventDefault();
+  if (e.target.id === "formCode") chercherCode();
+  if (e.target.id === "formChat") poser();
+});
+
+window.addEventListener("resize", () => { lancer(A); lancer(B); viser(); });
+
+const esc = t => String(t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const nb = n => n.toLocaleString("fr-FR");
+const pluriel = (n, mot) => `${nb(n)} ${mot}${n > 1 ? "s" : ""}`;
+const VERDICT = { bon: "Compatible", prudence: "Prudence", mauvais: "Déconseillé", inconnu: "Inconnu" };
+
+// Sample data only. ?data=pire and ?data=vide swap the fixture for the worst realistic case and the empty case.
+let PRODUITS = [
+  { id: "serum", nom: "Sérum Éclat", marque: "Maison Fictive", note: 14, v: "prudence", img: "serum" },
+  { id: "gel", nom: "Gel Doux", marque: "Atelier Exemple", note: 17, v: "bon", img: "tube" },
+  { id: "creme", nom: "Crème Riche", marque: "Maison Fictive", note: 8, v: "mauvais", img: "pot" },
+  { id: "baume", nom: "Baume Nuit", marque: "Analyse insuffisante", note: null, v: "inconnu", img: "baume" },
+];
+let POSTS = [
+  { id: 1, auteur: "Inès", peau: "Peau sensible", quand: "il y a 2 h", texte: "Le Gel Doux ne m'a pas piqué les joues, même les jours où ma peau réagit à tout. Trois semaines d'essai pour l'instant.", produit: "gel", tags: ["sensible", "routine"], gouttes: 24, coms: [["Maya", "Tu l'utilises matin et soir ?"], ["Inès", "Seulement le soir."]] },
+  { id: 2, auteur: "Camille", peau: "Peau mixte", quand: "hier", texte: "Six semaines sans parfum dans ma routine. Mes rougeurs ont baissé, mais ça reste mon expérience.", avap: true, tags: ["avant", "sensible"], gouttes: 58, coms: [["Noor", "Merci de l'avoir partagé."]] },
+  { id: 3, auteur: "Sam", peau: "Peau grasse", quand: "il y a 3 j", texte: "La Crème Riche était trop lourde pour moi. Je l'ai arrêtée au bout de deux semaines.", produit: "creme", tags: ["routine"], gouttes: 7, coms: [] },
+];
+const donnees = new URLSearchParams(location.search).get("data");
+if (donnees === "vide") { PRODUITS = []; POSTS = []; }
+if (donnees === "pire") {
+  PRODUITS = [
+    { id: "serum", nom: "Sérum Concentré Hyaluronique Triple Action Réparateur de Nuit Intense", marque: "Laboratoires Dermatologiques de Saint-Germain-en-Laye", note: 20, v: "bon", img: "serum" },
+    { id: "gel", nom: "Gel", marque: "", note: 0, v: "mauvais", img: "tube" },
+    { id: "creme", nom: "Crème Hydratante Peaux Déshydratées et Sensibilisées", marque: "Maison Fictive", note: 9, v: "prudence", img: "pot" },
+    { id: "baume", nom: "Baume", marque: "Analyse insuffisante", note: null, v: "inconnu", img: "baume" },
+  ];
+  POSTS = [
+    { id: 1, auteur: "Aleksandra Wiśniewska-Kowalczyk", peau: "Peau mixte, sensible et déshydratée", quand: "il y a 11 mois", texte: "J'ai testé ça pendant un an et je garde tous mes relevés ici : https://exemple-de-blog-beaute-tres-long.example.com/routine/2026/peau-sensible/avant-apres/semaine-52 <b>sans gras</b> & sans promesse. ".repeat(2), produit: "serum", avap: true, tags: ["sensible", "avant"], gouttes: 1284, coms: [["Bartholomew Fitzgerald-Montgomery", "Merci ! ".repeat(20)]] },
+    { id: 2, auteur: "Jo", peau: "", quand: "à l'instant", texte: "Ok.", tags: [], gouttes: 1, coms: [["Jo", "Oui"]] },
+  ];
+  $("#prenom").textContent = $("#profilNom").textContent = "Aleksandra Wiśniewska-Kowalczyk";
+  $("#profilAvatar").textContent = "A";
+}
+
+const parId = id => PRODUITS.find(p => p.id === id);
+const sg = p => `<span class="sg"><svg aria-hidden="true"><use href="#sg-${p.v}"/></svg><b aria-hidden="true">${p.note ?? "?"}</b><span class="sr">${p.note === null ? "Pas de note" : `${p.note} sur 20`}</span></span>`;
+const verdict = v => `<span class="verdict v-${v}"><svg class="vg" aria-hidden="true"><use href="#v-${v}"/></svg>${VERDICT[v]}</span>`;
+const fiche = p => p.id === "serum" ? 'data-va="resultat"' : "data-fiche";
+const ligne = p => `<li><button class="ligne" ${fiche(p)}><span class="vignette"><svg aria-hidden="true"><use href="#p-${p.img}"/></svg></span><span class="nom">${esc(p.nom)}${p.marque ? `<small>${esc(p.marque)}</small>` : ""}${verdict(p.v)}</span>${sg(p)}</button></li>`;
+const VIDE_SCAN = `<li class="vide">Rien ici pour l'instant. Scanne un produit pour commencer.</li>`;
+
+$("#derniers").innerHTML = PRODUITS.map(ligne).join("") || VIDE_SCAN;
+$("#etagere").innerHTML = PRODUITS.map(p => `<li><button class="tuile" ${fiche(p)}><span class="vignette"><svg aria-hidden="true"><use href="#p-${p.img}"/></svg></span>${sg(p)}<b>${esc(p.nom)}</b>${verdict(p.v)}</button></li>`).join("")
+  + `<li><button class="tuile ajout" data-onglet="scanner"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg>Ajouter un produit</button></li>`;
+
+const ROUTINES = {
+  matin: [["Nettoyant", "gel", false], ["Sérum", "serum", false], ["Crème de jour", "creme", false], ["Écran solaire", null, false]],
+  soir: [["Démaquillant", "baume", true], ["Nettoyant", "gel", true], ["Sérum", "serum", true], ["Crème de nuit", "creme", false]],
+};
+let moment_ = "soir";
+function majRoutine() {
+  const e = ROUTINES[moment_], faits = e.filter(x => x[2]).length, reste = e.find(x => !x[2]);
+  $("#etapes").innerHTML = e.map(([nom, id, fait], i) => `<li><button class="etape" data-etape="${i + 1}" aria-pressed="${fait}"><svg class="coche" aria-hidden="true"><use href="#${fait ? "v-bon" : "v-vide"}"/></svg><span class="nom">${esc(nom)}<small>${parId(id) ? esc(parId(id).nom) : "Aucun produit choisi"}</small></span></button></li>`).join("");
+  const texte = reste ? `Prochaine étape : ${reste[0].toLowerCase()}` : "Routine terminée";
+  $("#routine-etat").textContent = texte;
+  if (moment_ === "soir") $("#routine-accueil").textContent = texte;
+  $("#na").textContent = faits; $("#sa").textContent = `/${e.length}`;
+  return reste;
+}
+function choisirMoment(m) {
+  moment_ = m;
+  $$("[data-moment]").forEach(b => b.setAttribute("aria-pressed", b.dataset.moment === m));
+  $("#basculeRepere").style.transform = m === "soir" ? "translateX(100%)" : "none";
+  majRoutine();
+}
+function cocher(n) {
+  const x = ROUTINES[moment_][n - 1];
+  x[2] = !x[2];
+  const reste = majRoutine();
+  Object.assign(onde, { x: A.x, y: A.y, t: performance.now() });
+  anim.wob = 3;
+  if (!reste) eclat();
+  $(`[data-etape="${n}"]`).focus({ preventScroll: true });
+}
+$("#basculeRepere").style.transform = "translateX(100%)";
+
+let filtre = "tout";
+const bloques = new Set();
+const mesAvis = [];
+const AVAP = `<div class="avap"><div class="peau avant"></div><div class="peau apres"></div><span class="trait"></span><span class="marque-av g">Avant, exemple</span><span class="marque-av d">Après, exemple</span><input type="range" min="0" max="100" value="50" aria-label="Comparer avant et après, image d'exemple"></div>`;
+const carte = p => {
+  const lie = p.produit && parId(p.produit);
+  return `<li class="post" id="post-${p.id}">
+    <div class="auteur"><span class="avatar" aria-hidden="true">${esc([...p.auteur][0])}</span><div><b>${esc(p.auteur)}</b><small>${[p.peau, p.quand].filter(Boolean).map(esc).join(" · ")}</small></div><button class="plus" data-menu="${p.id}" aria-label="Options de l'avis de ${esc(p.auteur)}"><svg class="i" aria-hidden="true"><use href="#i-points"/></svg></button></div>
+    <p class="texte-post">${esc(p.texte)}</p>
+    ${p.avap ? AVAP : ""}
+    ${lie ? `<button class="produit-lie" ${fiche(lie)}><span class="vignette"><svg aria-hidden="true"><use href="#p-${lie.img}"/></svg></span><span class="nom">${esc(lie.nom)}</span>${sg(lie)}</button>` : ""}
+    <div class="actions">
+      <button class="action" data-jaime="${p.id}" aria-pressed="${!!p.aime}" aria-label="Utile, ${nb(p.gouttes)}"><svg class="i" aria-hidden="true"><use href="#i-goutte"/></svg><span>${nb(p.gouttes)}</span></button>
+      <button class="action" data-coms="${p.id}" aria-expanded="false" aria-controls="coms-${p.id}"><svg class="i" aria-hidden="true"><use href="#i-discussion"/></svg>${pluriel(p.coms.length, "réponse")}</button>
+    </div>
+    <ul class="coms" id="coms-${p.id}" hidden>${p.coms.map(([q, t]) => `<li><b>${esc(q)}</b> ${esc(t)}</li>`).join("") || `<li>Pas encore de réponse.</li>`}</ul>
+  </li>`;
+};
+function rendreFil() {
+  const l = POSTS.filter(p => !bloques.has(p.auteur) && !p.masque && (filtre === "tout" || p.tags.includes(filtre)));
+  $("#fil").innerHTML = l.map(carte).join("") || `<li class="vide">Aucun avis ici pour l'instant. Partage le premier.</li>`;
+}
+rendreFil();
+$("#fil").addEventListener("input", e => {
+  const a = e.target.closest(".avap"), v = +e.target.value;
+  a.querySelector(".apres").style.clipPath = `inset(0 0 0 ${v}%)`;
+  a.querySelector(".trait").style.transform = `translateX(${a.clientWidth * v / 100}px)`;
+});
+const poserTraits = () => $$(".avap").forEach(a => { a.querySelector(".trait").style.transform = `translateX(${a.clientWidth * a.querySelector("input").value / 100}px)`; });
+function aimer(b) {
+  const p = POSTS.find(x => x.id === +b.dataset.jaime);
+  p.aime = !p.aime; p.gouttes += p.aime ? 1 : -1;
+  b.setAttribute("aria-pressed", p.aime);
+  b.setAttribute("aria-label", `Utile, ${nb(p.gouttes)}`);
+  b.querySelector("span").textContent = nb(p.gouttes);
+  if (p.aime && !calme) b.querySelector("svg").animate([{ transform: "scale(.72)" }, { transform: "scale(1)" }], { duration: 220, easing: "cubic-bezier(.23, 1, .32, 1)" });
+}
+function choisir(b) {
+  const g = b.parentElement;
+  if (g.hasAttribute("data-unique")) $$(".choix", g).forEach(c => c.setAttribute("aria-pressed", c === b));
+  else b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") !== "true");
+  const faits = $$('.choix[aria-pressed="true"]', $("#profil")).map(c => c.textContent.toLowerCase());
+  $("#profilPeau").textContent = `Peau ${faits.join(faits.length > 2 ? ", " : " et ")}`;
+}
+
+const feuille = $("#feuille"), voile = $("#voile");
+let retourFocus = null, cibleMenu = null;
+function ouvrir(titre, html, source) {
+  retourFocus = source;
+  $("#feuilleTitre").textContent = titre;
+  $("#feuilleCorps").innerHTML = html;
+  feuille.inert = false; feuille.style.transform = "";
+  feuille.classList.add("ouverte"); voile.classList.add("vu");
+  $$(".ecran, .onglets").forEach(e => { e.dataset.etaitInert = e.inert; e.inert = true; });
+  ($("input, textarea, button:not(:disabled)", $("#feuilleCorps")))?.focus({ preventScroll: true });
+}
+function fermer() {
+  if (!feuille.classList.contains("ouverte")) return;
+  feuille.style.transform = "";
+  feuille.classList.remove("ouverte"); voile.classList.remove("vu");
+  feuille.inert = true;
+  $$(".ecran, .onglets").forEach(e => { e.inert = e.dataset.etaitInert === "true"; });
+  retourFocus?.isConnected && retourFocus.focus({ preventScroll: true });
+}
+voile.addEventListener("click", fermer);
+document.addEventListener("keydown", e => { if (e.key === "Escape") fermer(); });
+// Drag the sheet down by its handle: distance or a flick both close it.
+let tire = null;
+feuille.addEventListener("pointerdown", e => {
+  if (!e.target.closest(".poignee, h2")) return;
+  tire = { y: e.clientY, t: performance.now(), dy: 0 };
+  feuille.setPointerCapture(e.pointerId);
+  feuille.style.transition = "none";
+});
+feuille.addEventListener("pointermove", e => {
+  if (!tire) return;
+  const d = e.clientY - tire.y;
+  tire.dy = d;
+  feuille.style.transform = `translateY(${d > 0 ? d : d * 80 / (80 + Math.abs(d))}px)`;
+});
+const lacherFeuille = () => {
+  if (!tire) return;
+  const vite = tire.dy / (performance.now() - tire.t) > .5, loin = tire.dy > 90;
+  tire = null;
+  feuille.style.transition = "";
+  if (vite || loin) fermer(); else feuille.style.transform = "";
+};
+feuille.addEventListener("pointerup", lacherFeuille);
+feuille.addEventListener("pointercancel", lacherFeuille);
+
+const option = (action, icone, texte) => `<button class="reglage" data-action="${action}"><svg class="i" aria-hidden="true"><use href="#${icone}"/></svg><span>${esc(texte)}</span></button>`;
+function menuPost(p, source) {
+  cibleMenu = p;
+  ouvrir(`L'avis de ${p.auteur}`, `<ul class="liste" style="box-shadow:none;padding:0">
+    <li>${option("signaler", "i-drapeau", "Signaler cet avis")}</li>
+    <li>${option("masquer", "i-masquer", "Masquer cet avis")}</li>
+    <li>${option("bloquer", "i-bloquer", `Bloquer ${p.auteur}`)}</li></ul>`, source);
+}
+function agirPost(action) {
+  const p = cibleMenu;
+  if (action === "signaler") annoncer("Merci. L'équipe va relire cet avis.");
+  if (action === "masquer") { p.masque = true; annoncer("Avis masqué."); }
+  if (action === "bloquer") { bloques.add(p.auteur); annoncer(`${p.auteur} est bloqué·e.`); }
+  rendreFil(); poserTraits(); fermer();
+}
+function ouvrirEcrire(source) {
+  ouvrir("Partager mon avis", `<label for="avis">Ton expérience</label>
+    <textarea id="avis" maxlength="500" placeholder="Qu'as-tu remarqué sur ta peau ?"></textarea>
+    <p class="compteur"><span>Tes photos restent privées tant que tu ne les publies pas.</span><span id="reste">0/500</span></p>
+    <button class="cta" id="publier" disabled>Publier</button>`, source);
+  const t = $("#avis");
+  t.addEventListener("input", () => { $("#reste").textContent = `${t.value.length}/500`; $("#publier").disabled = !t.value.trim(); });
+}
+function publier() {
+  const texte = $("#avis").value.trim();
+  if (!texte) return;
+  const p = { id: Date.now(), auteur: $("#profilNom").textContent, peau: $("#profilPeau").textContent, quand: "à l'instant", texte, tags: [], gouttes: 0, coms: [] };
+  POSTS.unshift(p); mesAvis.unshift(p);
+  $("#nbAvis").textContent = mesAvis.length; $("#motAvis").textContent = "avis";
+  filtre = "tout"; $$(".filtre").forEach(f => f.setAttribute("aria-pressed", f.dataset.filtre === "tout"));
+  rendreFil(); poserTraits(); fermer();
+  $("#discussion").scrollTop = 0;
+  annoncer("Ton avis est publié.");
+}
+function ouvrirListe(type, source) {
+  const contenu = type === "avis"
+    ? (mesAvis.map(p => `<li class="vide" style="text-align:left">${esc(p.texte)}</li>`).join("") || `<li class="vide">Tu n'as encore rien publié.</li>`)
+    : ((type === "favoris" ? PRODUITS.slice(0, 2) : PRODUITS).map(ligne).join("") || VIDE_SCAN);
+  ouvrir({ avis: "Mes avis", favoris: "Favoris", historique: "Historique des scans" }[type], `<ul class="liste" style="box-shadow:none;padding:0">${contenu}</ul>${type === "avis" ? "" : '<p class="aide">Information, pas un avis médical.</p>'}`, source);
+}
+
+// EAN-8 and EAN-13: weights 1 and 3 alternate from the right, the total ends in 0.
+const codeValide = c => /^(\d{8}|\d{13})$/.test(c) && [...c].reduce((t, d, i) => t + d * ((c.length - i) % 2 ? 1 : 3), 0) % 10 === 0;
+function ouvrirCode(source) {
+  ouvrir("Saisir le code-barres", `<form id="formCode" novalidate><label for="code">Code EAN</label>
+    <input class="champ" id="code" inputmode="numeric" autocomplete="off" maxlength="13" placeholder="${CODE_DEMO}" aria-describedby="codeAide">
+    <p class="compteur" id="codeAide"><span>Les chiffres sous les barres, sans espace.</span></p>
+    <button class="cta" id="chercher" disabled>Rechercher</button></form>`, source);
+  const c = $("#code");
+  c.addEventListener("input", () => { c.value = c.value.replace(/\D/g, ""); c.removeAttribute("aria-invalid"); $("#codeAide").classList.remove("erreur"); $("#chercher").disabled = !c.value; });
+}
+function chercherCode() {
+  const c = $("#code"), aide = $("#codeAide");
+  const erreur = t => { c.setAttribute("aria-invalid", "true"); aide.classList.add("erreur"); aide.innerHTML = `<span role="alert">${t}</span>`; };
+  if (!codeValide(c.value)) return erreur("Ce code n'est pas valide : 8 ou 13 chiffres attendus.");
+  if (c.value !== CODE_DEMO) return erreur(`Produit absent de la maquette. Essaie ${CODE_DEMO}.`);
+  fermer(); detecter();
+}
+
+const PHASE = '<span class="tag-phase">Phase 2, exemple</span>';
+const verif = (v, titre, texte) => `<li><span class="signe v-${v}"><svg class="vg"><use href="#v-${v}"/></svg></span><div><b>${titre}</b><span>${texte}</span></div></li>`;
+const REPONSES = [
+  ["Puis-je l'utiliser tous les jours ?", "Oui si ta peau le tolère. Comme elle est sensible, commence un soir sur deux à cause du parfum et de l'alcool."],
+  ["Avec quoi éviter de le mélanger ?", "Rien d'interdit dans ta routine. Évite d'ajouter un autre produit parfumé le même soir."],
+  ["Pourquoi Prudence pour ma peau ?", "Le parfum et l'Alcohol Denat. peuvent irriter une peau sensible. La formule reste bonne, d'où le 14 sur 20."],
+];
+const bulleChat = (qui, texte) => { const f = $("#filChat"); f.insertAdjacentHTML("beforeend", `<p class="bulle-chat ${qui}">${esc(texte)}</p>`); f.lastElementChild.scrollIntoView({ block: "nearest" }); };
+function repondre(i) { bulleChat("moi", REPONSES[i][0]); bulleChat("ia", REPONSES[i][1]); }
+function poser() {
+  const c = $("#question"), q = c.value.trim();
+  if (!q) return;
+  c.value = "";
+  bulleChat("moi", q); bulleChat("ia", "Dans la maquette, seules les questions proposées ont une réponse.");
+}
+const PLUS = {
+  authenticite: source => ouvrir("Authenticité", `${PHASE}
+    <div class="verdict-feuille" style="background:var(--bon-fond)"><svg class="vg" style="color:var(--bon)"><use href="#v-bon"/></svg><div><b>Aucun signe de contrefaçon</b><span>Sur ce qu'on a pu vérifier.</span></div></div>
+    <ul class="verifs">${verif("bon", "Code-barres connu", "Il correspond à la marque et au format.")}${verif("bon", "Emballage", "Mentions et langue conformes à la photo.")}${verif("inconnu", "Numéro de lot", "Pas encore vérifié. Photographie-le pour le contrôler.")}</ul>
+    <p class="aide">Indicatif : seule la marque peut confirmer l'origine d'un produit.</p>`, source),
+  carbone: source => ouvrir("Impact carbone", `${PHASE}
+    <p class="chiffre-co2">1,8<small>kg CO₂e</small></p>
+    <p class="fourchette">Estimation, entre 1,4 et 2,2 kg pour ce flacon.</p>
+    <div class="repartition" aria-hidden="true"><i style="flex:45;background:var(--accent)"></i><i style="flex:35;background:var(--peche)"></i><i style="flex:20;background:var(--lilas)"></i></div>
+    <ul class="legende-co2"><li><i style="background:var(--accent)"></i><span>Emballage</span><b>45 %</b></li><li><i style="background:var(--peche)"></i><span>Transport depuis la Corée</span><b>35 %</b></li><li><i style="background:var(--lilas)"></i><span>Formule</span><b>20 %</b></li></ul>
+    <p class="aide">Calculé depuis le poids, l'emballage et le trajet, pas fourni par la marque.</p>`, source),
+  assistant: source => { const produit = source.dataset.produit; ouvrir("Assistant", `${PHASE}
+    <div class="fil-chat" id="filChat"><p class="bulle-chat ia">${produit ? "Je connais Sérum Éclat et ton profil de peau. Que veux-tu savoir ?" : "Pose ta question sur une formule ou un ingrédient. Je réponds selon ton profil de peau."}</p></div>
+    <div class="questions">${REPONSES.map(([q], i) => `<button type="button" class="filtre" data-question="${i}">${esc(q)}</button>`).join("")}</div>
+    <form class="ligne-chat" id="formChat"><input class="champ" id="question" maxlength="300" autocomplete="off" placeholder="Ta question" aria-label="Ta question"><button class="cta">Envoyer</button></form>
+    <p class="aide" style="margin-top:10px">Assistant IA : il peut se tromper, et ce n'est pas un avis médical.</p>`, source); },
+};
+
+const depart = location.hash.slice(1);
+if (depart === "compat") aller("resultat", { compat: true });
+else aller(["accueil", "scanner", "resultat", "routine", "discussion", "profil"].includes(depart) ? depart : "accueil");
+poserTraits();
+document.fonts?.ready.then(viser);
+requestAnimationFrame(image);
+</script>
