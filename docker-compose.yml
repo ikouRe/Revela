@@ -1,7 +1,7 @@
 # Lancement : docker compose --env-file backend/.env up -d
 services:
   postgres:
-    image: postgres:16
+    image: postgres:17
     environment:
       # ":?" fait échouer compose si la variable manque, au lieu de démarrer avec une valeur vide (RG-60)
       POSTGRES_DB: ${DB_NAME:?DB_NAME manquant dans backend/.env}
