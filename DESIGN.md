@@ -279,7 +279,7 @@ Une perle chaude éclairée de lumières pastel, une encre prune et une frambois
 ### Primary
 - **Framboise** (#b92b52) : boutons principaux, réaction « Utile » active, curseur de saisie, contour de focus, ligne de balayage du scan.
 - **Framboise foncée** (#961f41) : état appuyé du bouton, libellé de l'onglet actif, icônes de réglage, ajout d'un produit.
-- **Dégradé de la bulle** (`linear-gradient(150deg, #ffb296, #d64a72 60%, #961f41)`) : uniquement la bulle de l'onglet actif et les avatars. C'est le dégradé de l'icône d'appli.
+- **Dégradé de la perle** (`linear-gradient(150deg, #ffb296, #d64a72 60%, #961f41)`) : uniquement la perle de l'onglet actif et les avatars. C'est le dégradé de l'icône d'appli.
 
 ### Secondary
 - **Pêche** (#ffc4ab) : lumière de fond en haut à droite, cadre du scanner quand le produit est trouvé.
@@ -367,7 +367,7 @@ Le verre dépoli est rare. Il n'est livré que sur la carte Routine de l'Accueil
 - **Ombre de carte** (`box-shadow: 0 12px 28px rgba(122, 48, 80, .12)`) : toutes les cartes, listes et coques.
 - **Ombre de tuile** (`box-shadow: 0 8px 18px rgba(122, 48, 80, .1)`) : les tuiles de Ma salle de bain, plus serrées.
 - **Ombre du bouton** (`box-shadow: 0 10px 22px rgba(185, 43, 82, .3)`) : le bouton principal. Elle prend la couleur de la Framboise.
-- **Ombre de bulle** (`box-shadow: 0 8px 16px rgba(150, 31, 65, .34), inset 0 1px 1px rgba(255, 255, 255, .55)`) : la bulle de l'onglet actif, avec un petit reflet en haut.
+- **Ombre de la perle** (`box-shadow: 0 8px 16px rgba(150, 31, 65, .34)`) : le disque de repli de l'onglet actif, quand WebGL manque. La perle 3D porte sa lumière dans le shader.
 - **Ombre de barre** (`filter: drop-shadow(0 -6px 14px rgba(70, 24, 46, .13))`) : la barre d'onglets. Elle suit la forme de l'encoche.
 - **Ombre de feuille** (`box-shadow: 0 -14px 34px rgba(58, 26, 43, .2)`) : la feuille ouverte seulement.
 
@@ -422,8 +422,12 @@ Doux, francs, et toujours à portée du pouce.
 ### Navigation
 - **Style :** une barre de 86px en Blanc rosé, coins hauts de 28px, cinq onglets dans l'ordre Accueil, Routine, Scanner, Discussion, Profil. Scanner est au centre, c'est l'action principale.
 - **Encoche :** une encoche de 100px de large et 39px de profondeur est creusée dans le bord haut, sous l'onglet actif.
-- **Bulle :** un cercle de 54px avec le dégradé de la marque flotte dans l'encoche et porte l'icône de l'onglet actif en blanc. L'icône de l'onglet disparaît et son libellé passe en Framboise foncée, 700.
-- **Déplacement :** l'encoche glisse sur un ressort, et un second appui repart de la position réelle. Pendant le trajet, la bulle s'enfonce dans la barre et s'étire, puis remonte en se posant.
+- **Perle :** la perle 3D de l'accueil, teintée du dégradé de la marque, flotte dans l'encoche et porte l'icône de l'onglet actif en blanc. Sa forme reste imparfaite, avec une pointe douce. Elle vit dans sa propre toile, sous la barre. L'icône de l'onglet disparaît et son libellé passe en Framboise foncée, 700.
+- **Déplacement :** l'encoche glisse sur un ressort, et un second appui repart de la position réelle. Pendant le trajet, la perle s'enfonce sous la barre et fond : une seconde masse, sur un ressort plus mou, traîne derrière elle et se fusionne à son corps. À l'arrivée, elle se rassemble, remonte et tremble une fois. Avec le mouvement réduit, elle se place sans trajet.
+
+### Ouverture
+- **Séquence :** sur le fond perle, la perle 3D de l'Accueil tombe en 520 ms jusqu'au centre et frappe l'écran. Elle ondule, se résorbe en 420 ms, lance deux ondes et neuf gouttelettes. Le mot revela sort lettre par lettre, en Encre, à partir de 800 ms, décalage de 55 ms. À 2100 ms le voile s'efface en 360 ms et la perle regagne sa place sur l'Accueil.
+- **Interruption :** un appui passe directement à la sortie. Avec le mouvement réduit, le mot s'affiche puis s'efface, sans chute.
 - **Sur le Scanner :** la barre garde son Blanc rosé, le fondu au-dessus d'elle disparaît.
 - **Écrans poussés :** Résultat garde l'onglet Scanner actif et ajoute en haut un retour de 48px.
 
@@ -479,7 +483,7 @@ Le seul écran sombre, centré sur le flacon. Le viseur fait 160 × 76px, avec d
 
 ### Don't:
 - **Don't** poser le r goutte à côté du nom, sinon on lit « r revela ».
-- **Don't** ajouter une ombre ou un dégradé au logo, ni l'étirer ou le pencher. Cette règle vise le logo seul : le dégradé de la bulle et les ombres font partie du monde.
+- **Don't** ajouter une ombre ou un dégradé au logo, ni l'étirer ou le pencher. Cette règle vise le logo seul : le dégradé de la perle et les ombres font partie du monde.
 - **Don't** coller une note dans un badge rond ou carré sur une tuile : la note vit dans une goutte.
 - **Don't** utiliser les couleurs de verdict pour décorer.
 - **Don't** mettre de la Framboise sur une simple sélection : la sélection est en Encre.

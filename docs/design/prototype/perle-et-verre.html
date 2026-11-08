@@ -171,7 +171,9 @@ svg.i { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-widt
 .ombre-barre { position: absolute; inset: 0; filter: drop-shadow(0 -6px 14px rgba(70, 24, 46, .13)); pointer-events: none; }
 .cadre-barre { position: absolute; inset: 0; overflow: clip; border-radius: 28px 28px 0 0; }
 .fond-barre { position: absolute; left: 0; top: 0; fill: var(--blanc); will-change: transform; }
-.bulle { position: absolute; left: 0; top: 0; width: 54px; height: 54px; display: grid; place-items: center; border-radius: 50%; color: #fff; background: var(--degrade); box-shadow: 0 8px 16px rgba(150, 31, 65, .34), inset 0 1px 1px rgba(255, 255, 255, .55); will-change: transform; pointer-events: none; }
+#glBarre { position: absolute; left: 0; top: -44px; width: 100%; height: 130px; pointer-events: none; }
+.bulle { position: absolute; left: 0; top: 0; width: 54px; height: 54px; display: grid; place-items: center; color: #fff; will-change: transform; pointer-events: none; }
+.nogl .bulle { border-radius: 50%; background: var(--degrade); box-shadow: 0 8px 16px rgba(150, 31, 65, .34); }
 .onglet { position: relative; min-width: 0; display: grid; justify-items: center; align-content: end; gap: 3px; padding-bottom: 14px; color: var(--encre-2); font-size: 12px; font-weight: 500; transition: color .18s; }
 .onglet svg { transition: opacity .14s, transform .12s var(--ease-out); }
 .onglet[aria-current="page"] { color: var(--accent-fort); font-weight: 700; }
@@ -335,6 +337,10 @@ svg.i { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-widt
   .statut { display: none; }
   .corps, .corps-scan { padding-top: 28px; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
 }
+.tel.ouvre #gl { z-index: 31; }
+.splash { position: absolute; inset: 0; z-index: 30; overflow: hidden; background: #F7E3DC; cursor: pointer; }
+.splash-lac { width: 100%; height: 100%; display: block; }
+.rejouer { justify-self: start; min-height: 44px; color: var(--accent-fort); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) {
   .ecran, .cadre, .cta, .toast, .bascule-repere, .feuille, .interrupteur::after { transition-duration: .01s; }
   .ecran { transform: none; }
@@ -414,6 +420,7 @@ svg.i { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-widt
     <h1>Perle et verre</h1>
     <p>Tous les onglets sont dessinés. Touche le menu, coche ta routine, compare un avant-après, et attrape les gouttes.</p>
     <p>Produits et notes d'exemple, inventés pour la maquette.</p>
+    <button class="rejouer" id="rejouer">Revoir l'ouverture</button>
   </aside>
 
   <main class="tel" id="tel" data-ecran="accueil">
@@ -597,6 +604,7 @@ svg.i { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-widt
     </section>
 
     <nav class="onglets" id="onglets" aria-label="Navigation principale">
+      <canvas id="glBarre" aria-hidden="true"></canvas>
       <div class="ombre-barre"><div class="cadre-barre"><svg class="fond-barre" id="fondBarre" width="1600" height="120" viewBox="-800 0 1600 120" aria-hidden="true"><path d="M-800 0H-50C-36 0-33 7-28 17C-21 33-12 39 0 39C12 39 21 33 28 17C33 7 36 0 50 0H800V120H-800Z"/></svg></div></div>
       <button class="onglet" data-onglet="accueil"><svg class="i"><use href="#i-accueil"/></svg>Accueil</button>
       <button class="onglet" data-onglet="routine"><svg class="i"><use href="#i-routine"/></svg>Routine</button>
@@ -612,12 +620,142 @@ svg.i { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-widt
       <div id="feuilleCorps"></div>
     </section>
     <div class="toast" id="toast" role="status"></div>
+    <div class="splash" id="splash" aria-hidden="true">
+      <canvas class="splash-lac" id="splashLac"></canvas>
+    </div>
   </main>
 </div>
 
+<script>
+// Splash « Le lac » (source : brand/splash/lac) : neuf gouttes tombent dans un lac de sirop rose, la dixième est
+// une goutte d'encre qui se diffuse et dessine le nom en dégradé framboise vers vin. Validé le 2026-11-05.
+window.lacSplash = (() => {
+  const LOGO = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-14 24 672 210"><title>Revela</title><path fill="#000" d="M16.5 100.0L15.8 102.5L15.2 104.9L14.7 107.3L14.2 109.6L13.8 111.9L13.4 114.1L13.0 116.3L12.6 118.4L12.2 120.5L11.8 122.6L11.4 124.6L11.1 126.6L10.7 128.5L10.3 130.4L10.0 132.3L9.6 134.1L9.3 135.9L9.0 137.6L8.6 139.3L8.3 141.0L8.0 142.7L7.7 144.3L7.3 145.9L7.0 147.5L6.7 149.0L6.4 150.6L6.1 152.1L5.8 153.6L5.5 155.0L5.2 156.4L4.9 157.9L4.6 159.3L4.3 160.6L4.0 162.0L3.7 163.4L3.4 164.7L3.1 166.0L2.8 167.3L2.5 168.6L2.2 169.9L2.0 171.2L1.7 172.5L1.4 173.7L1.1 175.0L0.8 176.2L0.6 177.5L0.3 178.7L0.0 180.0L40.0 180.0L39.7 178.7L39.4 177.5L39.2 176.2L38.9 175.0L38.6 173.7L38.3 172.5L38.0 171.2L37.8 169.9L37.5 168.6L37.2 167.3L36.9 166.0L36.6 164.7L36.3 163.4L36.0 162.0L35.7 160.6L35.4 159.3L35.1 157.9L34.8 156.4L34.5 155.0L34.2 153.6L33.9 152.1L33.6 150.6L33.3 149.0L33.0 147.5L32.7 145.9L32.3 144.3L32.0 142.7L31.7 141.0L31.4 139.3L31.0 137.6L30.7 135.9L30.4 134.1L30.0 132.3L29.7 130.4L29.3 128.5L28.9 126.6L28.6 124.6L28.2 122.6L27.8 120.5L27.4 118.4L27.0 116.3L26.6 114.1L26.2 111.9L25.8 109.6L25.3 107.3L24.8 104.9L24.2 102.5L23.5 100.0Z"/><circle fill="#000" cx="20.0" cy="100.0" r="3.5"/><circle fill="#000" cx="20.0" cy="180.0" r="20.0"/><path fill="#000" transform="translate(20 98) scale(0.56) translate(-65.3 -37)" d="M79.60 109.30C97.20 63.10 130.20 32.30 172.00 32.30L174.20 57.60C145.60 56.50 106.00 82.90 82.90 148.90ZM172.00 32.30C198.40 32.30 213.80 60.90 213.80 89.50A28.60 28.60 0 1 1 156.60 89.50C156.60 78.50 165.40 65.30 174.20 57.60Z"/><path fill="#000" d="M120.0 152.5L122.0 152.6L124.1 152.7L126.3 152.8L128.5 152.8L130.7 152.9L133.0 153.0L135.3 153.1L137.7 153.1L140.1 153.2L142.5 153.2L145.0 153.3L147.4 153.3L149.9 153.3L152.4 153.3L154.9 153.3L157.4 153.3L159.9 153.3L162.4 153.2L164.9 153.1L167.3 153.1L169.8 153.0L172.2 152.8L174.6 152.7L176.9 152.5L179.3 152.3L181.6 152.1L183.9 151.9L186.1 151.6L188.3 151.3L190.4 151.0L192.5 150.7L194.5 150.3L196.5 149.8L198.5 149.3L200.4 148.8L202.3 148.2L204.1 147.6L205.9 146.8L207.6 146.0L209.3 145.0L211.0 143.9L212.6 142.6L214.1 141.1L215.5 139.3L216.8 137.3L217.7 135.0L218.4 132.5L218.7 129.9L218.6 126.6L218.2 123.2L217.5 119.9L216.5 116.7L215.2 113.7L213.7 110.8L211.9 108.1L209.9 105.6L207.7 103.3L205.4 101.2L202.9 99.2L200.3 97.4L197.6 95.8L194.8 94.4L191.9 93.1L188.9 92.0L185.8 91.0L182.7 90.2L179.6 89.6L176.4 89.0L173.1 88.7L169.8 88.5L166.5 88.4L163.2 88.5L159.9 88.8L156.6 89.2L153.3 89.8L150.0 90.5L146.7 91.5L143.4 92.6L140.2 93.9L137.1 95.3L134.0 97.0L131.0 98.9L128.0 101.0L125.2 103.3L122.6 105.8L120.0 108.5L117.7 111.5L115.5 114.7L113.6 118.0L111.9 121.6L110.4 125.4L109.2 129.3L108.3 133.4L107.6 137.6L107.3 142.0L107.2 146.5L107.3 150.4L107.7 154.1L108.2 157.7L108.9 161.3L109.8 164.7L110.8 168.0L112.0 171.2L113.4 174.4L115.0 177.3L116.7 180.2L118.5 182.9L120.5 185.5L122.7 188.0L124.9 190.3L127.2 192.4L129.7 194.4L132.2 196.3L134.8 198.0L137.5 199.5L140.2 200.9L143.0 202.2L145.8 203.3L148.6 204.3L151.5 205.2L154.4 205.9L157.3 206.5L160.3 207.0L163.2 207.3L166.2 207.6L169.1 207.7L172.1 207.7L175.0 207.5L178.0 207.3L180.9 206.9L183.8 206.4L186.7 205.9L189.6 205.1L192.4 204.3L195.2 203.4L197.9 202.3L200.7 201.1L203.3 199.7L206.0 198.3L208.5 196.7L211.0 194.9L213.4 193.0L215.8 191.0L217.6 189.2L190.4 162.8L189.4 163.9L188.7 164.7L187.9 165.4L187.1 166.1L186.2 166.9L185.1 167.6L184.1 168.2L182.9 168.9L181.7 169.5L180.4 170.1L179.1 170.6L177.7 171.1L176.3 171.5L174.8 171.9L173.3 172.2L171.8 172.5L170.2 172.7L168.7 172.8L167.1 172.9L165.6 172.9L164.0 172.8L162.5 172.7L161.0 172.6L159.5 172.3L158.0 172.0L156.6 171.7L155.2 171.2L153.8 170.7L152.5 170.2L151.3 169.6L150.0 169.0L148.9 168.3L147.7 167.5L146.6 166.7L145.6 165.8L144.6 164.8L143.6 163.8L142.7 162.6L141.9 161.4L141.0 160.1L140.3 158.7L139.6 157.2L138.9 155.6L138.3 153.8L137.8 152.0L137.4 149.9L137.1 147.7L136.8 145.5L136.7 142.9L136.8 140.5L137.0 138.2L137.3 136.2L137.8 134.2L138.4 132.4L139.0 130.7L139.8 129.1L140.7 127.6L141.7 126.2L142.8 124.8L143.9 123.5L145.2 122.3L146.6 121.2L148.1 120.1L149.8 119.0L151.5 118.1L153.2 117.2L155.1 116.5L157.0 115.8L159.0 115.2L161.1 114.7L163.2 114.3L165.3 114.0L167.4 113.8L169.5 113.6L171.6 113.6L173.7 113.7L175.8 113.9L177.8 114.2L179.8 114.5L181.6 115.0L183.4 115.5L185.2 116.1L186.8 116.8L188.3 117.5L189.7 118.3L190.9 119.1L192.1 120.0L193.1 120.9L194.0 121.9L194.8 122.8L195.5 123.8L196.0 124.9L196.5 126.0L196.9 127.2L197.2 128.5L197.3 130.1L197.5 129.4L197.7 128.8L198.0 128.4L198.2 128.0L198.4 127.9L198.5 128.0L198.4 128.2L198.1 128.5L197.7 128.9L197.0 129.3L196.2 129.8L195.2 130.3L194.1 130.8L192.9 131.3L191.5 131.8L190.0 132.3L188.5 132.7L186.8 133.2L185.0 133.6L183.2 134.0L181.2 134.4L179.2 134.8L177.2 135.1L175.1 135.5L172.9 135.8L170.7 136.1L168.4 136.4L166.1 136.6L163.8 136.9L161.4 137.1L159.1 137.3L156.7 137.5L154.3 137.7L151.9 137.9L149.5 138.1L147.1 138.2L144.7 138.4L142.3 138.5L139.9 138.6L137.5 138.7L135.2 138.8L132.9 138.9L130.7 139.0L128.4 139.1L126.2 139.2L124.1 139.3L122.0 139.4L120.0 139.5Z"/><circle fill="#000" cx="120.0" cy="146.0" r="6.5"/><circle fill="#000" cx="204.0" cy="176.0" r="19.0"/><path fill="#000" d="M293.3 188.9L293.3 186.8L293.2 184.7L293.0 182.7L292.7 180.6L292.4 178.5L292.1 176.5L291.8 174.4L291.4 172.4L291.1 170.3L290.7 168.3L290.3 166.3L289.8 164.2L289.4 162.2L288.9 160.1L288.5 158.1L288.0 156.1L287.5 154.1L287.0 152.0L286.5 150.0L286.0 148.0L285.4 146.0L284.9 144.0L284.3 142.1L283.8 140.1L283.2 138.1L282.6 136.2L282.0 134.3L281.4 132.3L280.8 130.4L280.2 128.5L279.6 126.6L278.9 124.8L278.3 122.9L277.6 121.1L277.0 119.2L276.3 117.4L275.6 115.6L274.9 113.9L274.2 112.1L273.5 110.4L272.8 108.6L272.1 106.9L271.4 105.3L270.6 103.6L269.9 101.9L269.1 100.3L268.4 98.7L267.6 97.2L236.4 118.8L237.4 119.8L238.4 120.8L239.4 121.8L240.4 122.9L241.4 124.0L242.4 125.1L243.4 126.3L244.4 127.5L245.4 128.7L246.5 130.0L247.5 131.3L248.6 132.6L249.6 134.0L250.7 135.4L251.7 136.8L252.8 138.2L253.8 139.6L254.9 141.1L255.9 142.6L257.0 144.1L258.0 145.7L259.1 147.2L260.2 148.8L261.2 150.4L262.3 152.0L263.3 153.6L264.4 155.3L265.4 156.9L266.5 158.6L267.5 160.2L268.6 161.9L269.6 163.6L270.7 165.3L271.7 167.0L272.7 168.8L273.8 170.5L274.8 172.2L275.9 173.9L276.9 175.7L277.9 177.4L279.0 179.1L280.0 180.9L281.1 182.6L282.1 184.3L283.2 186.1L284.3 187.8L285.4 189.5L286.7 191.1Z"/><circle fill="#000" cx="290.0" cy="190.0" r="3.5"/><circle fill="#000" cx="252.0" cy="108.0" r="19.0"/><path fill="#000" d="M293.3 191.1L294.6 189.5L295.7 187.8L296.8 186.1L297.9 184.3L298.9 182.6L300.0 180.9L301.0 179.1L302.1 177.4L303.1 175.7L304.1 173.9L305.2 172.2L306.2 170.5L307.3 168.8L308.3 167.0L309.3 165.3L310.4 163.6L311.4 161.9L312.5 160.2L313.5 158.6L314.6 156.9L315.6 155.3L316.7 153.6L317.7 152.0L318.8 150.4L319.8 148.8L320.9 147.2L322.0 145.7L323.0 144.1L324.1 142.6L325.1 141.1L326.2 139.6L327.2 138.2L328.3 136.8L329.3 135.4L330.4 134.0L331.4 132.6L332.5 131.3L333.5 130.0L334.6 128.7L335.6 127.5L336.6 126.3L337.6 125.1L338.6 124.0L339.6 122.9L340.6 121.8L341.6 120.8L342.6 119.8L343.6 118.8L312.4 97.2L311.6 98.7L310.9 100.3L310.1 101.9L309.4 103.6L308.6 105.3L307.9 106.9L307.2 108.6L306.5 110.4L305.8 112.1L305.1 113.9L304.4 115.6L303.7 117.4L303.0 119.2L302.4 121.1L301.7 122.9L301.1 124.8L300.4 126.6L299.8 128.5L299.2 130.4L298.6 132.3L298.0 134.3L297.4 136.2L296.8 138.1L296.2 140.1L295.7 142.1L295.1 144.0L294.6 146.0L294.0 148.0L293.5 150.0L293.0 152.0L292.5 154.1L292.0 156.1L291.5 158.1L291.1 160.1L290.6 162.2L290.2 164.2L289.7 166.3L289.3 168.3L288.9 170.3L288.6 172.4L288.2 174.4L287.9 176.5L287.6 178.5L287.3 180.6L287.0 182.7L286.8 184.7L286.7 186.8L286.7 188.9Z"/><circle fill="#000" cx="290.0" cy="190.0" r="3.5"/><circle fill="#000" cx="328.0" cy="108.0" r="19.0"/><path fill="#000" d="M358.0 152.5L360.0 152.6L362.1 152.7L364.3 152.8L366.5 152.8L368.7 152.9L371.0 153.0L373.3 153.1L375.7 153.1L378.1 153.2L380.5 153.2L383.0 153.3L385.4 153.3L387.9 153.3L390.4 153.3L392.9 153.3L395.4 153.3L397.9 153.3L400.4 153.2L402.9 153.1L405.3 153.1L407.8 153.0L410.2 152.8L412.6 152.7L414.9 152.5L417.3 152.3L419.6 152.1L421.9 151.9L424.1 151.6L426.3 151.3L428.4 151.0L430.5 150.7L432.5 150.3L434.5 149.8L436.5 149.3L438.4 148.8L440.3 148.2L442.1 147.6L443.9 146.8L445.6 146.0L447.3 145.0L449.0 143.9L450.6 142.6L452.1 141.1L453.5 139.3L454.8 137.3L455.7 135.0L456.4 132.5L456.7 129.9L456.6 126.6L456.2 123.2L455.5 119.9L454.5 116.7L453.2 113.7L451.7 110.8L449.9 108.1L447.9 105.6L445.7 103.3L443.4 101.2L440.9 99.2L438.3 97.4L435.6 95.8L432.8 94.4L429.9 93.1L426.9 92.0L423.8 91.0L420.7 90.2L417.6 89.6L414.4 89.0L411.1 88.7L407.8 88.5L404.5 88.4L401.2 88.5L397.9 88.8L394.6 89.2L391.3 89.8L388.0 90.5L384.7 91.5L381.4 92.6L378.2 93.9L375.1 95.3L372.0 97.0L369.0 98.9L366.0 101.0L363.2 103.3L360.6 105.8L358.0 108.5L355.7 111.5L353.5 114.7L351.6 118.0L349.9 121.6L348.4 125.4L347.2 129.3L346.3 133.4L345.6 137.6L345.3 142.0L345.2 146.5L345.3 150.4L345.7 154.1L346.2 157.7L346.9 161.3L347.8 164.7L348.8 168.0L350.0 171.2L351.4 174.4L353.0 177.3L354.7 180.2L356.5 182.9L358.5 185.5L360.7 188.0L362.9 190.3L365.2 192.4L367.7 194.4L370.2 196.3L372.8 198.0L375.5 199.5L378.2 200.9L381.0 202.2L383.8 203.3L386.6 204.3L389.5 205.2L392.4 205.9L395.3 206.5L398.3 207.0L401.2 207.3L404.2 207.6L407.1 207.7L410.1 207.7L413.0 207.5L416.0 207.3L418.9 206.9L421.8 206.4L424.7 205.9L427.6 205.1L430.4 204.3L433.2 203.4L435.9 202.3L438.7 201.1L441.3 199.7L444.0 198.3L446.5 196.7L449.0 194.9L451.4 193.0L453.8 191.0L455.6 189.2L428.4 162.8L427.4 163.9L426.7 164.7L425.9 165.4L425.1 166.1L424.2 166.9L423.1 167.6L422.1 168.2L420.9 168.9L419.7 169.5L418.4 170.1L417.1 170.6L415.7 171.1L414.3 171.5L412.8 171.9L411.3 172.2L409.8 172.5L408.2 172.7L406.7 172.8L405.1 172.9L403.6 172.9L402.0 172.8L400.5 172.7L399.0 172.6L397.5 172.3L396.0 172.0L394.6 171.7L393.2 171.2L391.8 170.7L390.5 170.2L389.3 169.6L388.0 169.0L386.9 168.3L385.7 167.5L384.6 166.7L383.6 165.8L382.6 164.8L381.6 163.8L380.7 162.6L379.9 161.4L379.0 160.1L378.3 158.7L377.6 157.2L376.9 155.6L376.3 153.8L375.8 152.0L375.4 149.9L375.1 147.7L374.8 145.5L374.7 142.9L374.8 140.5L375.0 138.2L375.3 136.2L375.8 134.2L376.4 132.4L377.0 130.7L377.8 129.1L378.7 127.6L379.7 126.2L380.8 124.8L381.9 123.5L383.2 122.3L384.6 121.2L386.1 120.1L387.8 119.0L389.5 118.1L391.2 117.2L393.1 116.5L395.0 115.8L397.0 115.2L399.1 114.7L401.2 114.3L403.3 114.0L405.4 113.8L407.5 113.6L409.6 113.6L411.7 113.7L413.8 113.9L415.8 114.2L417.8 114.5L419.6 115.0L421.4 115.5L423.2 116.1L424.8 116.8L426.3 117.5L427.7 118.3L428.9 119.1L430.1 120.0L431.1 120.9L432.0 121.9L432.8 122.8L433.5 123.8L434.0 124.9L434.5 126.0L434.9 127.2L435.2 128.5L435.3 130.1L435.5 129.4L435.7 128.8L436.0 128.4L436.2 128.0L436.4 127.9L436.5 128.0L436.4 128.2L436.1 128.5L435.7 128.9L435.0 129.3L434.2 129.8L433.2 130.3L432.1 130.8L430.9 131.3L429.5 131.8L428.0 132.3L426.5 132.7L424.8 133.2L423.0 133.6L421.2 134.0L419.2 134.4L417.2 134.8L415.2 135.1L413.1 135.5L410.9 135.8L408.7 136.1L406.4 136.4L404.1 136.6L401.8 136.9L399.4 137.1L397.1 137.3L394.7 137.5L392.3 137.7L389.9 137.9L387.5 138.1L385.1 138.2L382.7 138.4L380.3 138.5L377.9 138.6L375.5 138.7L373.2 138.8L370.9 138.9L368.7 139.0L366.4 139.1L364.2 139.2L362.1 139.3L360.0 139.4L358.0 139.5Z"/><circle fill="#000" cx="358.0" cy="146.0" r="6.5"/><circle fill="#000" cx="442.0" cy="176.0" r="19.0"/><path fill="#000" d="M484.5 46.0L484.4 49.4L484.2 52.7L484.1 56.0L483.8 59.2L483.6 62.4L483.4 65.6L483.1 68.8L482.9 71.9L482.6 75.0L482.4 78.1L482.1 81.1L481.8 84.1L481.5 87.1L481.2 90.0L480.9 93.0L480.5 95.9L480.2 98.7L479.9 101.6L479.6 104.4L479.2 107.2L478.9 110.0L478.5 112.8L478.2 115.5L477.8 118.2L477.4 121.0L477.1 123.7L476.7 126.3L476.3 129.0L475.9 131.6L475.5 134.3L475.2 136.9L474.8 139.5L474.4 142.1L474.0 144.7L473.6 147.2L473.1 149.8L472.7 152.3L472.3 154.9L471.9 157.4L471.5 159.9L471.1 162.5L470.6 165.0L470.2 167.5L469.8 170.0L469.3 172.5L468.9 175.0L468.4 177.5L468.0 180.0L508.0 180.0L507.6 177.5L507.1 175.0L506.7 172.5L506.2 170.0L505.8 167.5L505.4 165.0L504.9 162.5L504.5 159.9L504.1 157.4L503.7 154.9L503.3 152.3L502.9 149.8L502.4 147.2L502.0 144.7L501.6 142.1L501.2 139.5L500.8 136.9L500.5 134.3L500.1 131.6L499.7 129.0L499.3 126.3L498.9 123.7L498.6 121.0L498.2 118.2L497.8 115.5L497.5 112.8L497.1 110.0L496.8 107.2L496.4 104.4L496.1 101.6L495.8 98.7L495.5 95.9L495.1 93.0L494.8 90.0L494.5 87.1L494.2 84.1L493.9 81.1L493.6 78.1L493.4 75.0L493.1 71.9L492.9 68.8L492.6 65.6L492.4 62.4L492.2 59.2L491.9 56.0L491.8 52.7L491.6 49.4L491.5 46.0Z"/><circle fill="#000" cx="488.0" cy="46.0" r="3.5"/><circle fill="#000" cx="488.0" cy="180.0" r="20.0"/><path fill="#000" d="M617.5 108.7L616.0 106.7L614.1 104.5L612.1 102.4L610.0 100.5L607.7 98.7L605.4 97.1L603.1 95.6L600.6 94.2L598.1 92.9L595.5 91.8L592.9 90.8L590.2 90.0L587.5 89.2L584.7 88.6L581.9 88.1L579.1 87.8L576.3 87.5L573.5 87.4L570.7 87.4L567.8 87.5L565.0 87.8L562.1 88.2L559.3 88.7L556.5 89.4L553.7 90.2L550.9 91.2L548.2 92.2L545.5 93.5L542.9 94.8L540.3 96.4L537.8 98.0L535.4 99.9L533.0 101.8L530.8 104.0L528.7 106.3L526.6 108.7L524.7 111.3L523.0 114.0L521.4 116.9L519.9 119.9L518.6 123.0L517.5 126.3L516.5 129.7L515.8 133.2L515.2 136.8L514.8 140.5L514.5 144.3L514.5 148.2L514.7 152.3L515.0 156.3L515.6 160.1L516.4 163.8L517.3 167.4L518.5 170.9L519.8 174.2L521.4 177.3L523.0 180.4L524.9 183.2L526.9 185.9L529.1 188.5L531.4 190.8L533.8 193.0L536.3 195.0L538.9 196.9L541.6 198.5L544.4 200.0L547.3 201.2L550.2 202.3L553.1 203.3L556.1 204.0L559.1 204.6L562.2 204.9L565.2 205.2L568.3 205.2L571.4 205.1L574.4 204.7L577.5 204.3L580.5 203.6L583.4 202.8L586.4 201.8L589.3 200.6L592.1 199.3L594.9 197.8L597.6 196.1L600.2 194.3L602.7 192.2L605.1 190.0L607.4 187.7L609.6 185.2L611.7 182.5L613.6 179.6L615.3 176.6L616.9 173.5L618.3 170.2L619.5 166.8L620.5 163.6L595.5 156.4L594.8 158.8L594.1 160.8L593.4 162.6L592.5 164.3L591.6 166.0L590.6 167.5L589.5 168.9L588.4 170.3L587.2 171.5L585.9 172.7L584.6 173.7L583.3 174.7L581.9 175.6L580.4 176.4L578.9 177.1L577.4 177.8L575.8 178.3L574.3 178.8L572.7 179.1L571.0 179.4L569.4 179.6L567.8 179.7L566.2 179.7L564.6 179.6L563.0 179.4L561.4 179.1L559.9 178.7L558.3 178.3L556.9 177.7L555.4 177.1L554.0 176.4L552.7 175.6L551.3 174.7L550.1 173.7L548.9 172.6L547.7 171.5L546.6 170.2L545.6 168.8L544.6 167.3L543.7 165.7L542.8 164.0L542.1 162.1L541.4 160.1L540.8 158.0L540.3 155.6L539.9 153.2L539.6 150.6L539.5 147.8L539.5 145.1L539.6 142.5L539.9 140.1L540.2 137.8L540.7 135.7L541.3 133.7L541.9 131.8L542.6 130.0L543.4 128.3L544.3 126.7L545.2 125.3L546.2 123.9L547.3 122.6L548.4 121.3L549.6 120.2L550.8 119.1L552.1 118.1L553.5 117.2L554.9 116.3L556.4 115.5L557.9 114.8L559.5 114.1L561.1 113.6L562.8 113.1L564.5 112.7L566.2 112.3L567.9 112.1L569.6 111.9L571.4 111.8L573.1 111.8L574.9 111.8L576.6 112.0L578.4 112.2L580.0 112.4L581.7 112.8L583.3 113.2L584.9 113.7L586.5 114.3L588.0 114.9L589.4 115.6L590.7 116.3L592.0 117.1L593.3 118.0L594.4 118.9L595.5 119.9L596.5 120.8L597.4 121.9L598.5 123.3Z"/><circle fill="#000" cx="608.0" cy="116.0" r="12.0"/><circle fill="#000" cx="608.0" cy="160.0" r="13.0"/><path fill="#000" d="M608.5 102.0L607.8 104.4L607.2 106.7L606.7 108.9L606.2 111.1L605.8 113.3L605.4 115.4L605.0 117.5L604.6 119.6L604.2 121.6L603.8 123.6L603.4 125.5L603.1 127.4L602.7 129.3L602.3 131.1L602.0 132.9L601.6 134.7L601.3 136.4L601.0 138.1L600.6 139.8L600.3 141.4L600.0 143.0L599.7 144.6L599.3 146.2L599.0 147.8L598.7 149.3L598.4 150.8L598.1 152.2L597.8 153.7L597.5 155.1L597.2 156.6L596.9 158.0L596.6 159.3L596.3 160.7L596.0 162.1L595.7 163.4L595.4 164.7L595.1 166.0L594.8 167.3L594.5 168.6L594.2 169.9L594.0 171.2L593.7 172.5L593.4 173.7L593.1 175.0L592.8 176.2L592.6 177.5L592.3 178.7L592.0 180.0L632.0 180.0L631.7 178.7L631.4 177.5L631.2 176.2L630.9 175.0L630.6 173.7L630.3 172.5L630.0 171.2L629.8 169.9L629.5 168.6L629.2 167.3L628.9 166.0L628.6 164.7L628.3 163.4L628.0 162.1L627.7 160.7L627.4 159.3L627.1 158.0L626.8 156.6L626.5 155.1L626.2 153.7L625.9 152.2L625.6 150.8L625.3 149.3L625.0 147.8L624.7 146.2L624.3 144.6L624.0 143.0L623.7 141.4L623.4 139.8L623.0 138.1L622.7 136.4L622.4 134.7L622.0 132.9L621.7 131.1L621.3 129.3L620.9 127.4L620.6 125.5L620.2 123.6L619.8 121.6L619.4 119.6L619.0 117.5L618.6 115.4L618.2 113.3L617.8 111.1L617.3 108.9L616.8 106.7L616.2 104.4L615.5 102.0Z"/><circle fill="#000" cx="612.0" cy="102.0" r="3.5"/><circle fill="#000" cx="612.0" cy="180.0" r="20.0"/></svg>`;
+  const DROPS = [ // x, y (largeur d'écran = 1, centre = 0), instant d'impact (s), force
+  [-0.22,  0.42, 0.35, 0.8], [ 0.25,  0.18, 0.70, 0.7], [-0.10, -0.36, 0.95, 0.75], [ 0.30, -0.55, 1.15, 0.6],
+  [-0.30, -0.05, 1.32, 0.65], [ 0.12,  0.60, 1.46, 0.6], [ 0.33,  0.40, 1.58, 0.5], [-0.26, -0.62, 1.68, 0.55],
+  [ 0.05, -0.18, 1.77, 0.5], [ 0.00,  0.00, 2.25, 1.35]];
+const REVEAL = 2.25, END = 4.6;
+  const VS = `attribute vec2 a; void main(){ gl_Position = vec4(a, 0., 1.); }`;
+  const FS = `precision highp float;
+uniform vec2 uRes; uniform float uT; uniform vec4 uD[10]; uniform sampler2D uLogo, uBlur; uniform float uAsp;
+uniform vec3 uInk, uInk2;
+const vec3 CREAM = vec3(.985,.945,.925), PEACH = vec3(1.,.83,.76), ROSE = vec3(.95,.72,.75);
+
+float wave(vec2 p, vec4 d){
+  float dt = uT - d.z; if (dt <= 0.) return 0.;
+  float r = length(p - d.xy), front = .26 * dt, s = r - front;
+  float sig = .018 + .05 * dt;                          // le paquet d'ondes s'élargit en s'éloignant
+  float env = exp(-s * s / (sig * sig));
+  float bump = exp(-r * r / .0006) * exp(-9. * dt) * 1.4; // creux puis rebond au point d'impact
+  return d.w * (env * cos(s * 80.) * exp(-1.7 * dt) / (1. + 6. * r) - bump * cos(dt * 30.));
+}
+float H(vec2 p){ float h = 0.; for (int i = 0; i < 10; i++) h += wave(p, uD[i]); return h * .0022; }
+
+float hash(vec2 q){ return fract(sin(dot(q, vec2(127.1, 311.7))) * 43758.5453); }
+float noise(vec2 q){ vec2 i = floor(q), f = fract(q); f = f * f * (3. - 2. * f);
+  return mix(mix(hash(i), hash(i + vec2(1., 0.)), f.x), mix(hash(i + vec2(0., 1.)), hash(i + 1.), f.x), f.y); }
+
+void main(){
+  vec2 p = (gl_FragCoord.xy - .5 * uRes) / uRes.x;
+  float e = 1.5 / uRes.x;
+  float h = H(p), hx = H(p + vec2(e, 0.)), hy = H(p + vec2(0., e)), hx2 = H(p - vec2(e, 0.)), hy2 = H(p - vec2(0., e));
+  vec3 n = normalize(vec3(-(hx - hx2) / (2. * e), -(hy - hy2) / (2. * e), 1.));
+  float lap = (hx + hx2 + hy + hy2 - 4. * h) / (e * e);
+
+  // fond : sirop rose laiteux, lumière douce venue du haut
+  float g = smoothstep(-.9, .9, p.y);
+  vec3 col = mix(mix(ROSE, PEACH, smoothstep(-1., .2, p.y)), CREAM, g * .7);
+  col *= 1. - .08 * length(p * vec2(1.2, .6));
+
+  // la 10e goutte est une goutte d'encre : elle se diffuse depuis le centre et dessine le nom,
+  // d'abord en nuage flou aux bords irréguliers, puis l'encre se resserre sur les lettres
+  float tt = uT - ${REVEAL.toFixed(2)};
+  if (tt > 0.) {
+    vec2 q = p + n.xy * .02;                             // l'encre bouge avec l'eau
+    float w = .64; vec2 uv = vec2(q.x / w + .5, .5 - q.y * uAsp / w);
+    float inUV = step(0., uv.x) * step(uv.x, 1.) * step(0., uv.y) * step(uv.y, 1.);
+    float k = smoothstep(.2, 1.9, tt);
+    float a = mix(texture2D(uBlur, uv).a * 1.25, texture2D(uLogo, uv).a, k) * inUV;
+    float R = .5 * (1. - exp(-1.6 * tt)) + .02;
+    float fr = noise(q * 14. + tt) * .07;
+    float spread = smoothstep(R + .04, R - .06, length(q) + fr);
+    vec3 ink = mix(uInk, uInk2, clamp(uv.x, 0., 1.));
+    col = mix(col, ink, clamp(a, 0., 1.) * spread * smoothstep(0., .5, tt));
+    // voile d'encre très léger qui se dissout autour
+    col = mix(col, ink, .08 * spread * exp(-2.2 * tt) * smoothstep(0., .15, tt));
+  }
+
+  // lumière : reflets spéculaires, caustiques, voile de surface
+  vec3 L = normalize(vec3(-.35, .55, 1.));
+  float spec = pow(max(dot(reflect(-L, n), vec3(0., 0., 1.)), 0.), 90.);
+  col += spec * .55;
+  col += clamp(-lap * .02, 0., .2) * vec3(1., .96, .92);
+  col -= clamp(lap * .012, 0., .06);
+  col = mix(col, CREAM, clamp((1. - n.z) * 4., 0., .35));
+
+  // gouttes en chute : une petite perle qui grossit et son ombre qui la rejoint ; la dernière est d'encre
+  for (int i = 0; i < 10; i++) {
+    vec4 d = uD[i]; float f = (uT - d.z) / .32 + 1.;
+    if (f <= 0. || f >= 1.) continue;
+    float rr = mix(.004, .014 + .006 * d.w, f * f);
+    vec2 sh = d.xy + vec2(.04, -.06) * (1. - f);
+    col *= 1. - .18 * f * smoothstep(rr * 1.6, 0., length(p - sh));
+    vec2 q = (p - d.xy) / rr; float qq = dot(q, q);
+    if (qq < 1.) {
+      vec3 sn = vec3(q, sqrt(1. - qq));
+      vec3 body = i == 9 ? mix(uInk, uInk2, .5) : mix(col * .82, CREAM, .25);
+      vec3 drop = body + pow(max(dot(reflect(-L, sn), vec3(0., 0., 1.)), 0.), 40.) * .9;
+      col = mix(col, drop, smoothstep(1., .8, qq));
+    }
+  }
+  gl_FragColor = vec4(col, 1.);
+}`;
+  return cv => new Promise(done => {
+    const gl = cv.getContext('webgl', { antialias: true });
+    const size = () => { const d = Math.min(devicePixelRatio || 1, 2), r = cv.getBoundingClientRect();
+      cv.width = Math.round(r.width * d); cv.height = Math.round(r.height * d); gl.viewport(0, 0, cv.width, cv.height); };
+    const run = U => { size(); const t0 = performance.now();
+      const frame = now => { const t = Math.min((now - t0) / 1000, END);
+        gl.uniform2f(U('uRes'), cv.width, cv.height); gl.uniform1f(U('uT'), t); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        t < END ? requestAnimationFrame(frame) : done(); };
+      requestAnimationFrame(frame); };
+    if (cv.lacU) return run(cv.lacU);                   // déjà préparé : on rejoue
+    const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; };
+    const pr = gl.createProgram();
+    gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr);
+    if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) return done();  // pas de WebGL : on passe l'ouverture
+    gl.useProgram(pr);
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(pr, 'a'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    const U = n => gl.getUniformLocation(pr, n);
+    gl.uniform4fv(U('uD'), DROPS.flat());
+    const hex = c => [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16) / 255);
+    gl.uniform3fv(U('uInk'), hex('#BF3A62')); gl.uniform3fv(U('uInk2'), hex('#961F41'));
+    const vb = LOGO.match(/viewBox="([^"]+)"/)[1].split(/\s+/).map(Number);
+    gl.uniform1f(U('uAsp'), vb[2] / vb[3]);
+    const img = new Image();
+    img.onload = () => {
+      const draw = blur => { const c2 = document.createElement('canvas'); c2.width = 1600; c2.height = Math.round(1600 * vb[3] / vb[2]);
+        const x2 = c2.getContext('2d'); x2.filter = blur; x2.drawImage(img, 0, 0, c2.width, c2.height); return c2; };
+      [draw('none'), draw('blur(22px)')].forEach((c2, unit) => {
+        gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, c2);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      });
+      gl.uniform1i(U('uLogo'), 0); gl.uniform1i(U('uBlur'), 1);
+      cv.lacU = U; run(U);
+    };
+    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(LOGO);
+  });
+})();
+</script>
+
 <script id="frag" type="x-shader/x-fragment">
 precision highp float;
-uniform float uT, uIri, uK, uWob, uLum;
+uniform float uT, uIri, uK, uWob, uLum, uTeinte;
 uniform vec4 uA, uB; // x, y, rayon, pointe
 uniform vec3 uDoigt, uOnde; // x, y, force ; x, y, âge
 
@@ -694,13 +832,20 @@ void main() {
 
   c = mix(c, vec3(.66, .3, .44), pow(fres, 3.2) * .62);
 
+  // Same pearl, dyed with the brand gradient for the menu.
+  if (uTeinte > 0.) {
+    float m = clamp(.5 - .55 * n.y + .3 * n.x, 0., 1.);
+    vec3 teinte = m < .6 ? mix(vec3(1., .7, .59), vec3(.84, .29, .45), m / .6) : mix(vec3(.84, .29, .45), vec3(.59, .12, .25), (m - .6) / .4);
+    c = mix(c, teinte + caustique * .1, uTeinte);
+  }
+
   vec3 lumiere = mix(vec3(-.5, .72, .62), vec3((uDoigt.xy - p) / (max(uA.z, uB.z) * 1.5), .8), uLum);
   vec3 h = normalize(normalize(lumiere) + v);
   float spec = pow(max(dot(n, h), 0.), 170.) + pow(max(dot(n, h), 0.), 26.) * .16;
   float spec2 = pow(max(dot(n, normalize(normalize(vec3(.6, -.5, .55)) + v)), 0.), 90.) * .4;
 
   float a = mix(.42, .97, smoothstep(0., .8, fres)) + caustique * .14;
-  a = clamp(a, 0., 1.);
+  a = clamp(max(a, uTeinte), 0., 1.);
   vec3 pre = c * a + vec3(1.) * (spec + spec2);
   float alpha = clamp(a + spec + spec2, 0., 1.);
   vec4 g = vec4(min(pre, vec3(alpha)), alpha);
@@ -715,46 +860,51 @@ const calme = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const tel = $("#tel"), toile = $("#gl");
 const dpr = Math.min(devicePixelRatio || 1, 2);
 
-const gl = toile.getContext("webgl", { alpha: true, premultipliedAlpha: true, antialias: false, powerPreference: "low-power" });
-let U = null;
-if (gl) {
+const OPTIONS_GL = { alpha: true, premultipliedAlpha: true, antialias: false, powerPreference: "low-power" };
+const programme = ctx => {
   const shader = (type, src) => {
-    const s = gl.createShader(type);
-    gl.shaderSource(s, src); gl.compileShader(s);
-    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(s));
+    const s = ctx.createShader(type);
+    ctx.shaderSource(s, src); ctx.compileShader(s);
+    if (!ctx.getShaderParameter(s, ctx.COMPILE_STATUS)) console.error(ctx.getShaderInfoLog(s));
     return s;
   };
-  const prog = gl.createProgram();
-  gl.attachShader(prog, shader(gl.VERTEX_SHADER, "attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}"));
-  gl.attachShader(prog, shader(gl.FRAGMENT_SHADER, $("#frag").textContent));
-  gl.linkProgram(prog); gl.useProgram(prog);
-  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-  const position = gl.getAttribLocation(prog, "a");
-  gl.enableVertexAttribArray(position);
-  gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
-  U = Object.fromEntries(["uDoigt", "uOnde", "uLum", "uT", "uIri", "uK", "uWob", "uA", "uB"].map(n => [n, gl.getUniformLocation(prog, n)]));
-} else {
-  tel.classList.add("nogl");
-}
+  const prog = ctx.createProgram();
+  ctx.attachShader(prog, shader(ctx.VERTEX_SHADER, "attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}"));
+  ctx.attachShader(prog, shader(ctx.FRAGMENT_SHADER, $("#frag").textContent));
+  ctx.linkProgram(prog); ctx.useProgram(prog);
+  ctx.bindBuffer(ctx.ARRAY_BUFFER, ctx.createBuffer());
+  ctx.bufferData(ctx.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), ctx.STATIC_DRAW);
+  const position = ctx.getAttribLocation(prog, "a");
+  ctx.enableVertexAttribArray(position);
+  ctx.vertexAttribPointer(position, 2, ctx.FLOAT, false, 0, 0);
+  return Object.fromEntries(["uDoigt", "uOnde", "uLum", "uT", "uIri", "uK", "uWob", "uTeinte", "uA", "uB"].map(n => [n, ctx.getUniformLocation(prog, n)]));
+};
+const gl = toile.getContext("webgl", OPTIONS_GL);
+const toileBarre = $("#glBarre"), HB = 130;
+const glB = gl && toileBarre.getContext("webgl", OPTIONS_GL);
+const U = gl ? programme(gl) : null, UB = glB ? programme(glB) : null;
+if (!UB) { tel.classList.add("nogl"); toileBarre.hidden = true; }
 
 let W = 390, H = 844;
 const dimensionner = () => {
   W = tel.clientWidth; H = tel.clientHeight;
   toile.width = W * dpr; toile.height = H * dpr;
   if (gl) gl.viewport(0, 0, toile.width, toile.height);
+  if (glB) { toileBarre.width = W * dpr; toileBarre.height = HB * dpr; glB.viewport(0, 0, toileBarre.width, toileBarre.height); }
 };
 new ResizeObserver(dimensionner).observe(tel);
 dimensionner();
 
 const goutte = el => ({ el, x: 195, y: -160, r: 0, p: 0, vx: 0, vy: 0, vr: 0, lx: 0, ly: 0, cale: false, base: 0 });
 const A = goutte($("#ga")), B = goutte($("#gb"));
-const barre = { x: 0, v: 0, vise: 0, pret: false };
+const barre = { x: 0, v: 0, vise: 0, pret: false, sale: true, vole: false, wob: .6, onde: -1e4 };
+const queue = { x: 0, v: 0 };
 const fondBarre = $("#fondBarre"), bulle = $("#bulle");
 const anim = { iri: 0, iriV: .0, k: 1, wob: 1, wobRepos: 1 };
 const doigt = { x: 0, y: 0, la: false, force: 0, lum: 0 };
 const onde = { x: 0, y: 0, t: -1e4 };
 let tiree = null;
+let ouvre = null;
 
 const cible = (lettre) => {
   const e = $(`.ecran.actif [data-goutte="${lettre}"]`);
@@ -778,7 +928,7 @@ tel.addEventListener("pointermove", placer);
 tel.addEventListener("pointerleave", () => { if (!tiree) doigt.la = false; });
 tel.addEventListener("pointerdown", e => {
   placer(e);
-  if (e.target.closest(".feuille, .onglets, .voile")) return;
+  if (e.target.closest(".feuille, .onglets, .voile, .splash")) return;
   tiree = [A, B].find(g => g.r > 10 && Math.hypot(doigt.x - g.x, doigt.y - g.y) < g.r * 1.1) || null;
   if (tiree) { tiree.cale = false; tel.setPointerCapture(e.pointerId); }
 });
@@ -800,29 +950,52 @@ let dernier = performance.now();
 // Spring on transform only, so a second tap retargets from the live position and speed.
 function bouger(dt) {
   if (!barre.pret) return;
-  if (calme) { barre.x = barre.vise; barre.v = 0; }
+  if (calme) { barre.x = barre.vise; barre.v = 0; queue.x = barre.x; queue.v = 0; }
   else {
     barre.v += (240 * (barre.vise - barre.x) - 25 * barre.v) * dt;
     barre.x += barre.v * dt;
     if (Math.abs(barre.vise - barre.x) < .1 && Math.abs(barre.v) < 2) { barre.x = barre.vise; barre.v = 0; }
+    // A softer spring drags a second bead behind, so the pearl melts along the bar and gathers back on landing.
+    queue.v += (120 * (barre.x - queue.x) - 17 * queue.v) * dt;
+    queue.x = Math.max(barre.x - 58, Math.min(barre.x + 58, queue.x + queue.v * dt));
+    if (Math.abs(barre.x - queue.x) < .1 && Math.abs(queue.v) < 2 && !barre.v) { queue.x = barre.x; queue.v = 0; }
   }
-  const vitesse = Math.abs(barre.v);
-  const large = 1 + Math.min(.24, vitesse / 4200);
+  const vitesse = Math.abs(barre.v), ecart = Math.abs(barre.x - queue.x), enfonce = Math.min(26, vitesse / 60);
+  if (vitesse > 300) barre.vole = true;
+  if (barre.vole && vitesse < 40) { barre.vole = false; barre.onde = performance.now(); barre.wob = 3.2; }
+  barre.wob += (.6 - barre.wob) * Math.min(1, dt * 3.5);
   fondBarre.style.transform = `translate3d(${barre.x - 800}px,0,0)`;
-  // The bubble sinks into the bar while it travels and rises as it lands.
-  bulle.style.transform = `translate3d(${barre.x - 27}px,${-24 + Math.min(26, vitesse / 60)}px,0) scale(${large},${1 / large})`;
+  // The pearl sinks into the bar while it travels and rises as it lands.
+  bulle.style.transform = `translate3d(${barre.x - 27}px,${-24 + enfonce}px,0)`;
+  if (!UB || !(barre.sale || vitesse > .5 || ecart > .1 || Math.abs(queue.v) > .5 || barre.wob > .62)) return;
+  barre.sale = false;
+  const maintenant = performance.now(), y = HB - 47 - enfonce;
+  glB.uniform4f(UB.uA, barre.x * dpr, y * dpr, (27 - Math.min(5, vitesse / 420)) * dpr, .75);
+  glB.uniform4f(UB.uB, queue.x * dpr, (y - 2) * dpr, (ecart > .5 ? Math.min(19, 8 + ecart * .4) : 0) * dpr, 0);
+  glB.uniform1f(UB.uK, Math.max(1, Math.min(30, ecart * .8)) * dpr);
+  glB.uniform3f(UB.uDoigt, 0, 0, 0);
+  glB.uniform3f(UB.uOnde, barre.x * dpr, y * dpr, calme ? 9 : (maintenant - barre.onde) / 1000);
+  glB.uniform1f(UB.uLum, 0);
+  glB.uniform1f(UB.uT, calme ? 0 : maintenant / 1000);
+  glB.uniform1f(UB.uIri, .1);
+  glB.uniform1f(UB.uWob, calme ? 0 : barre.wob);
+  glB.uniform1f(UB.uTeinte, 1);
+  glB.clear(glB.COLOR_BUFFER_BIT);
+  glB.drawArrays(glB.TRIANGLES, 0, 3);
 }
 const viser = () => {
   const o = $('.onglet[aria-current="page"]');
   if (!o) return;
   barre.vise = o.offsetLeft + o.offsetWidth / 2;
-  if (!barre.pret) { barre.x = barre.vise; barre.pret = true; }
+  if (!barre.pret) { barre.x = queue.x = barre.vise; barre.pret = true; }
+  barre.sale = true;
 };
 
 function image(t) {
   const dt = Math.min((t - dernier) / 1000, 1 / 30); dernier = t;
   const vers = (g, c) => g === tiree && c ? { ...c, x: doigt.x, y: doigt.y } : c;
-  ressort(A, vers(A, cible("a")), dt); ressort(B, vers(B, cible("b")), dt);
+  if (ouvre) ouvre(t); else ressort(A, vers(A, cible("a")), dt);
+  ressort(B, vers(B, cible("b")), dt);
   const flotte = (ecran === "accueil" || ecran === "profil") && !calme ? Math.sin(t / 1100) * 4 : 0;
   let proche = false;
   for (const g of [A, B]) {
@@ -897,7 +1070,7 @@ function aller(nom, { chute = false, compat = false } = {}) {
   const icone = actif.querySelector("use").getAttribute("href");
   if ($("#bulleIcone").getAttribute("href") !== icone) {
     $("#bulleIcone").setAttribute("href", icone);
-    if (!calme) bulle.firstElementChild.animate([{ opacity: .2, filter: "blur(2px)" }, { opacity: 1, filter: "blur(0)" }], { duration: 180, easing: "cubic-bezier(.23, 1, .32, 1)" });
+    if (!calme) $("#bulleIcone").parentNode.animate([{ opacity: .2, filter: "blur(2px)" }, { opacity: 1, filter: "blur(0)" }], { duration: 180, easing: "cubic-bezier(.23, 1, .32, 1)" });
   }
   viser();
   try { history.replaceState(null, "", `${location.search}#${nom}`); } catch {}
@@ -1243,4 +1416,26 @@ else aller(["accueil", "scanner", "resultat", "routine", "discussion", "profil"]
 poserTraits();
 document.fonts?.ready.then(viser);
 requestAnimationFrame(image);
+
+// Splash « Le lac » : il joue jusqu'au bout (4,6 s) puis s'efface ; un toucher le passe.
+function ouverture() {
+  const s = $("#splash");
+  if (s.dataset.joue) return;
+  s.dataset.joue = "1"; s.hidden = false;
+  const SORTIE = "cubic-bezier(.23, 1, .32, 1)", DEPART = 4700;
+  const fondu = delay => s.animate([{ opacity: 1 }, { opacity: 0 }], { delay, duration: 420, easing: SORTIE, fill: "forwards" });
+  let fin;
+  if (calme || !window.lacSplash) fin = fondu(900);
+  else {
+    lacSplash($("#splashLac"));
+    fin = fondu(DEPART);
+    s.onclick = () => { fin.currentTime = Math.max(fin.currentTime, DEPART); };
+  }
+  fin.finished.then(() => {
+    fin.cancel();
+    s.hidden = true; delete s.dataset.joue;
+  });
+}
+ouverture();
+$("#rejouer").onclick = ouverture;
 </script>
