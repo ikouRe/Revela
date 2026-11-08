@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:revela/core/router/app_router.dart';
 
-void main() => runApp(const RevelaApp());
+import 'core/theme/revela_theme.dart';
+
+void main() => runApp(const ProviderScope(child:RevelaApp()));
 
 class RevelaApp extends StatelessWidget {
   const RevelaApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp.router(
       title: 'Revela',
+      theme: revelaTheme(),
       debugShowCheckedModeBanner: false,
-      home: Scaffold(body: Center(child: Text('Revela'))),
+      routerConfig:appRouter,
     );
   }
 }

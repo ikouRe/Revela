@@ -49,6 +49,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -57,3 +58,39 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/splash/
+
+  shaders:
+    - shaders/lac.frag
+  fonts:
+    - family: ZenMaruGothic
+      fonts:
+        - asset: assets/fonts/ZenMaruGothic-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/ZenMaruGothic-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/ZenMaruGothic-Black.ttf
+          weight: 900
+    - family: Figtree
+      fonts:
+         - asset: assets/fonts/Figtree-Regular.ttf
+           weight: 400
+         - asset: assets/fonts/Figtree-Medium.ttf
+           weight: 500
+         - asset: assets/fonts/Figtree-SemiBold.ttf
+           weight: 600
+         - asset: assets/fonts/Figtree-Bold.ttf
+           weight: 700
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/icon/icone.png
+  remove_alpha_ios: true
+  adaptive_icon_background: assets/icon/fond.png
+  adaptive_icon_foreground: assets/icon/r.png
+
+
+
+
