@@ -21,7 +21,9 @@ Les choix et leurs raisons sont expliqués dans [ADR-001](docs/adr/001-stack.md)
 |---|---|
 | `backend/` | API Spring Boot |
 | `mobile/` | Application Flutter |
-| `docs/` | Décisions d'architecture et design |
+| `docs/` | Décisions (`adr/`), spikes, architecture, design et journal de bord |
+
+Les conventions de branches, de commits et de PR sont dans [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Lancer le backend en local
 
