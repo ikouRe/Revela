@@ -1,0 +1,1441 @@
+<title>Revela Perle et verre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Zen+Maru+Gothic:wght@500;700;900&display=swap">
+<style>
+/* One phone, one liquid layer under the interface. */
+:root {
+  color-scheme: light;
+  --perle: #fbf1f0;
+  --peche: #ffc4ab;
+  --rose: #f8b3c8;
+  --lilas: #dcd0f4;
+  --encre: #3a1a2b;
+  --encre-2: #6b4557;
+  --accent: #b92b52;
+  --accent-fort: #961f41;
+  --blanc: #fffbfa;
+  --bon: #1c6e53;
+  --bon-fond: #dff2e9;
+  --prudence: #8c4c00;
+  --prudence-fond: #fdecd2;
+  --mauvais: #a8261f;
+  --mauvais-fond: #fce1de;
+  --inconnu: #5e4d57;
+  --inconnu-fond: #eee6ea;
+  --titre: "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "Arial Rounded MT Bold", system-ui, sans-serif;
+  --texte: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ombre: 0 12px 28px rgba(122, 48, 80, .12);
+  --ease-out: cubic-bezier(.23, 1, .32, 1);
+  --ease-drawer: cubic-bezier(.32, .72, 0, 1);
+  --degrade: linear-gradient(150deg, #ffb296, #d64a72 60%, #961f41);
+}
+html, body { height: 100%; }
+body {
+  background: #f4e4e6;
+  color: var(--encre);
+  font: 400 16px/1.45 var(--texte);
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: var(--rose); color: var(--encre); }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+h1, h2, h3, p, ul { margin: 0; padding: 0; }
+ul { list-style: none; }
+svg.i { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+.scene { min-height: 100%; display: flex; align-items: center; justify-content: center; gap: 56px; padding: 16px; box-sizing: border-box; }
+.legende { width: 280px; display: grid; gap: 12px; }
+.legende h1 { font: 700 34px/1.1 var(--titre); text-wrap: balance; }
+.legende p { color: var(--encre-2); }
+
+.tel {
+  position: relative; flex: none; width: 390px; height: min(844px, calc(100dvh - 32px));
+  overflow: clip; isolation: isolate; border-radius: 44px; box-shadow: 0 28px 70px rgba(90, 34, 60, .28), 0 0 0 8px #fffbfa;
+  background:
+    radial-gradient(70% 38% at 88% 4%, var(--peche) 0, transparent 72%),
+    radial-gradient(70% 34% at 2% 30%, var(--rose) 0, transparent 74%),
+    radial-gradient(90% 36% at 80% 98%, var(--lilas) 0, transparent 76%),
+    var(--perle);
+}
+#gl, .couche { position: absolute; inset: 0; pointer-events: none; }
+#gl { width: 100%; height: 100%; z-index: 2; }
+.couche { z-index: 3; overflow: hidden; }
+.goutte { position: absolute; left: -50px; top: -50px; width: 100px; height: 100px; display: grid; place-content: center; text-align: center; color: var(--encre); will-change: transform; }
+.nogl .goutte { border-radius: 50%; background: radial-gradient(circle at 34% 28%, #fff 0 8%, rgba(255, 255, 255, .55) 22%, rgba(255, 196, 171, .6) 62%, rgba(214, 110, 145, .75) 100%); }
+.note { white-space: nowrap; font: 900 40px/1 var(--titre); letter-spacing: -.02em; opacity: 0; transition: opacity .25s; font-variant-numeric: tabular-nums; }
+.note small { font: 700 13px/1 var(--titre); letter-spacing: 0; color: var(--encre-2); margin-left: 1px; }
+.goutte.vue .note { opacity: 1; }
+
+.ecran { position: absolute; inset: 0; z-index: 4; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; opacity: 0; visibility: hidden; transform: translateY(10px); transition: opacity .28s cubic-bezier(.16, 1, .3, 1), transform .4s cubic-bezier(.16, 1, .3, 1), visibility 0s .28s; }
+.ecran::-webkit-scrollbar { display: none; }
+.ecran.actif { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
+.corps { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; padding: 56px 20px 124px; }
+
+.marque { width: 104px; height: 39px; margin: -6px 0 -14px -1px; }
+.marque-legende { width: 180px; height: 68px; }
+.heros { position: relative; min-height: 196px; display: grid; align-content: start; gap: 10px; }
+.heros h1 { font: 700 42px/1.05 var(--titre); letter-spacing: -.02em; }
+.heros p { max-width: 15ch; color: var(--encre-2); font-size: 17px; line-height: 1.35; }
+.emplacement-heros { position: absolute; right: -6px; top: 8px; width: 170px; height: 180px; }
+.cta { min-height: 56px; display: flex; align-items: center; justify-content: center; gap: 10px; border-radius: 28px; background: var(--accent); color: #fff; font-weight: 700; font-size: 17px; box-shadow: 0 10px 22px rgba(185, 43, 82, .3); transition: transform .16s cubic-bezier(.16, 1, .3, 1), background .16s; }
+.cta:active { transform: scale(.97); background: var(--accent-fort); }
+.cta[hidden] { display: none; }
+.verre { background: rgba(255, 251, 250, .62); border: 1px solid rgba(255, 255, 255, .8); border-radius: 28px; box-shadow: var(--ombre); -webkit-backdrop-filter: blur(16px) saturate(1.3); backdrop-filter: blur(16px) saturate(1.3); }
+.routine { width: 100%; min-height: 76px; box-sizing: border-box; display: flex; align-items: center; gap: 14px; padding: 12px 16px; text-align: left; }
+.routine .pastille { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: rgba(248, 179, 200, .55); color: var(--accent-fort); flex: none; }
+.routine span { min-width: 0; flex: 1; }
+.routine b { display: block; font-weight: 600; }
+.routine em { font-style: normal; font-size: 14px; color: var(--encre-2); }
+.bloc { display: grid; gap: 10px; }
+.bloc h2 { font: 700 21px/1.2 var(--titre); }
+.titre-bloc { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.titre-bloc small { font-size: 14px; color: var(--encre-2); white-space: nowrap; }
+.vide { padding: 18px 2px; color: var(--encre-2); text-align: center; }
+.liste { background: var(--blanc); border-radius: 28px; box-shadow: var(--ombre); padding: 4px 16px; }
+.liste li + li { border-top: 1px solid #f2e3e4; }
+.ligne { width: 100%; min-height: 68px; display: flex; align-items: center; gap: 12px; text-align: left; padding: 10px 0; }
+.ligne .nom { flex: 1; min-width: 0; font-weight: 600; overflow-wrap: anywhere; }
+.ligne .nom small { display: block; font-weight: 400; font-size: 14px; color: var(--encre-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sg { position: relative; flex: none; width: 46px; height: 54px; display: grid; place-items: end center; padding-bottom: 9px; box-sizing: border-box; }
+.sg svg { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 4px 6px rgba(122, 48, 80, .18)); }
+.sg b { position: relative; font: 900 18px/1 var(--titre); font-variant-numeric: tabular-nums; }
+.verdict { display: flex; align-items: center; gap: 4px; margin-top: 3px; font-size: 14px; font-weight: 600; white-space: nowrap; }
+.vg { width: 20px; height: 20px; flex: none; }
+.v-bon { color: var(--bon); }
+.v-prudence { color: var(--prudence); }
+.v-mauvais { color: var(--mauvais); }
+.v-inconnu { color: var(--inconnu); }
+.aide { font-size: 14px; color: var(--encre-2); }
+
+.ecran-scan { background: radial-gradient(60% 34% at 50% 40%, #6d3a52 0, transparent 100%), #26101d; color: #fff; }
+.corps-scan { min-height: 100%; box-sizing: border-box; display: flex; flex-direction: column; gap: 18px; padding: 56px 20px 124px; }
+.corps-scan h1 { font: 700 34px/1.1 var(--titre); }
+.corps-scan > p { color: #f2dfe6; }
+.viseur { position: relative; flex: 1; min-height: 180px; display: grid; place-items: center; }
+.cadre { position: relative; width: min(264px, 100%); aspect-ratio: 264 / 168; transition: transform .16s cubic-bezier(.23, 1, .32, 1); }
+.cadre svg { display: block; width: 100%; height: 100%; }
+.coins { fill: none; stroke: #fff; stroke-width: 3; stroke-linecap: round; transition: stroke .16s; }
+.barres rect { fill: #ddd; fill-opacity: .55; }
+.balayage { position: absolute; left: 12%; right: 12%; top: 24%; height: 2px; border-radius: 2px; background: var(--peche); box-shadow: 0 0 12px 2px rgba(255, 196, 171, .6); animation: balayage 1.5s ease-in-out infinite alternate; }
+@keyframes balayage { to { transform: translateY(84px); } }
+.viseur.saisi .balayage { display: none; }
+.viseur.saisi .cadre { transform: scale(.94); }
+.viseur.saisi .coins { stroke: var(--peche); }
+.consigne { text-align: center; }
+.consigne b { display: block; font-size: 18px; font-weight: 600; color: #fff; }
+.consigne small { display: block; margin-top: 4px; font-size: 14px; color: #f2dfe6; font-variant-numeric: tabular-nums; }
+.liens { display: flex; flex-wrap: wrap; justify-content: center; gap: 0 20px; margin-top: -8px; }
+.lien { min-height: 48px; color: #fff; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+
+.barre-haut { display: flex; align-items: center; gap: 8px; margin: -8px 0 -8px -12px; }
+.retour { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 50%; }
+.barre-haut h1 { font: 700 18px/1 var(--titre); flex: 1; }
+.exemple { font-size: 13px; font-weight: 600; color: var(--encre-2); background: rgba(255, 251, 250, .7); padding: 5px 10px; border-radius: 12px; }
+.produit { display: flex; align-items: center; gap: 16px; }
+.photo { flex: none; width: 112px; height: 148px; display: grid; place-items: center; border-radius: 28px; background: var(--blanc); box-shadow: var(--ombre); }
+.photo svg { width: 72px; height: 124px; }
+.produit h2 { font: 700 30px/1.1 var(--titre); letter-spacing: -.01em; }
+.produit p { color: var(--encre-2); }
+.vignette { flex: none; width: 48px; height: 48px; display: grid; place-items: center; border-radius: 16px; background: #fbeeee; }
+.vignette svg { width: 26px; height: 42px; }
+.gouttes { display: grid; grid-template-columns: 1fr; justify-items: center; gap: 0; }
+.emplacement { width: 196px; height: 196px; }
+.etiquette { font-weight: 600; text-align: center; }
+.gouttes.deux { grid-template-columns: 150px 150px; justify-content: center; }
+.gouttes.deux .emplacement { width: 150px; height: 160px; }
+.gouttes .b { display: none; }
+.gouttes.deux .b { display: block; }
+.carte-verdict { display: flex; gap: 12px; padding: 16px; border-radius: 28px; background: var(--prudence-fond); color: #5c3200; box-shadow: var(--ombre); }
+.carte-verdict[hidden] { display: none; }
+.carte-verdict h2 { font: 700 21px/1.2 var(--titre); color: var(--prudence); }
+.carte-verdict .vg { width: 34px; height: 34px; color: var(--prudence); }
+.apparait { animation: apparait .5s cubic-bezier(.16, 1, .3, 1) both; }
+@keyframes apparait { from { opacity: 0; transform: translateY(10px); } }
+.raison summary { display: flex; gap: 12px; padding: 13px 0; cursor: pointer; list-style: none; }
+.raison summary::-webkit-details-marker { display: none; }
+.raison summary > div { flex: 1; min-width: 0; }
+.raison .fleche { width: 20px; height: 20px; margin-top: 4px; color: var(--encre-2); transition: transform .3s cubic-bezier(.16, 1, .3, 1); }
+.raison[open] .fleche { transform: rotate(90deg); }
+.raison .detail { padding: 0 0 14px 40px; color: var(--encre); font-size: 15px; }
+.signe { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; flex: none; margin-top: 1px; }
+.signe .vg { width: 24px; height: 24px; }
+.raison b { display: block; font-weight: 600; }
+.raison summary > div > span { color: var(--encre-2); font-size: 15px; }
+.raison small { display: block; font-size: 13px; color: var(--encre-2); margin-top: 2px; }
+
+.onglets { position: absolute; z-index: 6; left: 0; right: 0; bottom: 0; height: 86px; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); padding: 0 14px env(safe-area-inset-bottom, 0px); }
+.onglets::before { content: ""; position: absolute; left: 0; right: 0; top: -44px; height: 83px; background: linear-gradient(transparent, var(--perle) 72%); pointer-events: none; }
+.tel[data-ecran="scanner"] .onglets::before { display: none; }
+.ombre-barre { position: absolute; inset: 0; filter: drop-shadow(0 -6px 14px rgba(70, 24, 46, .13)); pointer-events: none; }
+.cadre-barre { position: absolute; inset: 0; overflow: clip; border-radius: 28px 28px 0 0; }
+.fond-barre { position: absolute; left: 0; top: 0; fill: var(--blanc); will-change: transform; }
+#glBarre { position: absolute; left: 0; top: -44px; width: 100%; height: 130px; pointer-events: none; }
+.bulle { position: absolute; left: 0; top: 0; width: 54px; height: 54px; display: grid; place-items: center; color: #fff; will-change: transform; pointer-events: none; }
+.nogl .bulle { border-radius: 50%; background: var(--degrade); box-shadow: 0 8px 16px rgba(150, 31, 65, .34); }
+.onglet { position: relative; min-width: 0; display: grid; justify-items: center; align-content: end; gap: 3px; padding-bottom: 14px; color: var(--encre-2); font-size: 12px; font-weight: 500; transition: color .18s; }
+.onglet svg { transition: opacity .14s, transform .12s var(--ease-out); }
+.onglet[aria-current="page"] { color: var(--accent-fort); font-weight: 700; }
+.onglet[aria-current="page"] svg { opacity: 0; }
+.onglet:active svg { transform: scale(.88); }
+.ligne:active, .routine:active, .etape:active, .tuile:active { transform: scale(.97); }
+.ligne, .routine, .etape, .tuile { transition: transform .16s cubic-bezier(.16, 1, .3, 1); }
+[data-goutte] { touch-action: none; cursor: grab; }
+.tel { -webkit-user-select: none; user-select: none; }
+.statut { position: absolute; z-index: 6; top: 16px; left: 36px; font-weight: 600; font-size: 15px; pointer-events: none; transition: color .2s; }
+.tel[data-ecran="scanner"] .statut { color: #fff; }
+.toast { position: absolute; z-index: 10; left: 24px; right: 24px; bottom: 104px; padding: 12px 16px; border-radius: 20px; background: var(--encre); color: #fff; text-align: center; font-size: 15px; opacity: 0; transform: translateY(8px); transition: opacity .2s, transform .3s cubic-bezier(.16, 1, .3, 1); pointer-events: none; }
+.toast.vu { opacity: 1; transform: none; }
+
+.tete-ecran { position: relative; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; min-height: 112px; }
+.tete-ecran > div:first-child { min-width: 0; display: grid; gap: 6px; }
+.tete-ecran h1 { font: 700 38px/1.05 var(--titre); letter-spacing: -.02em; overflow-wrap: anywhere; }
+.tete-ecran p { color: var(--encre-2); max-width: 24ch; }
+.tete-ecran.simple { min-height: 0; }
+.tete-ecran > div.auteur:first-child { display: flex; align-items: center; gap: 14px; }
+.tete-ecran > .auteur h1 { font-size: 32px; }
+.emplacement-routine { flex: none; width: 122px; height: 122px; margin: -8px -2px 0 0; }
+.emplacement-profil { flex: none; width: 92px; height: 96px; margin: -6px 0 0 0; }
+.bascule { position: relative; display: grid; grid-template-columns: 1fr 1fr; padding: 4px; border-radius: 26px; background: rgba(255, 251, 250, .7); box-shadow: var(--ombre); }
+.bascule-repere { position: absolute; left: 4px; top: 4px; bottom: 4px; width: calc(50% - 4px); border-radius: 22px; background: var(--encre); transition: transform .24s var(--ease-out); }
+.bascule button { position: relative; min-height: 44px; font-weight: 600; transition: color .18s; }
+.bascule button[aria-pressed="true"] { color: #fff; }
+.etapes { display: grid; gap: 8px; list-style: none; margin: 0; padding: 0; }
+.etape { width: 100%; min-height: 72px; box-sizing: border-box; display: flex; align-items: center; gap: 12px; padding: 10px 16px 10px 12px; border-radius: 24px; background: var(--blanc); box-shadow: var(--ombre); text-align: left; }
+.etape .nom { flex: 1; min-width: 0; font-weight: 600; overflow-wrap: anywhere; }
+.etape .nom small { display: block; font-weight: 400; font-size: 14px; color: var(--encre-2); }
+.etape .coche { flex: none; width: 28px; height: 28px; color: #8a6f7d; transition: color .18s; }
+.etape[aria-pressed="true"] .coche { color: var(--bon); }
+.etape[aria-pressed="true"] .nom { color: var(--encre-2); }
+.etagere { display: flex; gap: 10px; overflow-x: auto; margin: 0 -20px; padding: 4px 20px 14px; scroll-snap-type: x proximity; scroll-padding-left: 20px; scrollbar-width: none; }
+.etagere::-webkit-scrollbar { display: none; }
+.etagere li { flex: none; scroll-snap-align: start; }
+.tuile { position: relative; width: 136px; height: 186px; box-sizing: border-box; display: flex; flex-direction: column; gap: 6px; padding: 12px; border-radius: 24px; background: var(--blanc); box-shadow: 0 8px 18px rgba(122, 48, 80, .1); text-align: left; }
+.tuile .sg { position: absolute; right: 8px; top: 8px; }
+.tuile .vignette { width: 56px; height: 56px; }
+.tuile b { font-weight: 600; font-size: 15px; line-height: 1.25; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.tuile .verdict { margin-top: auto; }
+.tuile.ajout { align-items: center; justify-content: center; text-align: center; color: var(--accent-fort); font-weight: 600; background: rgba(255, 251, 250, .55); box-shadow: inset 0 0 0 1.5px rgba(185, 43, 82, .35); }
+
+.filtres { display: flex; gap: 8px; overflow-x: auto; margin: 0 -20px; padding: 2px 20px; scrollbar-width: none; }
+.filtres::-webkit-scrollbar { display: none; }
+.filtre, .choix { flex: none; min-height: 44px; padding: 0 16px; border-radius: 22px; background: rgba(255, 251, 250, .75); font-weight: 600; font-size: 15px; transition: background-color .18s, color .18s, transform .12s var(--ease-out); }
+.filtre:active, .choix:active { transform: scale(.96); }
+.filtre[aria-pressed="true"], .choix[aria-pressed="true"] { background: var(--encre); color: #fff; }
+.fil { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.post { display: grid; gap: 10px; padding: 14px 16px 6px; border-radius: 28px; background: var(--blanc); box-shadow: var(--ombre); min-width: 0; }
+.auteur { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.avatar { flex: none; width: 42px; height: 42px; display: grid; place-items: center; border-radius: 50%; color: #fff; background: var(--degrade); font: 700 18px/1 var(--titre); }
+.avatar.grand { width: 72px; height: 72px; font-size: 32px; }
+.auteur div { flex: 1; min-width: 0; }
+.auteur b { display: block; font-weight: 600; overflow-wrap: anywhere; }
+.auteur small { display: block; font-size: 14px; color: var(--encre-2); overflow-wrap: anywhere; }
+.plus { flex: none; width: 44px; height: 44px; margin-right: -10px; display: grid; place-items: center; border-radius: 50%; color: var(--encre-2); }
+.texte-post { overflow-wrap: anywhere; }
+.produit-lie { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 20px; background: #fbeeee; text-align: left; min-width: 0; }
+.produit-lie .nom { flex: 1; min-width: 0; font-weight: 600; font-size: 15px; overflow-wrap: anywhere; }
+.produit-lie .vignette { width: 40px; height: 40px; background: var(--blanc); border-radius: 14px; }
+.produit-lie .vignette svg { width: 22px; height: 36px; }
+.produit-lie .sg { transform: scale(.82); margin: -4px -2px; }
+.avap { position: relative; height: 196px; overflow: clip; border-radius: 20px; touch-action: pan-y; }
+.peau { position: absolute; inset: 0; }
+.avant { background: radial-gradient(12% 10% at 30% 42%, rgba(190, 62, 70, .5), transparent 100%), radial-gradient(9% 8% at 44% 60%, rgba(190, 62, 70, .42), transparent 100%), radial-gradient(10% 9% at 66% 38%, rgba(190, 62, 70, .46), transparent 100%), radial-gradient(14% 12% at 72% 66%, rgba(190, 62, 70, .4), transparent 100%), radial-gradient(70% 90% at 60% 30%, #eec3a8, #d29a7d 100%); }
+.apres { background: radial-gradient(70% 90% at 60% 30%, #f3cdb4, #d8a487 100%); clip-path: inset(0 0 0 50%); }
+.trait { position: absolute; top: 0; bottom: 0; left: 0; width: 2px; margin-left: -1px; background: #fff; transform: translateX(var(--x, 0)); pointer-events: none; }
+.trait::after { content: ""; position: absolute; left: 50%; top: 50%; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; background: #fff; box-shadow: 0 3px 8px rgba(70, 24, 46, .3); }
+.marque-av { position: absolute; bottom: 8px; padding: 3px 9px; border-radius: 10px; background: rgba(58, 26, 43, .72); color: #fff; font-size: 13px; font-weight: 600; pointer-events: none; }
+.marque-av.g { left: 8px; } .marque-av.d { right: 8px; }
+.avap:has(input:focus-visible) { outline: 3px solid var(--accent); outline-offset: 2px; }
+.avap input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; touch-action: pan-y; }
+.actions { display: flex; gap: 4px; margin-left: -10px; }
+.action { min-height: 44px; display: inline-flex; align-items: center; gap: 6px; padding: 0 10px; border-radius: 22px; color: var(--encre-2); font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.action svg { transition: color .18s; }
+.action[aria-pressed="true"] { color: var(--accent); }
+.action[aria-pressed="true"] .goutte-vide { fill: currentColor; }
+.coms { display: grid; gap: 8px; padding: 0 0 10px; font-size: 15px; }
+.coms[hidden] { display: none; }
+.coms b { font-weight: 600; }
+.coms li { overflow-wrap: anywhere; }
+
+.chiffres { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.chiffre { min-height: 72px; display: grid; align-content: center; justify-items: center; border-radius: 22px; background: rgba(255, 251, 250, .7); box-shadow: var(--ombre); font-size: 14px; color: var(--encre-2); transition: transform .12s var(--ease-out); }
+.chiffre:active { transform: scale(.97); }
+.chiffre b { font: 900 25px/1.1 var(--titre); color: var(--encre); font-variant-numeric: tabular-nums; }
+.carte-peau { display: grid; gap: 10px; padding: 16px; border-radius: 28px; background: var(--blanc); box-shadow: var(--ombre); }
+.carte-peau h3 { font-size: 15px; font-weight: 600; color: var(--encre-2); margin-top: 4px; }
+.choix-groupe { display: flex; flex-wrap: wrap; gap: 8px; }
+.choix { background: #fbeeee; }
+.reglage { width: 100%; min-height: 60px; display: flex; align-items: center; gap: 12px; text-align: left; padding: 8px 0; color: var(--encre); }
+.reglage > svg.i:first-child { color: var(--accent-fort); }
+.reglage span { flex: 1; min-width: 0; font-weight: 500; }
+.reglage small { display: block; font-size: 14px; font-weight: 400; color: var(--encre-2); }
+.reglage .suite { color: var(--encre-2); width: 20px; height: 20px; }
+.interrupteur { flex: none; position: relative; width: 50px; height: 30px; border-radius: 15px; background: #9c8390; transition: background-color .18s; }
+.interrupteur::after { content: ""; position: absolute; left: 3px; top: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(70, 24, 46, .3); transition: transform .2s var(--ease-out); }
+[aria-checked="true"] .interrupteur { background: var(--bon); }
+[aria-checked="true"] .interrupteur::after { transform: translateX(20px); }
+
+.voile { position: absolute; inset: 0; z-index: 8; background: rgba(38, 16, 29, .46); opacity: 0; pointer-events: none; transition: opacity .24s var(--ease-out); }
+.voile.vu { opacity: 1; pointer-events: auto; }
+.feuille { position: absolute; z-index: 9; left: 0; right: 0; bottom: 0; max-height: 82%; overflow-y: auto; box-sizing: border-box; padding: 8px 20px max(24px, env(safe-area-inset-bottom, 0px)); border-radius: 28px 28px 0 0; background: var(--blanc); transform: translateY(105%); transition: transform .32s var(--ease-drawer); }
+.feuille.ouverte { transform: none; box-shadow: 0 -14px 34px rgba(58, 26, 43, .2); }
+.poignee { display: grid; place-items: center; height: 28px; touch-action: none; cursor: grab; }
+.poignee::after { content: ""; width: 40px; height: 5px; border-radius: 3px; background: #e2cfd6; }
+.feuille h2 { font: 700 21px/1.2 var(--titre); margin-bottom: 10px; touch-action: none; }
+.feuille label { display: block; font-weight: 600; margin-bottom: 6px; }
+.feuille textarea { width: 100%; min-height: 128px; box-sizing: border-box; padding: 12px 14px; border: 1.5px solid #9c8390; border-radius: 18px; background: #fff; color: var(--encre); font: inherit; resize: none; -webkit-user-select: text; user-select: text; caret-color: var(--accent); }
+.feuille textarea:focus-visible { outline: 3px solid var(--accent); outline-offset: 0; }
+.champ { width: 100%; min-height: 56px; box-sizing: border-box; padding: 0 16px; border: 1.5px solid #9c8390; border-radius: 18px; background: #fff; color: var(--encre); font: 500 18px/1 var(--texte); letter-spacing: .04em; font-variant-numeric: tabular-nums; -webkit-user-select: text; user-select: text; caret-color: var(--accent); }
+.champ:focus-visible { outline: 3px solid var(--accent); outline-offset: 0; }
+.champ[aria-invalid="true"] { border-color: var(--mauvais); }
+#codeAide.erreur { color: var(--mauvais); font-weight: 500; }
+.entete { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.verre.bouton-rond { flex: none; width: 48px; height: 48px; display: grid; place-items: center; border-radius: 50%; color: var(--accent-fort); }
+.bouton-rond:active { transform: scale(.94); }
+.verdict-feuille { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 20px; margin-bottom: 6px; }
+.verdict-feuille .vg { width: 32px; height: 32px; flex: none; }
+.verdict-feuille b { display: block; font: 700 18px/1.2 var(--titre); }
+.verdict-feuille span { font-size: 15px; color: var(--encre-2); }
+.verifs li { display: flex; gap: 10px; padding: 12px 0; }
+.verifs li + li { border-top: 1px solid #f2e3e4; }
+.verifs b { display: block; font-weight: 600; }
+.verifs div span { font-size: 15px; color: var(--encre-2); }
+.chiffre-co2 { font: 900 40px/1 var(--titre); letter-spacing: -.01em; }
+.chiffre-co2 small { font: 700 18px/1 var(--titre); margin-left: 4px; }
+.fourchette { color: var(--encre-2); font-size: 15px; margin: 6px 0 14px; }
+.repartition { display: flex; height: 14px; gap: 3px; border-radius: 7px; overflow: hidden; }
+.repartition i { display: block; }
+.legende-co2 li { display: flex; align-items: center; gap: 10px; padding: 9px 0; font-size: 15px; }
+.legende-co2 i { width: 12px; height: 12px; border-radius: 4px; flex: none; }
+.legende-co2 span { flex: 1; }
+.legende-co2 b { font-weight: 600; font-variant-numeric: tabular-nums; }
+.fil-chat { display: grid; gap: 10px; margin-bottom: 12px; }
+.bulle-chat { max-width: 84%; padding: 10px 14px; border-radius: 18px; font-size: 15px; line-height: 1.4; overflow-wrap: anywhere; }
+.bulle-chat.ia { justify-self: start; background: #fbeeee; border-bottom-left-radius: 6px; }
+.bulle-chat.moi { justify-self: end; background: var(--encre); color: #fff; border-bottom-right-radius: 6px; }
+.questions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.questions .filtre { flex: 0 1 auto; padding: 8px 14px; background: #fbeeee; text-align: left; }
+.ligne-chat { display: flex; gap: 8px; }
+.ligne-chat .champ { flex: 1; min-width: 0; min-height: 48px; font-size: 16px; letter-spacing: 0; }
+.feuille .ligne-chat .cta { width: auto; margin: 0; padding: 0 18px; min-height: 48px; font-size: 16px; }
+.tag-phase { display: inline-block; margin-bottom: 10px; padding: 3px 9px; border-radius: 10px; background: #fbeeee; color: var(--encre-2); font-size: 13px; font-weight: 600; }
+.feuille .cta { width: 100%; margin-top: 12px; }
+.feuille .cta:disabled { background: #d9c6cf; color: #5e4d57; box-shadow: none; cursor: not-allowed; }
+.compteur { display: flex; justify-content: space-between; gap: 12px; margin-top: 6px; font-size: 14px; color: var(--encre-2); font-variant-numeric: tabular-nums; }
+
+@media (prefers-reduced-transparency: reduce) {
+  .verre, .bascule, .chiffre, .filtre { background: var(--blanc); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+@supports (corner-shape: squircle) {
+  .verre, .liste, .carte-verdict, .post, .carte-peau { corner-shape: squircle; border-radius: 44px; }
+}
+@media (max-width: 760px) {
+  .legende { display: none; }
+  .scene { padding: 0; height: 100%; }
+  .tel { width: 100%; height: 100%; border-radius: 0; box-shadow: none; }
+  .statut { display: none; }
+  .corps, .corps-scan { padding-top: 28px; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
+}
+.tel.ouvre #gl { z-index: 31; }
+.splash { position: absolute; inset: 0; z-index: 30; overflow: hidden; background: #F7E3DC; cursor: pointer; }
+.splash-lac { width: 100%; height: 100%; display: block; }
+.rejouer { justify-self: start; min-height: 44px; color: var(--accent-fort); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  .ecran, .cadre, .cta, .toast, .bascule-repere, .feuille, .interrupteur::after { transition-duration: .01s; }
+  .ecran { transform: none; }
+  .apparait, .balayage { animation: none; }
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-scan" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M8 7v10"/><path d="M12 7v10"/><path d="M17 7v10"/></symbol>
+  <symbol id="i-routine" viewBox="0 0 24 24"><path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"/><path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"/></symbol>
+  <symbol id="i-accueil" viewBox="0 0 24 24"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+  <symbol id="i-discussion" viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></symbol>
+  <symbol id="i-profil" viewBox="0 0 24 24"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></symbol>
+  <symbol id="v-bon" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.5C12 2.5 19.5 9.6 19.5 14.6A7.5 7.5 0 0 1 4.5 14.6C4.5 9.6 12 2.5 12 2.5Z"/><path fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="m8.6 14.8 2.4 2.4 4.4-4.6"/></symbol>
+  <symbol id="v-prudence" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M12 2.5C12 2.5 19.5 9.6 19.5 14.6A7.5 7.5 0 0 1 4.5 14.6C4.5 9.6 12 2.5 12 2.5Z"/><path fill="currentColor" d="M4.6 14c2.4-1.4 4.4 1.4 7.4.2s5-1.2 7.4-.2a7.5 7.5 0 1 1-14.8 0Z"/></symbol>
+  <symbol id="v-mauvais" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M12 2.5C12 2.5 19.5 9.6 19.5 14.6A7.5 7.5 0 0 1 4.5 14.6C4.5 9.6 12 2.5 12 2.5Z"/><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M4 21.5 20 4.5"/></symbol>
+  <symbol id="v-inconnu" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-dasharray="2.6 2.8" stroke-linecap="round" d="M12 2.5C12 2.5 19.5 9.6 19.5 14.6A7.5 7.5 0 0 1 4.5 14.6C4.5 9.6 12 2.5 12 2.5Z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 15.5h.01"/></symbol>
+  <symbol id="v-vide" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M12 2.5C12 2.5 19.5 9.6 19.5 14.6A7.5 7.5 0 0 1 4.5 14.6C4.5 9.6 12 2.5 12 2.5Z"/></symbol>
+  <symbol id="i-goutte" viewBox="0 0 24 24"><path class="goutte-vide" d="M12 2.5C12 2.5 19.5 9.6 19.5 14.6A7.5 7.5 0 0 1 4.5 14.6C4.5 9.6 12 2.5 12 2.5Z"/></symbol>
+  <symbol id="sg-bon" viewBox="0 0 46 54"><path fill="url(#gn-bon)" d="M23 2C23 2 42 20 42 33A19 19 0 0 1 4 33C4 20 23 2 23 2Z"/><path fill="none" stroke="#fff" stroke-opacity=".75" stroke-width="1.5" d="M23 2C23 2 42 20 42 33A19 19 0 0 1 4 33C4 20 23 2 23 2Z"/><ellipse cx="15" cy="27" rx="3.2" ry="5.6" fill="#fff" fill-opacity=".75" transform="rotate(24 15 27)"/></symbol>
+  <symbol id="sg-prudence" viewBox="0 0 46 54"><path fill="url(#gn-prudence)" d="M23 2C23 2 42 20 42 33A19 19 0 0 1 4 33C4 20 23 2 23 2Z"/><path fill="none" stroke="#fff" stroke-opacity=".75" stroke-width="1.5" d="M23 2C23 2 42 20 42 33A19 19 0 0 1 4 33C4 20 23 2 23 2Z"/><ellipse cx="15" cy="27" rx="3.2" ry="5.6" fill="#fff" fill-opacity=".75" transform="rotate(24 15 27)"/></symbol>
+  <symbol id="sg-mauvais" viewBox="0 0 46 54"><path fill="url(#gn-mauvais)" d="M23 2C23 2 42 20 42 33A19 19 0 0 1 4 33C4 20 23 2 23 2Z"/><path fill="none" stroke="#fff" stroke-opacity=".75" stroke-width="1.5" d="M23 2C23 2 42 20 42 33A19 19 0 0 1 4 33C4 20 23 2 23 2Z"/><ellipse cx="15" cy="27" rx="3.2" ry="5.6" fill="#fff" fill-opacity=".75" transform="rotate(24 15 27)"/></symbol>
+  <symbol id="sg-inconnu" viewBox="0 0 46 54"><path fill="url(#gn-inconnu)" d="M23 2C23 2 42 20 42 33A19 19 0 0 1 4 33C4 20 23 2 23 2Z"/><path fill="none" stroke="#fff" stroke-opacity=".75" stroke-width="1.5" d="M23 2C23 2 42 20 42 33A19 19 0 0 1 4 33C4 20 23 2 23 2Z"/><ellipse cx="15" cy="27" rx="3.2" ry="5.6" fill="#fff" fill-opacity=".75" transform="rotate(24 15 27)"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></symbol>
+  <symbol id="i-points" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></symbol>
+  <symbol id="i-favori" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></symbol>
+  <symbol id="i-historique" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></symbol>
+  <symbol id="i-cadenas" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+  <symbol id="i-cloche" viewBox="0 0 24 24"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></symbol>
+  <symbol id="i-drapeau" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></symbol>
+  <symbol id="i-bloquer" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></symbol>
+  <symbol id="i-masquer" viewBox="0 0 24 24"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.53 13.53 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><path d="m2 2 20 20"/></symbol>
+  <symbol id="i-sortie" viewBox="0 0 24 24"><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></symbol>
+  <symbol id="i-retour" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+  <symbol id="i-bouclier" viewBox="0 0 24 24"><path d="M12 3 5 6v5.5c0 4.4 2.9 7.8 7 9.5 4.1-1.7 7-5.1 7-9.5V6Z"/><path d="m9 12 2.2 2.2L15 10.4"/></symbol>
+  <symbol id="i-feuille" viewBox="0 0 24 24"><path d="M5 19c0-8 5-13 15-14 0 10-4 15-11 15-1.6 0-3-.4-4-1Z"/><path d="M5 20c2-5 5-8 9-10"/></symbol>
+  <symbol id="i-assistant" viewBox="0 0 24 24"><path d="M11 4c.7 4.200 2.800 6.300 7 7-4.200.7-6.300 2.800-7 7-.7-4.200-2.800-6.300-7-7 4.200-.7 6.300-2.800 7-7Z"/><path d="M18.500 3v3.500M20.200 4.800h-3.500"/></symbol>
+  <symbol id="i-suite" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="logo" viewBox="0 0 672 256"><path fill="#3A1A2B" fill-rule="evenodd" d="M250 140A62 62 0 1 0 231.84 183.84A12 12 0 0 0 214.87 166.87A38 38 0 0 1 151.94 152H238A12 12 0 0 0 250 140ZM151.94 128H224.06A38 38 0 0 0 151.94 128ZM261.86 94.46A12 12 0 0 1 284.14 85.54L313 157.7L341.86 85.54A12 12 0 0 1 364.14 94.46L324.14 194.46A12 12 0 0 1 301.86 194.46ZM498 140A62 62 0 1 0 479.84 183.84A12 12 0 0 0 462.87 166.87A38 38 0 0 1 399.94 152H486A12 12 0 0 0 498 140ZM399.94 128H472.06A38 38 0 0 0 399.94 128ZM510.00 44.00A12.00 12.00 0 0 1 534.00 44.00V190.00A12.00 12.00 0 0 1 510.00 190.00ZM548 140a62 62 0 1 1 124 0a62 62 0 1 1 -124 0ZM572 140a38 38 0 1 0 76 0a38 38 0 1 0 -76 0Z"/><path fill="#3A1A2B" d="M648.00 90.00A12.00 12.00 0 0 1 672.00 90.00V190.00A12.00 12.00 0 0 1 648.00 190.00Z"/><path fill="#3A1A2B" d="M0.00 90.07A12.04 12.04 0 0 1 24.09 90.07V190.08A12.04 12.04 0 0 1 0.00 190.08ZM20.44 126.20C36.50 95.54 58.40 75.10 86.14 75.10L87.60 96.27C68.62 95.54 42.34 113.06 22.63 156.86ZM86.14 75.10C103.66 75.10 113.88 94.08 113.88 113.06A18.98 18.98 0 1 1 75.92 113.06C75.92 105.76 81.76 101.38 87.60 96.27Z"/></symbol>
+  <defs>
+    <linearGradient id="verre-rose" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd9c8"/><stop offset=".55" stop-color="#f4a7ba"/><stop offset="1" stop-color="#c9587e"/></linearGradient>
+    <linearGradient id="gn-bon" x1="0" y1="0" x2=".6" y2="1"><stop offset="0" stop-color="#eefaf3"/><stop offset="1" stop-color="#9fd8bd"/></linearGradient>
+    <linearGradient id="gn-prudence" x1="0" y1="0" x2=".6" y2="1"><stop offset="0" stop-color="#fff4e2"/><stop offset="1" stop-color="#f8ca8c"/></linearGradient>
+    <linearGradient id="gn-mauvais" x1="0" y1="0" x2=".6" y2="1"><stop offset="0" stop-color="#ffeae6"/><stop offset="1" stop-color="#f4a79e"/></linearGradient>
+    <linearGradient id="gn-inconnu" x1="0" y1="0" x2=".6" y2="1"><stop offset="0" stop-color="#f7f1f4"/><stop offset="1" stop-color="#d6c9d1"/></linearGradient>
+    <linearGradient id="reflet" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".65"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+    <pattern id="barres" width="9" height="10" patternUnits="userSpaceOnUse"><rect width="2" height="10" fill="#26101d"/><rect x="3" width="1" height="10" fill="#26101d"/><rect x="5.5" width="2.5" height="10" fill="#26101d"/></pattern>
+  </defs>
+  <symbol id="p-serum" viewBox="0 0 120 200">
+    <rect x="47" y="2" width="26" height="34" rx="13" fill="#3a1a2b"/>
+    <rect x="39" y="33" width="42" height="20" rx="5" fill="#e9c9b4"/>
+    <rect x="45" y="51" width="30" height="10" fill="#f4a7ba"/>
+    <rect x="16" y="58" width="88" height="140" rx="22" fill="url(#verre-rose)"/>
+    <rect x="23" y="66" width="10" height="120" rx="5" fill="url(#reflet)"/>
+    <rect x="27" y="88" width="66" height="88" rx="9" fill="#fffbfa"/>
+    <text x="60" y="108" text-anchor="middle" font-family="Zen Maru Gothic, sans-serif" font-weight="700" font-size="12" fill="#3a1a2b">Sérum</text>
+    <text x="60" y="122" text-anchor="middle" font-family="Zen Maru Gothic, sans-serif" font-weight="700" font-size="12" fill="#3a1a2b">Éclat</text>
+    <rect x="35" y="137" width="50" height="28" fill="url(#barres)"/>
+  </symbol>
+  <symbol id="p-tube" viewBox="0 0 120 200">
+    <path d="M22 6h76l-10 150H32z" fill="#bfe3d6"/><path d="M34 6h12l4 150h-8z" fill="url(#reflet)"/>
+    <rect x="30" y="154" width="60" height="42" rx="8" fill="#1c6e53"/>
+  </symbol>
+  <symbol id="p-pot" viewBox="0 0 120 200">
+    <rect x="12" y="66" width="96" height="40" rx="10" fill="#3a1a2b"/>
+    <rect x="16" y="102" width="88" height="64" rx="16" fill="#f7d5c6"/><rect x="24" y="110" width="10" height="48" rx="5" fill="url(#reflet)"/>
+  </symbol>
+  <symbol id="p-baume" viewBox="0 0 120 200">
+    <path d="M42 62c0-26 18-44 36-50v50z" fill="#dcd0f4"/><rect x="38" y="58" width="44" height="40" fill="#e9c9b4"/>
+    <rect x="30" y="94" width="60" height="100" rx="8" fill="#6b4557"/>
+  </symbol>
+</svg>
+
+<div class="scene">
+  <aside class="legende">
+    <svg class="marque-legende" role="img" aria-label="Revela"><use href="#logo"/></svg>
+    <h1>Perle et verre</h1>
+    <p>Tous les onglets sont dessinés. Touche le menu, coche ta routine, compare un avant-après, et attrape les gouttes.</p>
+    <p>Produits et notes d'exemple, inventés pour la maquette.</p>
+    <button class="rejouer" id="rejouer">Revoir l'ouverture</button>
+  </aside>
+
+  <main class="tel" id="tel" data-ecran="accueil">
+    <canvas id="gl" aria-hidden="true"></canvas>
+    <div class="couche" aria-hidden="true">
+      <div class="goutte" id="ga"><div class="note"><span id="na">14</span><small id="sa">/20</small></div></div>
+      <div class="goutte" id="gb"><div class="note"><span id="nb">11</span><small>/20</small></div></div>
+    </div>
+    <div class="statut" aria-hidden="true">9:41</div>
+
+    <section class="ecran actif" id="accueil" aria-label="Accueil">
+      <div class="corps">
+        <div class="entete"><svg class="marque" role="img" aria-label="Revela"><use href="#logo"/></svg><button class="verre bouton-rond" data-plus="assistant" aria-label="Demander à l'assistant"><svg class="i"><use href="#i-assistant"/></svg></button></div>
+        <div class="heros">
+          <h1>Bonjour<br><span id="prenom">Léa</span></h1>
+          <p>Scanne un produit. On te dit la vérité.</p>
+          <div class="emplacement-heros" data-goutte="a"></div>
+        </div>
+        <button class="cta" data-va="scanner"><svg class="i"><use href="#i-scan"/></svg>Scanner un produit</button>
+        <button class="verre routine" data-onglet="routine">
+          <span class="pastille"><svg class="i"><use href="#i-routine"/></svg></span>
+          <span><b>Routine du soir</b><em id="routine-accueil">Prochaine étape : crème de nuit</em></span>
+          <svg class="i"><use href="#i-suite"/></svg>
+        </button>
+        <div class="bloc">
+          <div class="titre-bloc"><h2>Derniers scans</h2><small>notes produit sur 20</small></div>
+          <ul class="liste" id="derniers"></ul>
+        </div>
+        <p class="aide">Produits d'exemple, inventés pour la maquette. Information, pas un avis médical.</p>
+      </div>
+    </section>
+
+    <section class="ecran ecran-scan" id="scanner" aria-label="Scanner">
+      <div class="corps-scan">
+        <h1>Scanner</h1>
+        <div class="viseur" id="viseur">
+          <div class="cadre"><svg viewBox="-2 -2 268 172" aria-hidden="true"><g class="barres"><rect x="46.0" y="42" width="3.4" height="84"/><rect x="51.7" y="42" width="2.2" height="84"/><rect x="57.4" y="42" width="2.2" height="84"/><rect x="63.1" y="42" width="3.4" height="84"/><rect x="68.8" y="42" width="2.2" height="84"/><rect x="74.5" y="42" width="2.2" height="84"/><rect x="80.2" y="42" width="3.4" height="84"/><rect x="85.9" y="42" width="2.2" height="84"/><rect x="91.6" y="42" width="2.2" height="84"/><rect x="97.3" y="42" width="3.4" height="84"/><rect x="103.0" y="42" width="2.2" height="84"/><rect x="108.7" y="42" width="2.2" height="84"/><rect x="114.4" y="42" width="3.4" height="84"/><rect x="120.1" y="42" width="2.2" height="84"/><rect x="125.8" y="42" width="2.2" height="84"/><rect x="131.5" y="42" width="3.4" height="84"/><rect x="137.2" y="42" width="2.2" height="84"/><rect x="142.9" y="42" width="2.2" height="84"/><rect x="148.6" y="42" width="3.4" height="84"/><rect x="154.3" y="42" width="2.2" height="84"/><rect x="160.0" y="42" width="2.2" height="84"/><rect x="165.7" y="42" width="3.4" height="84"/><rect x="171.4" y="42" width="2.2" height="84"/><rect x="177.1" y="42" width="2.2" height="84"/><rect x="182.8" y="42" width="3.4" height="84"/><rect x="188.5" y="42" width="2.2" height="84"/><rect x="194.2" y="42" width="2.2" height="84"/><rect x="199.9" y="42" width="3.4" height="84"/><rect x="205.6" y="42" width="2.2" height="84"/><rect x="211.3" y="42" width="2.2" height="84"/><rect x="217.0" y="42" width="3.4" height="84"/></g><path class="coins" d="M0 36V14a14 14 0 0 1 14-14H36M228 0H250a14 14 0 0 1 14 14V36M264 132V154a14 14 0 0 1-14 14H228M36 168H14a14 14 0 0 1-14-14V132"/></svg><div class="balayage"></div></div>
+        </div>
+        <p class="consigne" id="etat" aria-live="polite"><b>Vise le code-barres du produit</b><small>Garde le téléphone stable</small></p>
+        <button class="cta" id="scan">Simuler le scan</button>
+        <div class="liens">
+          <button class="lien" id="saisir">Saisir le code</button>
+          <button class="lien" data-bientot="L'analyse par photo">Analyser une photo</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="ecran" id="resultat" aria-label="Résultat">
+      <div class="corps">
+        <div class="barre-haut">
+          <button class="retour" data-va="scanner" aria-label="Retour au scanner"><svg class="i"><use href="#i-retour"/></svg></button>
+          <h1>Résultat</h1>
+          <span class="exemple">Exemple</span>
+        </div>
+        <div class="produit">
+          <div class="photo" id="photo"><svg role="img" aria-label="Photo du produit"><use href="#p-serum"/></svg></div>
+          <div><h2>Sérum Éclat</h2><p>Maison Fictive · 30 ml</p><p>24 ingrédients</p></div>
+        </div>
+        <div>
+          <div class="gouttes" id="gouttes">
+            <div class="emplacement" data-goutte="a"></div>
+            <div class="emplacement b" data-goutte="b"></div>
+            <p class="etiquette">Note produit</p>
+            <p class="etiquette b">Ma peau</p>
+          </div>
+          <p class="sr" id="annonce" aria-live="polite">Note produit : 14 sur 20.</p>
+        </div>
+        <div class="carte-verdict" id="verdict" hidden>
+          <svg class="vg"><use href="#v-prudence"/></svg>
+          <div><h2>Prudence</h2><p>Bonne formule, mais deux ingrédients peuvent irriter ta peau sensible.</p></div>
+        </div>
+        <button class="cta" id="compat">Voir si ça me convient</button>
+        <div class="bloc" id="raisons-peau" hidden>
+          <h2>Pourquoi Prudence</h2>
+          <ul class="liste">
+            <li><details class="raison"><summary><span class="signe v-prudence"><svg class="vg"><use href="#v-prudence"/></svg></span><div><b>Parfum</b><span>Ta peau est sensible, et le parfum peut l'irriter.</span></div><svg class="i fleche"><use href="#i-suite"/></svg></summary><p class="detail">Tu as indiqué une peau sensible dans ton profil. Ici le parfum est en 9e position sur 24.<small>Source : table Revela</small></p></details></li>
+            <li><details class="raison"><summary><span class="signe v-prudence"><svg class="vg"><use href="#v-prudence"/></svg></span><div><b>Alcohol Denat.</b><span>Peut assécher une peau sensible.</span></div><svg class="i fleche"><use href="#i-suite"/></svg></summary><p class="detail">Il arrive en 4e position sur 24, donc en quantité notable.<small>Source : table Revela</small></p></details></li>
+          </ul>
+        </div>
+        <div class="bloc">
+          <h2>Pourquoi 14 sur 20</h2>
+          <ul class="liste">
+            <li><details class="raison"><summary><span class="signe v-bon"><svg class="vg"><use href="#v-bon"/></svg></span><div><b>Niacinamide</b><span>Actif bien documenté, placé haut dans la liste.</span></div><svg class="i fleche"><use href="#i-suite"/></svg></summary><p class="detail">Il arrive en 3e position sur 24.<small>Source : CosIng</small></p></details></li>
+            <li><details class="raison"><summary><span class="signe v-bon"><svg class="vg"><use href="#v-bon"/></svg></span><div><b>Glycerin</b><span>Hydratant courant et bien toléré.</span></div><svg class="i fleche"><use href="#i-suite"/></svg></summary><p class="detail">Il arrive en 2e position sur 24.<small>Source : CosIng</small></p></details></li>
+            <li><details class="raison"><summary><span class="signe v-prudence"><svg class="vg"><use href="#v-prudence"/></svg></span><div><b>Parfum</b><span>Composition non détaillée sur l'étiquette.</span></div><svg class="i fleche"><use href="#i-suite"/></svg></summary><p class="detail">L'étiquette ne dit pas de quoi il est fait.<small>Source : Open Beauty Facts</small></p></details></li>
+          </ul>
+        </div>
+        <div class="bloc">
+          <h2>Aller plus loin</h2>
+          <ul class="liste">
+            <li><button class="reglage" data-plus="authenticite"><svg class="i"><use href="#i-bouclier"/></svg><span>Authenticité<small>Aucun signe de contrefaçon relevé</small></span><svg class="i suite"><use href="#i-suite"/></svg></button></li>
+            <li><button class="reglage" data-plus="carbone"><svg class="i"><use href="#i-feuille"/></svg><span>Impact carbone<small>Environ 1,8 kg CO₂e, estimation</small></span><svg class="i suite"><use href="#i-suite"/></svg></button></li>
+            <li><button class="reglage" data-plus="assistant" data-produit="1"><svg class="i"><use href="#i-assistant"/></svg><span>Poser une question<small>L'assistant connaît ce produit et ta peau</small></span><svg class="i suite"><use href="#i-suite"/></svg></button></li>
+          </ul>
+        </div>
+        <p class="aide">Information, pas un avis médical.</p>
+      </div>
+    </section>
+
+    <section class="ecran" id="routine" aria-label="Routine">
+      <div class="corps">
+        <div class="tete-ecran">
+          <div><h1>Routine</h1><p id="routine-etat" aria-live="polite">Prochaine étape : crème de nuit</p></div>
+          <div class="emplacement-routine" data-goutte="a"></div>
+        </div>
+        <div class="bascule" role="group" aria-label="Moment de la routine">
+          <span class="bascule-repere" id="basculeRepere"></span>
+          <button data-moment="matin" aria-pressed="false">Matin</button>
+          <button data-moment="soir" aria-pressed="true">Soir</button>
+        </div>
+        <ol class="etapes" id="etapes"></ol>
+        <div class="bloc">
+          <h2>Ma salle de bain</h2>
+          <ul class="etagere" id="etagere"></ul>
+        </div>
+        <p class="aide">Produits d'exemple, inventés pour la maquette. Information, pas un avis médical.</p>
+      </div>
+    </section>
+
+    <section class="ecran" id="discussion" aria-label="Discussion">
+      <div class="corps">
+        <div class="tete-ecran simple">
+          <div><h1>Discussion</h1><p>Ce que d'autres ont vécu avec leurs produits.</p></div>
+          <span class="exemple">Exemple</span>
+        </div>
+        <button class="cta" id="ecrire"><svg class="i"><use href="#i-plus"/></svg>Partager mon avis</button>
+        <div class="filtres" id="filtres" role="group" aria-label="Filtrer les avis">
+          <button class="filtre" data-filtre="tout" aria-pressed="true">Pour toi</button>
+          <button class="filtre" data-filtre="sensible" aria-pressed="false">Peau sensible</button>
+          <button class="filtre" data-filtre="avant" aria-pressed="false">Avant-après</button>
+          <button class="filtre" data-filtre="routine" aria-pressed="false">Routines</button>
+        </div>
+        <ul class="fil" id="fil"></ul>
+        <p class="aide">Des expériences personnelles, pas un avis médical.</p>
+      </div>
+    </section>
+
+    <section class="ecran" id="profil" aria-label="Profil">
+      <div class="corps">
+        <div class="tete-ecran simple">
+          <div class="auteur"><span class="avatar grand" id="profilAvatar" aria-hidden="true">L</span><div><h1 id="profilNom">Léa</h1><small id="profilPeau" aria-live="polite">Peau mixte et sensible</small></div></div>
+          <div class="emplacement-profil" data-goutte="a"></div>
+        </div>
+        <div class="chiffres">
+          <button class="chiffre" data-liste="historique"><b>4</b>scans</button>
+          <button class="chiffre" data-liste="favoris"><b>2</b>favoris</button>
+          <button class="chiffre" data-liste="avis"><b id="nbAvis">0</b><span id="motAvis">avis</span></button>
+        </div>
+        <div class="bloc">
+          <h2>Ma peau</h2>
+          <div class="carte-peau">
+            <p class="aide">Tes verdicts dépendent de ces réponses.</p>
+            <h3 id="t-type">Type de peau</h3>
+            <div class="choix-groupe" role="group" aria-labelledby="t-type" data-unique>
+              <button class="choix" aria-pressed="false">Sèche</button>
+              <button class="choix" aria-pressed="true">Mixte</button>
+              <button class="choix" aria-pressed="false">Grasse</button>
+              <button class="choix" aria-pressed="false">Normale</button>
+            </div>
+            <h3 id="t-part">Particularités</h3>
+            <div class="choix-groupe" role="group" aria-labelledby="t-part">
+              <button class="choix" aria-pressed="true">Sensible</button>
+              <button class="choix" aria-pressed="false">Rougeurs</button>
+              <button class="choix" aria-pressed="false">Imperfections</button>
+              <button class="choix" aria-pressed="false">Déshydratée</button>
+            </div>
+          </div>
+        </div>
+        <div class="bloc">
+          <h2>Mon compte</h2>
+          <ul class="liste">
+            <li><button class="reglage" role="switch" aria-checked="true"><svg class="i"><use href="#i-cadenas"/></svg><span>Photos privées<small>Rien n'est visible sans ton accord</small></span><i class="interrupteur"></i></button></li>
+            <li><button class="reglage" role="switch" aria-checked="false"><svg class="i"><use href="#i-cloche"/></svg><span>Rappels de routine</span><i class="interrupteur"></i></button></li>
+            <li><button class="reglage" data-liste="favoris"><svg class="i"><use href="#i-favori"/></svg><span>Favoris</span><svg class="i suite"><use href="#i-suite"/></svg></button></li>
+            <li><button class="reglage" data-liste="historique"><svg class="i"><use href="#i-historique"/></svg><span>Historique des scans</span><svg class="i suite"><use href="#i-suite"/></svg></button></li>
+            <li><button class="reglage" id="deconnexion"><svg class="i"><use href="#i-sortie"/></svg><span>Se déconnecter</span></button></li>
+          </ul>
+        </div>
+        <p class="aide">Information, pas un avis médical.</p>
+      </div>
+    </section>
+
+    <nav class="onglets" id="onglets" aria-label="Navigation principale">
+      <canvas id="glBarre" aria-hidden="true"></canvas>
+      <div class="ombre-barre"><div class="cadre-barre"><svg class="fond-barre" id="fondBarre" width="1600" height="120" viewBox="-800 0 1600 120" aria-hidden="true"><path d="M-800 0H-50C-36 0-33 7-28 17C-21 33-12 39 0 39C12 39 21 33 28 17C33 7 36 0 50 0H800V120H-800Z"/></svg></div></div>
+      <button class="onglet" data-onglet="accueil"><svg class="i"><use href="#i-accueil"/></svg>Accueil</button>
+      <button class="onglet" data-onglet="routine"><svg class="i"><use href="#i-routine"/></svg>Routine</button>
+      <button class="onglet" data-onglet="scanner"><svg class="i"><use href="#i-scan"/></svg>Scanner</button>
+      <button class="onglet" data-onglet="discussion"><svg class="i"><use href="#i-discussion"/></svg>Discussion</button>
+      <button class="onglet" data-onglet="profil"><svg class="i"><use href="#i-profil"/></svg>Profil</button>
+      <span class="bulle" id="bulle" aria-hidden="true"><svg class="i"><use id="bulleIcone" href="#i-accueil"/></svg></span>
+    </nav>
+    <div class="voile" id="voile"></div>
+    <section class="feuille" id="feuille" role="dialog" aria-modal="true" aria-labelledby="feuilleTitre" inert>
+      <div class="poignee" aria-hidden="true"></div>
+      <h2 id="feuilleTitre"></h2>
+      <div id="feuilleCorps"></div>
+    </section>
+    <div class="toast" id="toast" role="status"></div>
+    <div class="splash" id="splash" aria-hidden="true">
+      <canvas class="splash-lac" id="splashLac"></canvas>
+    </div>
+  </main>
+</div>
+
+<script>
+// Splash « Le lac » (source : brand/splash/lac) : neuf gouttes tombent dans un lac de sirop rose, la dixième est
+// une goutte d'encre qui se diffuse et dessine le nom en dégradé framboise vers vin. Validé le 2026-11-05.
+window.lacSplash = (() => {
+  const LOGO = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-14 24 672 210"><title>Revela</title><path fill="#000" d="M16.5 100.0L15.8 102.5L15.2 104.9L14.7 107.3L14.2 109.6L13.8 111.9L13.4 114.1L13.0 116.3L12.6 118.4L12.2 120.5L11.8 122.6L11.4 124.6L11.1 126.6L10.7 128.5L10.3 130.4L10.0 132.3L9.6 134.1L9.3 135.9L9.0 137.6L8.6 139.3L8.3 141.0L8.0 142.7L7.7 144.3L7.3 145.9L7.0 147.5L6.7 149.0L6.4 150.6L6.1 152.1L5.8 153.6L5.5 155.0L5.2 156.4L4.9 157.9L4.6 159.3L4.3 160.6L4.0 162.0L3.7 163.4L3.4 164.7L3.1 166.0L2.8 167.3L2.5 168.6L2.2 169.9L2.0 171.2L1.7 172.5L1.4 173.7L1.1 175.0L0.8 176.2L0.6 177.5L0.3 178.7L0.0 180.0L40.0 180.0L39.7 178.7L39.4 177.5L39.2 176.2L38.9 175.0L38.6 173.7L38.3 172.5L38.0 171.2L37.8 169.9L37.5 168.6L37.2 167.3L36.9 166.0L36.6 164.7L36.3 163.4L36.0 162.0L35.7 160.6L35.4 159.3L35.1 157.9L34.8 156.4L34.5 155.0L34.2 153.6L33.9 152.1L33.6 150.6L33.3 149.0L33.0 147.5L32.7 145.9L32.3 144.3L32.0 142.7L31.7 141.0L31.4 139.3L31.0 137.6L30.7 135.9L30.4 134.1L30.0 132.3L29.7 130.4L29.3 128.5L28.9 126.6L28.6 124.6L28.2 122.6L27.8 120.5L27.4 118.4L27.0 116.3L26.6 114.1L26.2 111.9L25.8 109.6L25.3 107.3L24.8 104.9L24.2 102.5L23.5 100.0Z"/><circle fill="#000" cx="20.0" cy="100.0" r="3.5"/><circle fill="#000" cx="20.0" cy="180.0" r="20.0"/><path fill="#000" transform="translate(20 98) scale(0.56) translate(-65.3 -37)" d="M79.60 109.30C97.20 63.10 130.20 32.30 172.00 32.30L174.20 57.60C145.60 56.50 106.00 82.90 82.90 148.90ZM172.00 32.30C198.40 32.30 213.80 60.90 213.80 89.50A28.60 28.60 0 1 1 156.60 89.50C156.60 78.50 165.40 65.30 174.20 57.60Z"/><path fill="#000" d="M120.0 152.5L122.0 152.6L124.1 152.7L126.3 152.8L128.5 152.8L130.7 152.9L133.0 153.0L135.3 153.1L137.7 153.1L140.1 153.2L142.5 153.2L145.0 153.3L147.4 153.3L149.9 153.3L152.4 153.3L154.9 153.3L157.4 153.3L159.9 153.3L162.4 153.2L164.9 153.1L167.3 153.1L169.8 153.0L172.2 152.8L174.6 152.7L176.9 152.5L179.3 152.3L181.6 152.1L183.9 151.9L186.1 151.6L188.3 151.3L190.4 151.0L192.5 150.7L194.5 150.3L196.5 149.8L198.5 149.3L200.4 148.8L202.3 148.2L204.1 147.6L205.9 146.8L207.6 146.0L209.3 145.0L211.0 143.9L212.6 142.6L214.1 141.1L215.5 139.3L216.8 137.3L217.7 135.0L218.4 132.5L218.7 129.9L218.6 126.6L218.2 123.2L217.5 119.9L216.5 116.7L215.2 113.7L213.7 110.8L211.9 108.1L209.9 105.6L207.7 103.3L205.4 101.2L202.9 99.2L200.3 97.4L197.6 95.8L194.8 94.4L191.9 93.1L188.9 92.0L185.8 91.0L182.7 90.2L179.6 89.6L176.4 89.0L173.1 88.7L169.8 88.5L166.5 88.4L163.2 88.5L159.9 88.8L156.6 89.2L153.3 89.8L150.0 90.5L146.7 91.5L143.4 92.6L140.2 93.9L137.1 95.3L134.0 97.0L131.0 98.9L128.0 101.0L125.2 103.3L122.6 105.8L120.0 108.5L117.7 111.5L115.5 114.7L113.6 118.0L111.9 121.6L110.4 125.4L109.2 129.3L108.3 133.4L107.6 137.6L107.3 142.0L107.2 146.5L107.3 150.4L107.7 154.1L108.2 157.7L108.9 161.3L109.8 164.7L110.8 168.0L112.0 171.2L113.4 174.4L115.0 177.3L116.7 180.2L118.5 182.9L120.5 185.5L122.7 188.0L124.9 190.3L127.2 192.4L129.7 194.4L132.2 196.3L134.8 198.0L137.5 199.5L140.2 200.9L143.0 202.2L145.8 203.3L148.6 204.3L151.5 205.2L154.4 205.9L157.3 206.5L160.3 207.0L163.2 207.3L166.2 207.6L169.1 207.7L172.1 207.7L175.0 207.5L178.0 207.3L180.9 206.9L183.8 206.4L186.7 205.9L189.6 205.1L192.4 204.3L195.2 203.4L197.9 202.3L200.7 201.1L203.3 199.7L206.0 198.3L208.5 196.7L211.0 194.9L213.4 193.0L215.8 191.0L217.6 189.2L190.4 162.8L189.4 163.9L188.7 164.7L187.9 165.4L187.1 166.1L186.2 166.9L185.1 167.6L184.1 168.2L182.9 168.9L181.7 169.5L180.4 170.1L179.1 170.6L177.7 171.1L176.3 171.5L174.8 171.9L173.3 172.2L171.8 172.5L170.2 172.7L168.7 172.8L167.1 172.9L165.6 172.9L164.0 172.8L162.5 172.7L161.0 172.6L159.5 172.3L158.0 172.0L156.6 171.7L155.2 171.2L153.8 170.7L152.5 170.2L151.3 169.6L150.0 169.0L148.9 168.3L147.7 167.5L146.6 166.7L145.6 165.8L144.6 164.8L143.6 163.8L142.7 162.6L141.9 161.4L141.0 160.1L140.3 158.7L139.6 157.2L138.9 155.6L138.3 153.8L137.8 152.0L137.4 149.9L137.1 147.7L136.8 145.5L136.7 142.9L136.8 140.5L137.0 138.2L137.3 136.2L137.8 134.2L138.4 132.4L139.0 130.7L139.8 129.1L140.7 127.6L141.7 126.2L142.8 124.8L143.9 123.5L145.2 122.3L146.6 121.2L148.1 120.1L149.8 119.0L151.5 118.1L153.2 117.2L155.1 116.5L157.0 115.8L159.0 115.2L161.1 114.7L163.2 114.3L165.3 114.0L167.4 113.8L169.5 113.6L171.6 113.6L173.7 113.7L175.8 113.9L177.8 114.2L179.8 114.5L181.6 115.0L183.4 115.5L185.2 116.1L186.8 116.8L188.3 117.5L189.7 118.3L190.9 119.1L192.1 120.0L193.1 120.9L194.0 121.9L194.8 122.8L195.5 123.8L196.0 124.9L196.5 126.0L196.9 127.2L197.2 128.5L197.3 130.1L197.5 129.4L197.7 128.8L198.0 128.4L198.2 128.0L198.4 127.9L198.5 128.0L198.4 128.2L198.1 128.5L197.7 128.9L197.0 129.3L196.2 129.8L195.2 130.3L194.1 130.8L192.9 131.3L191.5 131.8L190.0 132.3L188.5 132.7L186.8 133.2L185.0 133.6L183.2 134.0L181.2 134.4L179.2 134.8L177.2 135.1L175.1 135.5L172.9 135.8L170.7 136.1L168.4 136.4L166.1 136.6L163.8 136.9L161.4 137.1L159.1 137.3L156.7 137.5L154.3 137.7L151.9 137.9L149.5 138.1L147.1 138.2L144.7 138.4L142.3 138.5L139.9 138.6L137.5 138.7L135.2 138.8L132.9 138.9L130.7 139.0L128.4 139.1L126.2 139.2L124.1 139.3L122.0 139.4L120.0 139.5Z"/><circle fill="#000" cx="120.0" cy="146.0" r="6.5"/><circle fill="#000" cx="204.0" cy="176.0" r="19.0"/><path fill="#000" d="M293.3 188.9L293.3 186.8L293.2 184.7L293.0 182.7L292.7 180.6L292.4 178.5L292.1 176.5L291.8 174.4L291.4 172.4L291.1 170.3L290.7 168.3L290.3 166.3L289.8 164.2L289.4 162.2L288.9 160.1L288.5 158.1L288.0 156.1L287.5 154.1L287.0 152.0L286.5 150.0L286.0 148.0L285.4 146.0L284.9 144.0L284.3 142.1L283.8 140.1L283.2 138.1L282.6 136.2L282.0 134.3L281.4 132.3L280.8 130.4L280.2 128.5L279.6 126.6L278.9 124.8L278.3 122.9L277.6 121.1L277.0 119.2L276.3 117.4L275.6 115.6L274.9 113.9L274.2 112.1L273.5 110.4L272.8 108.6L272.1 106.9L271.4 105.3L270.6 103.6L269.9 101.9L269.1 100.3L268.4 98.7L267.6 97.2L236.4 118.8L237.4 119.8L238.4 120.8L239.4 121.8L240.4 122.9L241.4 124.0L242.4 125.1L243.4 126.3L244.4 127.5L245.4 128.7L246.5 130.0L247.5 131.3L248.6 132.6L249.6 134.0L250.7 135.4L251.7 136.8L252.8 138.2L253.8 139.6L254.9 141.1L255.9 142.6L257.0 144.1L258.0 145.7L259.1 147.2L260.2 148.8L261.2 150.4L262.3 152.0L263.3 153.6L264.4 155.3L265.4 156.9L266.5 158.6L267.5 160.2L268.6 161.9L269.6 163.6L270.7 165.3L271.7 167.0L272.7 168.8L273.8 170.5L274.8 172.2L275.9 173.9L276.9 175.7L277.9 177.4L279.0 179.1L280.0 180.9L281.1 182.6L282.1 184.3L283.2 186.1L284.3 187.8L285.4 189.5L286.7 191.1Z"/><circle fill="#000" cx="290.0" cy="190.0" r="3.5"/><circle fill="#000" cx="252.0" cy="108.0" r="19.0"/><path fill="#000" d="M293.3 191.1L294.6 189.5L295.7 187.8L296.8 186.1L297.9 184.3L298.9 182.6L300.0 180.9L301.0 179.1L302.1 177.4L303.1 175.7L304.1 173.9L305.2 172.2L306.2 170.5L307.3 168.8L308.3 167.0L309.3 165.3L310.4 163.6L311.4 161.9L312.5 160.2L313.5 158.6L314.6 156.9L315.6 155.3L316.7 153.6L317.7 152.0L318.8 150.4L319.8 148.8L320.9 147.2L322.0 145.7L323.0 144.1L324.1 142.6L325.1 141.1L326.2 139.6L327.2 138.2L328.3 136.8L329.3 135.4L330.4 134.0L331.4 132.6L332.5 131.3L333.5 130.0L334.6 128.7L335.6 127.5L336.6 126.3L337.6 125.1L338.6 124.0L339.6 122.9L340.6 121.8L341.6 120.8L342.6 119.8L343.6 118.8L312.4 97.2L311.6 98.7L310.9 100.3L310.1 101.9L309.4 103.6L308.6 105.3L307.9 106.9L307.2 108.6L306.5 110.4L305.8 112.1L305.1 113.9L304.4 115.6L303.7 117.4L303.0 119.2L302.4 121.1L301.7 122.9L301.1 124.8L300.4 126.6L299.8 128.5L299.2 130.4L298.6 132.3L298.0 134.3L297.4 136.2L296.8 138.1L296.2 140.1L295.7 142.1L295.1 144.0L294.6 146.0L294.0 148.0L293.5 150.0L293.0 152.0L292.5 154.1L292.0 156.1L291.5 158.1L291.1 160.1L290.6 162.2L290.2 164.2L289.7 166.3L289.3 168.3L288.9 170.3L288.6 172.4L288.2 174.4L287.9 176.5L287.6 178.5L287.3 180.6L287.0 182.7L286.8 184.7L286.7 186.8L286.7 188.9Z"/><circle fill="#000" cx="290.0" cy="190.0" r="3.5"/><circle fill="#000" cx="328.0" cy="108.0" r="19.0"/><path fill="#000" d="M358.0 152.5L360.0 152.6L362.1 152.7L364.3 152.8L366.5 152.8L368.7 152.9L371.0 153.0L373.3 153.1L375.7 153.1L378.1 153.2L380.5 153.2L383.0 153.3L385.4 153.3L387.9 153.3L390.4 153.3L392.9 153.3L395.4 153.3L397.9 153.3L400.4 153.2L402.9 153.1L405.3 153.1L407.8 153.0L410.2 152.8L412.6 152.7L414.9 152.5L417.3 152.3L419.6 152.1L421.9 151.9L424.1 151.6L426.3 151.3L428.4 151.0L430.5 150.7L432.5 150.3L434.5 149.8L436.5 149.3L438.4 148.8L440.3 148.2L442.1 147.6L443.9 146.8L445.6 146.0L447.3 145.0L449.0 143.9L450.6 142.6L452.1 141.1L453.5 139.3L454.8 137.3L455.7 135.0L456.4 132.5L456.7 129.9L456.6 126.6L456.2 123.2L455.5 119.9L454.5 116.7L453.2 113.7L451.7 110.8L449.9 108.1L447.9 105.6L445.7 103.3L443.4 101.2L440.9 99.2L438.3 97.4L435.6 95.8L432.8 94.4L429.9 93.1L426.9 92.0L423.8 91.0L420.7 90.2L417.6 89.6L414.4 89.0L411.1 88.7L407.8 88.5L404.5 88.4L401.2 88.5L397.9 88.8L394.6 89.2L391.3 89.8L388.0 90.5L384.7 91.5L381.4 92.6L378.2 93.9L375.1 95.3L372.0 97.0L369.0 98.9L366.0 101.0L363.2 103.3L360.6 105.8L358.0 108.5L355.7 111.5L353.5 114.7L351.6 118.0L349.9 121.6L348.4 125.4L347.2 129.3L346.3 133.4L345.6 137.6L345.3 142.0L345.2 146.5L345.3 150.4L345.7 154.1L346.2 157.7L346.9 161.3L347.8 164.7L348.8 168.0L350.0 171.2L351.4 174.4L353.0 177.3L354.7 180.2L356.5 182.9L358.5 185.5L360.7 188.0L362.9 190.3L365.2 192.4L367.7 194.4L370.2 196.3L372.8 198.0L375.5 199.5L378.2 200.9L381.0 202.2L383.8 203.3L386.6 204.3L389.5 205.2L392.4 205.9L395.3 206.5L398.3 207.0L401.2 207.3L404.2 207.6L407.1 207.7L410.1 207.7L413.0 207.5L416.0 207.3L418.9 206.9L421.8 206.4L424.7 205.9L427.6 205.1L430.4 204.3L433.2 203.4L435.9 202.3L438.7 201.1L441.3 199.7L444.0 198.3L446.5 196.7L449.0 194.9L451.4 193.0L453.8 191.0L455.6 189.2L428.4 162.8L427.4 163.9L426.7 164.7L425.9 165.4L425.1 166.1L424.2 166.9L423.1 167.6L422.1 168.2L420.9 168.9L419.7 169.5L418.4 170.1L417.1 170.6L415.7 171.1L414.3 171.5L412.8 171.9L411.3 172.2L409.8 172.5L408.2 172.7L406.7 172.8L405.1 172.9L403.6 172.9L402.0 172.8L400.5 172.7L399.0 172.6L397.5 172.3L396.0 172.0L394.6 171.7L393.2 171.2L391.8 170.7L390.5 170.2L389.3 169.6L388.0 169.0L386.9 168.3L385.7 167.5L384.6 166.7L383.6 165.8L382.6 164.8L381.6 163.8L380.7 162.6L379.9 161.4L379.0 160.1L378.3 158.7L377.6 157.2L376.9 155.6L376.3 153.8L375.8 152.0L375.4 149.9L375.1 147.7L374.8 145.5L374.7 142.9L374.8 140.5L375.0 138.2L375.3 136.2L375.8 134.2L376.4 132.4L377.0 130.7L377.8 129.1L378.7 127.6L379.7 126.2L380.8 124.8L381.9 123.5L383.2 122.3L384.6 121.2L386.1 120.1L387.8 119.0L389.5 118.1L391.2 117.2L393.1 116.5L395.0 115.8L397.0 115.2L399.1 114.7L401.2 114.3L403.3 114.0L405.4 113.8L407.5 113.6L409.6 113.6L411.7 113.7L413.8 113.9L415.8 114.2L417.8 114.5L419.6 115.0L421.4 115.5L423.2 116.1L424.8 116.8L426.3 117.5L427.7 118.3L428.9 119.1L430.1 120.0L431.1 120.9L432.0 121.9L432.8 122.8L433.5 123.8L434.0 124.9L434.5 126.0L434.9 127.2L435.2 128.5L435.3 130.1L435.5 129.4L435.7 128.8L436.0 128.4L436.2 128.0L436.4 127.9L436.5 128.0L436.4 128.2L436.1 128.5L435.7 128.9L435.0 129.3L434.2 129.8L433.2 130.3L432.1 130.8L430.9 131.3L429.5 131.8L428.0 132.3L426.5 132.7L424.8 133.2L423.0 133.6L421.2 134.0L419.2 134.4L417.2 134.8L415.2 135.1L413.1 135.5L410.9 135.8L408.7 136.1L406.4 136.4L404.1 136.6L401.8 136.9L399.4 137.1L397.1 137.3L394.7 137.5L392.3 137.7L389.9 137.9L387.5 138.1L385.1 138.2L382.7 138.4L380.3 138.5L377.9 138.6L375.5 138.7L373.2 138.8L370.9 138.9L368.7 139.0L366.4 139.1L364.2 139.2L362.1 139.3L360.0 139.4L358.0 139.5Z"/><circle fill="#000" cx="358.0" cy="146.0" r="6.5"/><circle fill="#000" cx="442.0" cy="176.0" r="19.0"/><path fill="#000" d="M484.5 46.0L484.4 49.4L484.2 52.7L484.1 56.0L483.8 59.2L483.6 62.4L483.4 65.6L483.1 68.8L482.9 71.9L482.6 75.0L482.4 78.1L482.1 81.1L481.8 84.1L481.5 87.1L481.2 90.0L480.9 93.0L480.5 95.9L480.2 98.7L479.9 101.6L479.6 104.4L479.2 107.2L478.9 110.0L478.5 112.8L478.2 115.5L477.8 118.2L477.4 121.0L477.1 123.7L476.7 126.3L476.3 129.0L475.9 131.6L475.5 134.3L475.2 136.9L474.8 139.5L474.4 142.1L474.0 144.7L473.6 147.2L473.1 149.8L472.7 152.3L472.3 154.9L471.9 157.4L471.5 159.9L471.1 162.5L470.6 165.0L470.2 167.5L469.8 170.0L469.3 172.5L468.9 175.0L468.4 177.5L468.0 180.0L508.0 180.0L507.6 177.5L507.1 175.0L506.7 172.5L506.2 170.0L505.8 167.5L505.4 165.0L504.9 162.5L504.5 159.9L504.1 157.4L503.7 154.9L503.3 152.3L502.9 149.8L502.4 147.2L502.0 144.7L501.6 142.1L501.2 139.5L500.8 136.9L500.5 134.3L500.1 131.6L499.7 129.0L499.3 126.3L498.9 123.7L498.6 121.0L498.2 118.2L497.8 115.5L497.5 112.8L497.1 110.0L496.8 107.2L496.4 104.4L496.1 101.6L495.8 98.7L495.5 95.9L495.1 93.0L494.8 90.0L494.5 87.1L494.2 84.1L493.9 81.1L493.6 78.1L493.4 75.0L493.1 71.9L492.9 68.8L492.6 65.6L492.4 62.4L492.2 59.2L491.9 56.0L491.8 52.7L491.6 49.4L491.5 46.0Z"/><circle fill="#000" cx="488.0" cy="46.0" r="3.5"/><circle fill="#000" cx="488.0" cy="180.0" r="20.0"/><path fill="#000" d="M617.5 108.7L616.0 106.7L614.1 104.5L612.1 102.4L610.0 100.5L607.7 98.7L605.4 97.1L603.1 95.6L600.6 94.2L598.1 92.9L595.5 91.8L592.9 90.8L590.2 90.0L587.5 89.2L584.7 88.6L581.9 88.1L579.1 87.8L576.3 87.5L573.5 87.4L570.7 87.4L567.8 87.5L565.0 87.8L562.1 88.2L559.3 88.7L556.5 89.4L553.7 90.2L550.9 91.2L548.2 92.2L545.5 93.5L542.9 94.8L540.3 96.4L537.8 98.0L535.4 99.9L533.0 101.8L530.8 104.0L528.7 106.3L526.6 108.7L524.7 111.3L523.0 114.0L521.4 116.9L519.9 119.9L518.6 123.0L517.5 126.3L516.5 129.7L515.8 133.2L515.2 136.8L514.8 140.5L514.5 144.3L514.5 148.2L514.7 152.3L515.0 156.3L515.6 160.1L516.4 163.8L517.3 167.4L518.5 170.9L519.8 174.2L521.4 177.3L523.0 180.4L524.9 183.2L526.9 185.9L529.1 188.5L531.4 190.8L533.8 193.0L536.3 195.0L538.9 196.9L541.6 198.5L544.4 200.0L547.3 201.2L550.2 202.3L553.1 203.3L556.1 204.0L559.1 204.6L562.2 204.9L565.2 205.2L568.3 205.2L571.4 205.1L574.4 204.7L577.5 204.3L580.5 203.6L583.4 202.8L586.4 201.8L589.3 200.6L592.1 199.3L594.9 197.8L597.6 196.1L600.2 194.3L602.7 192.2L605.1 190.0L607.4 187.7L609.6 185.2L611.7 182.5L613.6 179.6L615.3 176.6L616.9 173.5L618.3 170.2L619.5 166.8L620.5 163.6L595.5 156.4L594.8 158.8L594.1 160.8L593.4 162.6L592.5 164.3L591.6 166.0L590.6 167.5L589.5 168.9L588.4 170.3L587.2 171.5L585.9 172.7L584.6 173.7L583.3 174.7L581.9 175.6L580.4 176.4L578.9 177.1L577.4 177.8L575.8 178.3L574.3 178.8L572.7 179.1L571.0 179.4L569.4 179.6L567.8 179.7L566.2 179.7L564.6 179.6L563.0 179.4L561.4 179.1L559.9 178.7L558.3 178.3L556.9 177.7L555.4 177.1L554.0 176.4L552.7 175.6L551.3 174.7L550.1 173.7L548.9 172.6L547.7 171.5L546.6 170.2L545.6 168.8L544.6 167.3L543.7 165.7L542.8 164.0L542.1 162.1L541.4 160.1L540.8 158.0L540.3 155.6L539.9 153.2L539.6 150.6L539.5 147.8L539.5 145.1L539.6 142.5L539.9 140.1L540.2 137.8L540.7 135.7L541.3 133.7L541.9 131.8L542.6 130.0L543.4 128.3L544.3 126.7L545.2 125.3L546.2 123.9L547.3 122.6L548.4 121.3L549.6 120.2L550.8 119.1L552.1 118.1L553.5 117.2L554.9 116.3L556.4 115.5L557.9 114.8L559.5 114.1L561.1 113.6L562.8 113.1L564.5 112.7L566.2 112.3L567.9 112.1L569.6 111.9L571.4 111.8L573.1 111.8L574.9 111.8L576.6 112.0L578.4 112.2L580.0 112.4L581.7 112.8L583.3 113.2L584.9 113.7L586.5 114.3L588.0 114.9L589.4 115.6L590.7 116.3L592.0 117.1L593.3 118.0L594.4 118.9L595.5 119.9L596.5 120.8L597.4 121.9L598.5 123.3Z"/><circle fill="#000" cx="608.0" cy="116.0" r="12.0"/><circle fill="#000" cx="608.0" cy="160.0" r="13.0"/><path fill="#000" d="M608.5 102.0L607.8 104.4L607.2 106.7L606.7 108.9L606.2 111.1L605.8 113.3L605.4 115.4L605.0 117.5L604.6 119.6L604.2 121.6L603.8 123.6L603.4 125.5L603.1 127.4L602.7 129.3L602.3 131.1L602.0 132.9L601.6 134.7L601.3 136.4L601.0 138.1L600.6 139.8L600.3 141.4L600.0 143.0L599.7 144.6L599.3 146.2L599.0 147.8L598.7 149.3L598.4 150.8L598.1 152.2L597.8 153.7L597.5 155.1L597.2 156.6L596.9 158.0L596.6 159.3L596.3 160.7L596.0 162.1L595.7 163.4L595.4 164.7L595.1 166.0L594.8 167.3L594.5 168.6L594.2 169.9L594.0 171.2L593.7 172.5L593.4 173.7L593.1 175.0L592.8 176.2L592.6 177.5L592.3 178.7L592.0 180.0L632.0 180.0L631.7 178.7L631.4 177.5L631.2 176.2L630.9 175.0L630.6 173.7L630.3 172.5L630.0 171.2L629.8 169.9L629.5 168.6L629.2 167.3L628.9 166.0L628.6 164.7L628.3 163.4L628.0 162.1L627.7 160.7L627.4 159.3L627.1 158.0L626.8 156.6L626.5 155.1L626.2 153.7L625.9 152.2L625.6 150.8L625.3 149.3L625.0 147.8L624.7 146.2L624.3 144.6L624.0 143.0L623.7 141.4L623.4 139.8L623.0 138.1L622.7 136.4L622.4 134.7L622.0 132.9L621.7 131.1L621.3 129.3L620.9 127.4L620.6 125.5L620.2 123.6L619.8 121.6L619.4 119.6L619.0 117.5L618.6 115.4L618.2 113.3L617.8 111.1L617.3 108.9L616.8 106.7L616.2 104.4L615.5 102.0Z"/><circle fill="#000" cx="612.0" cy="102.0" r="3.5"/><circle fill="#000" cx="612.0" cy="180.0" r="20.0"/></svg>`;
+  const DROPS = [ // x, y (largeur d'écran = 1, centre = 0), instant d'impact (s), force
+  [-0.22,  0.42, 0.35, 0.8], [ 0.25,  0.18, 0.70, 0.7], [-0.10, -0.36, 0.95, 0.75], [ 0.30, -0.55, 1.15, 0.6],
+  [-0.30, -0.05, 1.32, 0.65], [ 0.12,  0.60, 1.46, 0.6], [ 0.33,  0.40, 1.58, 0.5], [-0.26, -0.62, 1.68, 0.55],
+  [ 0.05, -0.18, 1.77, 0.5], [ 0.00,  0.00, 2.25, 1.35]];
+const REVEAL = 2.25, END = 4.6;
+  const VS = `attribute vec2 a; void main(){ gl_Position = vec4(a, 0., 1.); }`;
+  const FS = `precision highp float;
+uniform vec2 uRes; uniform float uT; uniform vec4 uD[10]; uniform sampler2D uLogo, uBlur; uniform float uAsp;
+uniform vec3 uInk, uInk2;
+const vec3 CREAM = vec3(.985,.945,.925), PEACH = vec3(1.,.83,.76), ROSE = vec3(.95,.72,.75);
+
+float wave(vec2 p, vec4 d){
+  float dt = uT - d.z; if (dt <= 0.) return 0.;
+  float r = length(p - d.xy), front = .26 * dt, s = r - front;
+  float sig = .018 + .05 * dt;                          // le paquet d'ondes s'élargit en s'éloignant
+  float env = exp(-s * s / (sig * sig));
+  float bump = exp(-r * r / .0006) * exp(-9. * dt) * 1.4; // creux puis rebond au point d'impact
+  return d.w * (env * cos(s * 80.) * exp(-1.7 * dt) / (1. + 6. * r) - bump * cos(dt * 30.));
+}
+float H(vec2 p){ float h = 0.; for (int i = 0; i < 10; i++) h += wave(p, uD[i]); return h * .0022; }
+
+float hash(vec2 q){ return fract(sin(dot(q, vec2(127.1, 311.7))) * 43758.5453); }
+float noise(vec2 q){ vec2 i = floor(q), f = fract(q); f = f * f * (3. - 2. * f);
+  return mix(mix(hash(i), hash(i + vec2(1., 0.)), f.x), mix(hash(i + vec2(0., 1.)), hash(i + 1.), f.x), f.y); }
+
+void main(){
+  vec2 p = (gl_FragCoord.xy - .5 * uRes) / uRes.x;
+  float e = 1.5 / uRes.x;
+  float h = H(p), hx = H(p + vec2(e, 0.)), hy = H(p + vec2(0., e)), hx2 = H(p - vec2(e, 0.)), hy2 = H(p - vec2(0., e));
+  vec3 n = normalize(vec3(-(hx - hx2) / (2. * e), -(hy - hy2) / (2. * e), 1.));
+  float lap = (hx + hx2 + hy + hy2 - 4. * h) / (e * e);
+
+  // fond : sirop rose laiteux, lumière douce venue du haut
+  float g = smoothstep(-.9, .9, p.y);
+  vec3 col = mix(mix(ROSE, PEACH, smoothstep(-1., .2, p.y)), CREAM, g * .7);
+  col *= 1. - .08 * length(p * vec2(1.2, .6));
+
+  // la 10e goutte est une goutte d'encre : elle se diffuse depuis le centre et dessine le nom,
+  // d'abord en nuage flou aux bords irréguliers, puis l'encre se resserre sur les lettres
+  float tt = uT - ${REVEAL.toFixed(2)};
+  if (tt > 0.) {
+    vec2 q = p + n.xy * .02;                             // l'encre bouge avec l'eau
+    float w = .64; vec2 uv = vec2(q.x / w + .5, .5 - q.y * uAsp / w);
+    float inUV = step(0., uv.x) * step(uv.x, 1.) * step(0., uv.y) * step(uv.y, 1.);
+    float k = smoothstep(.2, 1.9, tt);
+    float a = mix(texture2D(uBlur, uv).a * 1.25, texture2D(uLogo, uv).a, k) * inUV;
+    float R = .5 * (1. - exp(-1.6 * tt)) + .02;
+    float fr = noise(q * 14. + tt) * .07;
+    float spread = smoothstep(R + .04, R - .06, length(q) + fr);
+    vec3 ink = mix(uInk, uInk2, clamp(uv.x, 0., 1.));
+    col = mix(col, ink, clamp(a, 0., 1.) * spread * smoothstep(0., .5, tt));
+    // voile d'encre très léger qui se dissout autour
+    col = mix(col, ink, .08 * spread * exp(-2.2 * tt) * smoothstep(0., .15, tt));
+  }
+
+  // lumière : reflets spéculaires, caustiques, voile de surface
+  vec3 L = normalize(vec3(-.35, .55, 1.));
+  float spec = pow(max(dot(reflect(-L, n), vec3(0., 0., 1.)), 0.), 90.);
+  col += spec * .55;
+  col += clamp(-lap * .02, 0., .2) * vec3(1., .96, .92);
+  col -= clamp(lap * .012, 0., .06);
+  col = mix(col, CREAM, clamp((1. - n.z) * 4., 0., .35));
+
+  // gouttes en chute : une petite perle qui grossit et son ombre qui la rejoint ; la dernière est d'encre
+  for (int i = 0; i < 10; i++) {
+    vec4 d = uD[i]; float f = (uT - d.z) / .32 + 1.;
+    if (f <= 0. || f >= 1.) continue;
+    float rr = mix(.004, .014 + .006 * d.w, f * f);
+    vec2 sh = d.xy + vec2(.04, -.06) * (1. - f);
+    col *= 1. - .18 * f * smoothstep(rr * 1.6, 0., length(p - sh));
+    vec2 q = (p - d.xy) / rr; float qq = dot(q, q);
+    if (qq < 1.) {
+      vec3 sn = vec3(q, sqrt(1. - qq));
+      vec3 body = i == 9 ? mix(uInk, uInk2, .5) : mix(col * .82, CREAM, .25);
+      vec3 drop = body + pow(max(dot(reflect(-L, sn), vec3(0., 0., 1.)), 0.), 40.) * .9;
+      col = mix(col, drop, smoothstep(1., .8, qq));
+    }
+  }
+  gl_FragColor = vec4(col, 1.);
+}`;
+  return cv => new Promise(done => {
+    const gl = cv.getContext('webgl', { antialias: true });
+    const size = () => { const d = Math.min(devicePixelRatio || 1, 2), r = cv.getBoundingClientRect();
+      cv.width = Math.round(r.width * d); cv.height = Math.round(r.height * d); gl.viewport(0, 0, cv.width, cv.height); };
+    const run = U => { size(); const t0 = performance.now();
+      const frame = now => { const t = Math.min((now - t0) / 1000, END);
+        gl.uniform2f(U('uRes'), cv.width, cv.height); gl.uniform1f(U('uT'), t); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        t < END ? requestAnimationFrame(frame) : done(); };
+      requestAnimationFrame(frame); };
+    if (cv.lacU) return run(cv.lacU);                   // déjà préparé : on rejoue
+    const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; };
+    const pr = gl.createProgram();
+    gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr);
+    if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) return done();  // pas de WebGL : on passe l'ouverture
+    gl.useProgram(pr);
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(pr, 'a'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    const U = n => gl.getUniformLocation(pr, n);
+    gl.uniform4fv(U('uD'), DROPS.flat());
+    const hex = c => [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16) / 255);
+    gl.uniform3fv(U('uInk'), hex('#BF3A62')); gl.uniform3fv(U('uInk2'), hex('#961F41'));
+    const vb = LOGO.match(/viewBox="([^"]+)"/)[1].split(/\s+/).map(Number);
+    gl.uniform1f(U('uAsp'), vb[2] / vb[3]);
+    const img = new Image();
+    img.onload = () => {
+      const draw = blur => { const c2 = document.createElement('canvas'); c2.width = 1600; c2.height = Math.round(1600 * vb[3] / vb[2]);
+        const x2 = c2.getContext('2d'); x2.filter = blur; x2.drawImage(img, 0, 0, c2.width, c2.height); return c2; };
+      [draw('none'), draw('blur(22px)')].forEach((c2, unit) => {
+        gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, c2);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      });
+      gl.uniform1i(U('uLogo'), 0); gl.uniform1i(U('uBlur'), 1);
+      cv.lacU = U; run(U);
+    };
+    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(LOGO);
+  });
+})();
+</script>
+
+<script id="frag" type="x-shader/x-fragment">
+precision highp float;
+uniform float uT, uIri, uK, uWob, uLum, uTeinte;
+uniform vec4 uA, uB; // x, y, rayon, pointe
+uniform vec3 uDoigt, uOnde; // x, y, force ; x, y, âge
+
+float smin(float a, float b, float k) { float h = max(k - abs(a - b), 0.) / k; return min(a, b) - h * h * k * .25; }
+
+float goutte(vec3 p, vec4 g) {
+  vec3 q = p - vec3(g.xy, 0.);
+  float r = g.z, t = g.w;
+  float w = uWob * r * .022 * (sin(q.y / r * 4.5 + uT * 2.1) + sin(q.x / r * 3.7 - uT * 1.7));
+  vec2 vers = p.xy - uDoigt.xy;
+  w -= uDoigt.z * r * .15 * exp(-dot(vers, vers) / (r * r * .4));
+  if (uOnde.z < 2.5) {
+    float l = length(p.xy - uOnde.xy) / r;
+    w += r * .045 * sin(l * 13. - uOnde.z * 17.) * exp(-uOnde.z * 2.6 - l * 1.1);
+  }
+  float corps = length(q) - r + w;
+  float pointe = length(q - vec3(0., r * (.35 + .95 * t), 0.)) - r * .1;
+  return smin(corps, pointe, r * (.2 + .75 * t));
+}
+
+float carte(vec3 p) {
+  float d = 1e5;
+  if (uA.z > .5) d = goutte(p, uA);
+  if (uB.z > .5) d = smin(d, goutte(p, uB), uK);
+  return d;
+}
+
+vec3 normale(vec3 p) {
+  vec2 e = vec2(.6, -.6);
+  return normalize(e.xyy * carte(p + e.xyy) + e.yyx * carte(p + e.yyx) + e.yxy * carte(p + e.yxy) + e.xxx * carte(p + e.xxx));
+}
+
+float ombre(vec2 p, vec4 g) {
+  if (g.z < .5) return 0.;
+  vec2 s = (p - g.xy - vec2(g.z * .12, -g.z * 1.14)) / vec2(g.z * .92, g.z * .24);
+  return exp(-dot(s, s)) * .2;
+}
+
+void main() {
+  vec2 p = gl_FragCoord.xy;
+  // Les pixels loin des gouttes sortent tout de suite, c'est ce qui garde le shader tenable sur téléphone.
+  float da = uA.z > .5 ? length(p - uA.xy - vec2(0., uA.z * .3)) / uA.z : 9.;
+  float db = uB.z > .5 ? length(p - uB.xy - vec2(0., uB.z * .3)) / uB.z : 9.;
+  if (min(da, db) > 2.3) { gl_FragColor = vec4(0.); return; }
+
+  float zMax = max(uA.z, uB.z) * 1.7;
+  float z = zMax, proche = 1e5, zProche = z;
+  for (int i = 0; i < 34; i++) {
+    float d = carte(vec3(p, z));
+    if (d < proche) { proche = d; zProche = z; }
+    if (d < .2) break;
+    z -= d * .85;
+    if (z < -zMax) break;
+  }
+  float couvre = clamp(1. - proche, 0., 1.);
+  float o = ombre(p, uA) + ombre(p, uB);
+  vec4 sol = vec4(vec3(.72, .3, .42) * o, o);
+  if (couvre <= 0.) { gl_FragColor = sol; return; }
+
+  vec3 n = normale(vec3(p, zProche));
+  vec3 v = vec3(0., 0., 1.);
+  vec3 r = reflect(-v, n);
+  float fres = pow(1. - clamp(n.z, 0., 1.), 2.1);
+
+  vec3 ciel = mix(vec3(1., .79, .7), vec3(.98, .72, .84), .5 + .5 * r.y);
+  vec3 c = mix(vec3(1., .975, .965), ciel, .28 + .55 * fres);
+
+  float caustique = pow(max(dot(n, normalize(vec3(.34, -.78, .52))), 0.), 3.);
+  c += vec3(1., .62, .46) * caustique * .34;
+
+  float film = (1. - n.z) * 3.2 + r.x * 1.4 + r.y * .8 + uT * .18 + uLum * length(p - uDoigt.xy) / 260.;
+  vec3 irise = .68 + .32 * cos(6.2832 * (film + vec3(0., .33, .67)));
+  c = mix(c, irise, uIri * smoothstep(.02, .7, fres + .12));
+
+  c = mix(c, vec3(.66, .3, .44), pow(fres, 3.2) * .62);
+
+  // Same pearl, dyed with the brand gradient for the menu.
+  if (uTeinte > 0.) {
+    float m = clamp(.5 - .55 * n.y + .3 * n.x, 0., 1.);
+    vec3 teinte = m < .6 ? mix(vec3(1., .7, .59), vec3(.84, .29, .45), m / .6) : mix(vec3(.84, .29, .45), vec3(.59, .12, .25), (m - .6) / .4);
+    c = mix(c, teinte + caustique * .1, uTeinte);
+  }
+
+  vec3 lumiere = mix(vec3(-.5, .72, .62), vec3((uDoigt.xy - p) / (max(uA.z, uB.z) * 1.5), .8), uLum);
+  vec3 h = normalize(normalize(lumiere) + v);
+  float spec = pow(max(dot(n, h), 0.), 170.) + pow(max(dot(n, h), 0.), 26.) * .16;
+  float spec2 = pow(max(dot(n, normalize(normalize(vec3(.6, -.5, .55)) + v)), 0.), 90.) * .4;
+
+  float a = mix(.42, .97, smoothstep(0., .8, fres)) + caustique * .14;
+  a = clamp(max(a, uTeinte), 0., 1.);
+  vec3 pre = c * a + vec3(1.) * (spec + spec2);
+  float alpha = clamp(a + spec + spec2, 0., 1.);
+  vec4 g = vec4(min(pre, vec3(alpha)), alpha);
+  gl_FragColor = mix(sol, g, couvre);
+}
+</script>
+
+<script>
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const calme = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const tel = $("#tel"), toile = $("#gl");
+const dpr = Math.min(devicePixelRatio || 1, 2);
+
+const OPTIONS_GL = { alpha: true, premultipliedAlpha: true, antialias: false, powerPreference: "low-power" };
+const programme = ctx => {
+  const shader = (type, src) => {
+    const s = ctx.createShader(type);
+    ctx.shaderSource(s, src); ctx.compileShader(s);
+    if (!ctx.getShaderParameter(s, ctx.COMPILE_STATUS)) console.error(ctx.getShaderInfoLog(s));
+    return s;
+  };
+  const prog = ctx.createProgram();
+  ctx.attachShader(prog, shader(ctx.VERTEX_SHADER, "attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}"));
+  ctx.attachShader(prog, shader(ctx.FRAGMENT_SHADER, $("#frag").textContent));
+  ctx.linkProgram(prog); ctx.useProgram(prog);
+  ctx.bindBuffer(ctx.ARRAY_BUFFER, ctx.createBuffer());
+  ctx.bufferData(ctx.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), ctx.STATIC_DRAW);
+  const position = ctx.getAttribLocation(prog, "a");
+  ctx.enableVertexAttribArray(position);
+  ctx.vertexAttribPointer(position, 2, ctx.FLOAT, false, 0, 0);
+  return Object.fromEntries(["uDoigt", "uOnde", "uLum", "uT", "uIri", "uK", "uWob", "uTeinte", "uA", "uB"].map(n => [n, ctx.getUniformLocation(prog, n)]));
+};
+const gl = toile.getContext("webgl", OPTIONS_GL);
+const toileBarre = $("#glBarre"), HB = 130;
+const glB = gl && toileBarre.getContext("webgl", OPTIONS_GL);
+const U = gl ? programme(gl) : null, UB = glB ? programme(glB) : null;
+if (!UB) { tel.classList.add("nogl"); toileBarre.hidden = true; }
+
+let W = 390, H = 844;
+const dimensionner = () => {
+  W = tel.clientWidth; H = tel.clientHeight;
+  toile.width = W * dpr; toile.height = H * dpr;
+  if (gl) gl.viewport(0, 0, toile.width, toile.height);
+  if (glB) { toileBarre.width = W * dpr; toileBarre.height = HB * dpr; glB.viewport(0, 0, toileBarre.width, toileBarre.height); }
+};
+new ResizeObserver(dimensionner).observe(tel);
+dimensionner();
+
+const goutte = el => ({ el, x: 195, y: -160, r: 0, p: 0, vx: 0, vy: 0, vr: 0, lx: 0, ly: 0, cale: false, base: 0 });
+const A = goutte($("#ga")), B = goutte($("#gb"));
+const barre = { x: 0, v: 0, vise: 0, pret: false, sale: true, vole: false, wob: .6, onde: -1e4 };
+const queue = { x: 0, v: 0 };
+const fondBarre = $("#fondBarre"), bulle = $("#bulle");
+const anim = { iri: 0, iriV: .0, k: 1, wob: 1, wobRepos: 1 };
+const doigt = { x: 0, y: 0, la: false, force: 0, lum: 0 };
+const onde = { x: 0, y: 0, t: -1e4 };
+let tiree = null;
+let ouvre = null;
+
+const cible = (lettre) => {
+  const e = $(`.ecran.actif [data-goutte="${lettre}"]`);
+  if (!e || !e.offsetParent) return null;
+  const c = e.getBoundingClientRect(), t = tel.getBoundingClientRect();
+  return { x: c.left - t.left + c.width / 2, y: c.top - t.top + c.height / 2, r: Math.min(c.width, c.height) * .46 };
+};
+
+const ressort = (g, c, dt) => {
+  if (!c) c = { x: g.x, y: g.y, r: 0 };
+  if (g.cale || calme) { Object.assign(g, { x: c.x, y: c.y, r: c.r, vx: 0, vy: 0, vr: 0 }); return; }
+  const k = 150, a = 15;
+  g.vx += (k * (c.x - g.x) - a * g.vx) * dt; g.x += g.vx * dt;
+  g.vy += (k * (c.y - g.y) - a * g.vy) * dt; g.y += g.vy * dt;
+  g.vr += (240 * (c.r - g.r) - 24 * g.vr) * dt; g.r = Math.max(0, g.r + g.vr * dt);
+  if (g !== tiree && Math.hypot(c.x - g.x, c.y - g.y, g.vx / 20, g.vy / 20) < .6 && Math.abs(c.r - g.r) < .4) g.cale = true;
+};
+
+const placer = e => { const t = tel.getBoundingClientRect(); doigt.x = e.clientX - t.left; doigt.y = e.clientY - t.top; doigt.la = true; };
+tel.addEventListener("pointermove", placer);
+tel.addEventListener("pointerleave", () => { if (!tiree) doigt.la = false; });
+tel.addEventListener("pointerdown", e => {
+  placer(e);
+  if (e.target.closest(".feuille, .onglets, .voile, .splash")) return;
+  tiree = [A, B].find(g => g.r > 10 && Math.hypot(doigt.x - g.x, doigt.y - g.y) < g.r * 1.1) || null;
+  if (tiree) { tiree.cale = false; tel.setPointerCapture(e.pointerId); }
+});
+const lacher = e => {
+  if (tiree) {
+    tiree.cale = false; tiree = null;
+    Object.assign(onde, { x: doigt.x, y: doigt.y, t: performance.now() });
+    anim.wob = 3;
+  }
+  if (e.pointerType !== "mouse") doigt.la = false;
+};
+tel.addEventListener("pointerup", lacher);
+tel.addEventListener("pointercancel", lacher);
+
+const lancer = (g) => { g.cale = false; };
+let ecran = "accueil";
+let dernier = performance.now();
+
+// Spring on transform only, so a second tap retargets from the live position and speed.
+function bouger(dt) {
+  if (!barre.pret) return;
+  if (calme) { barre.x = barre.vise; barre.v = 0; queue.x = barre.x; queue.v = 0; }
+  else {
+    barre.v += (240 * (barre.vise - barre.x) - 25 * barre.v) * dt;
+    barre.x += barre.v * dt;
+    if (Math.abs(barre.vise - barre.x) < .1 && Math.abs(barre.v) < 2) { barre.x = barre.vise; barre.v = 0; }
+    // A softer spring drags a second bead behind, so the pearl melts along the bar and gathers back on landing.
+    queue.v += (120 * (barre.x - queue.x) - 17 * queue.v) * dt;
+    queue.x = Math.max(barre.x - 58, Math.min(barre.x + 58, queue.x + queue.v * dt));
+    if (Math.abs(barre.x - queue.x) < .1 && Math.abs(queue.v) < 2 && !barre.v) { queue.x = barre.x; queue.v = 0; }
+  }
+  const vitesse = Math.abs(barre.v), ecart = Math.abs(barre.x - queue.x), enfonce = Math.min(26, vitesse / 60);
+  if (vitesse > 300) barre.vole = true;
+  if (barre.vole && vitesse < 40) { barre.vole = false; barre.onde = performance.now(); barre.wob = 3.2; }
+  barre.wob += (.6 - barre.wob) * Math.min(1, dt * 3.5);
+  fondBarre.style.transform = `translate3d(${barre.x - 800}px,0,0)`;
+  // The pearl sinks into the bar while it travels and rises as it lands.
+  bulle.style.transform = `translate3d(${barre.x - 27}px,${-24 + enfonce}px,0)`;
+  if (!UB || !(barre.sale || vitesse > .5 || ecart > .1 || Math.abs(queue.v) > .5 || barre.wob > .62)) return;
+  barre.sale = false;
+  const maintenant = performance.now(), y = HB - 47 - enfonce;
+  glB.uniform4f(UB.uA, barre.x * dpr, y * dpr, (27 - Math.min(5, vitesse / 420)) * dpr, .75);
+  glB.uniform4f(UB.uB, queue.x * dpr, (y - 2) * dpr, (ecart > .5 ? Math.min(19, 8 + ecart * .4) : 0) * dpr, 0);
+  glB.uniform1f(UB.uK, Math.max(1, Math.min(30, ecart * .8)) * dpr);
+  glB.uniform3f(UB.uDoigt, 0, 0, 0);
+  glB.uniform3f(UB.uOnde, barre.x * dpr, y * dpr, calme ? 9 : (maintenant - barre.onde) / 1000);
+  glB.uniform1f(UB.uLum, 0);
+  glB.uniform1f(UB.uT, calme ? 0 : maintenant / 1000);
+  glB.uniform1f(UB.uIri, .1);
+  glB.uniform1f(UB.uWob, calme ? 0 : barre.wob);
+  glB.uniform1f(UB.uTeinte, 1);
+  glB.clear(glB.COLOR_BUFFER_BIT);
+  glB.drawArrays(glB.TRIANGLES, 0, 3);
+}
+const viser = () => {
+  const o = $('.onglet[aria-current="page"]');
+  if (!o) return;
+  barre.vise = o.offsetLeft + o.offsetWidth / 2;
+  if (!barre.pret) { barre.x = queue.x = barre.vise; barre.pret = true; }
+  barre.sale = true;
+};
+
+function image(t) {
+  const dt = Math.min((t - dernier) / 1000, 1 / 30); dernier = t;
+  const vers = (g, c) => g === tiree && c ? { ...c, x: doigt.x, y: doigt.y } : c;
+  if (ouvre) ouvre(t); else ressort(A, vers(A, cible("a")), dt);
+  ressort(B, vers(B, cible("b")), dt);
+  const flotte = (ecran === "accueil" || ecran === "profil") && !calme ? Math.sin(t / 1100) * 4 : 0;
+  let proche = false;
+  for (const g of [A, B]) {
+    const vise = g.base + Math.min(.85, Math.abs(g.vy) / 1100);
+    g.p += (vise - g.p) * Math.min(1, dt * 14);
+    const dx = doigt.x - g.x, dy = doigt.y - g.y, d = Math.hypot(dx, dy);
+    const pres = doigt.la && g.r > 10 && d < g.r * 1.7 && !calme;
+    proche ||= pres;
+    g.lx += ((pres ? dx * .13 : 0) - g.lx) * Math.min(1, dt * 9);
+    g.ly += ((pres ? dy * .13 : 0) - g.ly) * Math.min(1, dt * 9);
+    const x = g.x + g.lx, y = g.y + g.ly + flotte, s = g.r / 50;
+    g.el.style.transform = `translate(${x}px,${y}px) scale(${s})`;
+    if (U) gl.uniform4f(g === A ? U.uA : U.uB, x * dpr, (H - y) * dpr, g.r * dpr, g.p);
+  }
+  anim.iri += (Math.max(anim.iriV, proche ? .5 : 0) - anim.iri) * Math.min(1, dt * 5);
+  anim.k += ((B.r > 2 ? 30 : 1) - anim.k) * Math.min(1, dt * 4);
+  anim.wob += (anim.wobRepos - anim.wob) * Math.min(1, dt * 2.5);
+  doigt.force += ((proche ? 1 : 0) - doigt.force) * Math.min(1, dt * 8);
+  doigt.lum += ((doigt.la ? 1 : 0) - doigt.lum) * Math.min(1, dt * 6);
+  bouger(dt);
+  if (U) {
+    gl.uniform3f(U.uDoigt, doigt.x * dpr, (H - doigt.y) * dpr, doigt.force);
+    gl.uniform3f(U.uOnde, onde.x * dpr, (H - onde.y) * dpr, calme ? 9 : (t - onde.t) / 1000);
+    gl.uniform1f(U.uLum, doigt.lum);
+    gl.uniform1f(U.uT, calme ? 0 : t / 1000);
+    gl.uniform1f(U.uIri, anim.iri);
+    gl.uniform1f(U.uK, anim.k * dpr);
+    gl.uniform1f(U.uWob, calme ? 0 : anim.wob);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  }
+  requestAnimationFrame(image);
+}
+
+const consigne = (titre, detail) => { $("#etat").innerHTML = `<b>${titre}</b><small>${detail}</small>`; };
+const CODE_DEMO = "8809416470009";
+function detecter() {
+  const v = $("#viseur");
+  v.classList.add("saisi");
+  consigne("Code détecté", CODE_DEMO);
+  setTimeout(() => { v.classList.remove("saisi"); aller("resultat", { chute: true }); }, calme ? 0 : 700);
+}
+
+const compter = (el, fin, then) => {
+  if (calme) { el.textContent = fin; return then?.(); }
+  const debut = performance.now(), duree = 700;
+  (function pas(t) {
+    const q = Math.min((t - debut) / duree, 1);
+    el.textContent = Math.round(fin * (1 - Math.pow(1 - q, 4)));
+    q < 1 ? requestAnimationFrame(pas) : then?.();
+  })(debut);
+};
+const eclat = () => { anim.iriV = 1; setTimeout(() => { anim.iriV = .3; }, 900); };
+
+let minuteurs = [];
+const plus_tard = (f, ms) => minuteurs.push(setTimeout(f, calme ? 0 : ms));
+
+function resetResultat() {
+  $("#gouttes").classList.remove("deux");
+  $("#verdict").hidden = true; $("#raisons-peau").hidden = true; $("#compat").hidden = false;
+  A.el.classList.remove("vue"); B.el.classList.remove("vue");
+  $("#annonce").textContent = "Note produit : 14 sur 20.";
+}
+
+function aller(nom, { chute = false, compat = false } = {}) {
+  minuteurs.forEach(clearTimeout); minuteurs = [];
+  ecran = nom; tel.dataset.ecran = nom;
+  $$(".ecran").forEach(e => { const a = e.id === nom; e.classList.toggle("actif", a); e.inert = !a; if (a) e.scrollTop = 0; });
+  $$(".onglet").forEach(o => o.removeAttribute("aria-current"));
+  const actif = $(`.onglet[data-onglet="${nom === "resultat" ? "scanner" : nom}"]`);
+  actif.setAttribute("aria-current", "page");
+  const icone = actif.querySelector("use").getAttribute("href");
+  if ($("#bulleIcone").getAttribute("href") !== icone) {
+    $("#bulleIcone").setAttribute("href", icone);
+    if (!calme) $("#bulleIcone").parentNode.animate([{ opacity: .2, filter: "blur(2px)" }, { opacity: 1, filter: "blur(0)" }], { duration: 180, easing: "cubic-bezier(.23, 1, .32, 1)" });
+  }
+  viser();
+  try { history.replaceState(null, "", `${location.search}#${nom}`); } catch {}
+  resetResultat();
+  $("#sa").textContent = "/20";
+  tiree = null;
+  consigne("Vise le code-barres du produit", "Garde le téléphone stable");
+  lancer(A); lancer(B);
+  A.base = nom === "accueil" || nom === "profil" ? .9 : nom === "routine" ? .45 : 0;
+  anim.wobRepos = nom === "accueil" || nom === "profil" ? 1 : .35;
+  if (nom === "routine") { majRoutine(); A.el.classList.add("vue"); }
+  anim.iriV = 0;
+  if (nom === "resultat") {
+    if (chute) {
+      A.x = W / 2; A.y = -150; A.vy = 200; A.vx = 0; A.r = 56;
+      const photo = $("#photo");
+      photo.classList.remove("apparait"); void photo.offsetWidth; photo.classList.add("apparait");
+    }
+    plus_tard(() => { A.el.classList.add("vue"); compter($("#na"), 14); eclat(); }, chute ? 620 : 240);
+    if (compat) plus_tard(voirCompat, 300);
+  }
+}
+
+function voirCompat() {
+  $("#gouttes").classList.add("deux");
+  $("#compat").hidden = true;
+  lancer(A); lancer(B);
+  B.x = W + 120; B.y = A.y; B.vx = 0; B.vy = 0; B.r = 40;
+  A.el.classList.add("vue");
+  $("#na").textContent = 14;
+  plus_tard(() => {
+    B.el.classList.add("vue");
+    compter($("#nb"), 11);
+    eclat();
+    const v = $("#verdict"), r = $("#raisons-peau");
+    v.hidden = false; r.hidden = false;
+    v.classList.add("apparait"); r.classList.add("apparait");
+    $("#annonce").textContent = "Ma peau : 11 sur 20. Verdict : Prudence.";
+  }, 560);
+}
+
+let minuteToast;
+const annoncer = texte => {
+  const t = $("#toast");
+  t.textContent = texte; t.classList.add("vu");
+  clearTimeout(minuteToast); minuteToast = setTimeout(() => t.classList.remove("vu"), 2200);
+};
+
+document.addEventListener("click", e => {
+  const b = e.target.closest("button");
+  if (!b) return;
+  if (b.dataset.va || b.dataset.onglet) { fermer(); aller(b.dataset.va || b.dataset.onglet); }
+  else if (b.dataset.fiche !== undefined) annoncer("Seule la fiche de Sérum Éclat est dessinée dans la maquette.");
+  else if (b.dataset.moment) choisirMoment(b.dataset.moment);
+  else if (b.dataset.etape) cocher(+b.dataset.etape);
+  else if (b.dataset.filtre) { filtre = b.dataset.filtre; $$(".filtre").forEach(f => f.setAttribute("aria-pressed", f === b)); rendreFil(); poserTraits(); }
+  else if (b.dataset.jaime) aimer(b);
+  else if (b.dataset.coms) { const l = $(`#coms-${b.dataset.coms}`); l.hidden = !l.hidden; b.setAttribute("aria-expanded", !l.hidden); }
+  else if (b.dataset.menu) menuPost(POSTS.find(p => p.id === +b.dataset.menu), b);
+  else if (b.dataset.action) agirPost(b.dataset.action);
+  else if (b.dataset.liste) ouvrirListe(b.dataset.liste, b);
+  else if (b.matches(".choix")) choisir(b);
+  else if (b.getAttribute("role") === "switch") b.setAttribute("aria-checked", b.getAttribute("aria-checked") !== "true");
+  else if (b.id === "ecrire") ouvrirEcrire(b);
+  else if (b.id === "publier") publier();
+  else if (b.id === "deconnexion") annoncer("La connexion sera dessinée avec l'écran d'entrée.");
+  else if (b.dataset.bientot) annoncer(`${b.dataset.bientot} arrive dans la suite des maquettes.`);
+  else if (b.id === "scan") detecter();
+  else if (b.id === "saisir") ouvrirCode(b);
+  else if (b.dataset.plus) PLUS[b.dataset.plus](b);
+  else if (b.dataset.question) repondre(+b.dataset.question);
+  else if (b.id === "compat") voirCompat();
+});
+document.addEventListener("submit", e => {
+  e.preventDefault();
+  if (e.target.id === "formCode") chercherCode();
+  if (e.target.id === "formChat") poser();
+});
+
+window.addEventListener("resize", () => { lancer(A); lancer(B); viser(); });
+
+const esc = t => String(t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const nb = n => n.toLocaleString("fr-FR");
+const pluriel = (n, mot) => `${nb(n)} ${mot}${n > 1 ? "s" : ""}`;
+const VERDICT = { bon: "Compatible", prudence: "Prudence", mauvais: "Déconseillé", inconnu: "Inconnu" };
+
+// Sample data only. ?data=pire and ?data=vide swap the fixture for the worst realistic case and the empty case.
+let PRODUITS = [
+  { id: "serum", nom: "Sérum Éclat", marque: "Maison Fictive", note: 14, v: "prudence", img: "serum" },
+  { id: "gel", nom: "Gel Doux", marque: "Atelier Exemple", note: 17, v: "bon", img: "tube" },
+  { id: "creme", nom: "Crème Riche", marque: "Maison Fictive", note: 8, v: "mauvais", img: "pot" },
+  { id: "baume", nom: "Baume Nuit", marque: "Analyse insuffisante", note: null, v: "inconnu", img: "baume" },
+];
+let POSTS = [
+  { id: 1, auteur: "Inès", peau: "Peau sensible", quand: "il y a 2 h", texte: "Le Gel Doux ne m'a pas piqué les joues, même les jours où ma peau réagit à tout. Trois semaines d'essai pour l'instant.", produit: "gel", tags: ["sensible", "routine"], gouttes: 24, coms: [["Maya", "Tu l'utilises matin et soir ?"], ["Inès", "Seulement le soir."]] },
+  { id: 2, auteur: "Camille", peau: "Peau mixte", quand: "hier", texte: "Six semaines sans parfum dans ma routine. Mes rougeurs ont baissé, mais ça reste mon expérience.", avap: true, tags: ["avant", "sensible"], gouttes: 58, coms: [["Noor", "Merci de l'avoir partagé."]] },
+  { id: 3, auteur: "Sam", peau: "Peau grasse", quand: "il y a 3 j", texte: "La Crème Riche était trop lourde pour moi. Je l'ai arrêtée au bout de deux semaines.", produit: "creme", tags: ["routine"], gouttes: 7, coms: [] },
+];
+const donnees = new URLSearchParams(location.search).get("data");
+if (donnees === "vide") { PRODUITS = []; POSTS = []; }
+if (donnees === "pire") {
+  PRODUITS = [
+    { id: "serum", nom: "Sérum Concentré Hyaluronique Triple Action Réparateur de Nuit Intense", marque: "Laboratoires Dermatologiques de Saint-Germain-en-Laye", note: 20, v: "bon", img: "serum" },
+    { id: "gel", nom: "Gel", marque: "", note: 0, v: "mauvais", img: "tube" },
+    { id: "creme", nom: "Crème Hydratante Peaux Déshydratées et Sensibilisées", marque: "Maison Fictive", note: 9, v: "prudence", img: "pot" },
+    { id: "baume", nom: "Baume", marque: "Analyse insuffisante", note: null, v: "inconnu", img: "baume" },
+  ];
+  POSTS = [
+    { id: 1, auteur: "Aleksandra Wiśniewska-Kowalczyk", peau: "Peau mixte, sensible et déshydratée", quand: "il y a 11 mois", texte: "J'ai testé ça pendant un an et je garde tous mes relevés ici : https://exemple-de-blog-beaute-tres-long.example.com/routine/2026/peau-sensible/avant-apres/semaine-52 <b>sans gras</b> & sans promesse. ".repeat(2), produit: "serum", avap: true, tags: ["sensible", "avant"], gouttes: 1284, coms: [["Bartholomew Fitzgerald-Montgomery", "Merci ! ".repeat(20)]] },
+    { id: 2, auteur: "Jo", peau: "", quand: "à l'instant", texte: "Ok.", tags: [], gouttes: 1, coms: [["Jo", "Oui"]] },
+  ];
+  $("#prenom").textContent = $("#profilNom").textContent = "Aleksandra Wiśniewska-Kowalczyk";
+  $("#profilAvatar").textContent = "A";
+}
+
+const parId = id => PRODUITS.find(p => p.id === id);
+const sg = p => `<span class="sg"><svg aria-hidden="true"><use href="#sg-${p.v}"/></svg><b aria-hidden="true">${p.note ?? "?"}</b><span class="sr">${p.note === null ? "Pas de note" : `${p.note} sur 20`}</span></span>`;
+const verdict = v => `<span class="verdict v-${v}"><svg class="vg" aria-hidden="true"><use href="#v-${v}"/></svg>${VERDICT[v]}</span>`;
+const fiche = p => p.id === "serum" ? 'data-va="resultat"' : "data-fiche";
+const ligne = p => `<li><button class="ligne" ${fiche(p)}><span class="vignette"><svg aria-hidden="true"><use href="#p-${p.img}"/></svg></span><span class="nom">${esc(p.nom)}${p.marque ? `<small>${esc(p.marque)}</small>` : ""}${verdict(p.v)}</span>${sg(p)}</button></li>`;
+const VIDE_SCAN = `<li class="vide">Rien ici pour l'instant. Scanne un produit pour commencer.</li>`;
+
+$("#derniers").innerHTML = PRODUITS.map(ligne).join("") || VIDE_SCAN;
+$("#etagere").innerHTML = PRODUITS.map(p => `<li><button class="tuile" ${fiche(p)}><span class="vignette"><svg aria-hidden="true"><use href="#p-${p.img}"/></svg></span>${sg(p)}<b>${esc(p.nom)}</b>${verdict(p.v)}</button></li>`).join("")
+  + `<li><button class="tuile ajout" data-onglet="scanner"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg>Ajouter un produit</button></li>`;
+
+const ROUTINES = {
+  matin: [["Nettoyant", "gel", false], ["Sérum", "serum", false], ["Crème de jour", "creme", false], ["Écran solaire", null, false]],
+  soir: [["Démaquillant", "baume", true], ["Nettoyant", "gel", true], ["Sérum", "serum", true], ["Crème de nuit", "creme", false]],
+};
+let moment_ = "soir";
+function majRoutine() {
+  const e = ROUTINES[moment_], faits = e.filter(x => x[2]).length, reste = e.find(x => !x[2]);
+  $("#etapes").innerHTML = e.map(([nom, id, fait], i) => `<li><button class="etape" data-etape="${i + 1}" aria-pressed="${fait}"><svg class="coche" aria-hidden="true"><use href="#${fait ? "v-bon" : "v-vide"}"/></svg><span class="nom">${esc(nom)}<small>${parId(id) ? esc(parId(id).nom) : "Aucun produit choisi"}</small></span></button></li>`).join("");
+  const texte = reste ? `Prochaine étape : ${reste[0].toLowerCase()}` : "Routine terminée";
+  $("#routine-etat").textContent = texte;
+  if (moment_ === "soir") $("#routine-accueil").textContent = texte;
+  $("#na").textContent = faits; $("#sa").textContent = `/${e.length}`;
+  return reste;
+}
+function choisirMoment(m) {
+  moment_ = m;
+  $$("[data-moment]").forEach(b => b.setAttribute("aria-pressed", b.dataset.moment === m));
+  $("#basculeRepere").style.transform = m === "soir" ? "translateX(100%)" : "none";
+  majRoutine();
+}
+function cocher(n) {
+  const x = ROUTINES[moment_][n - 1];
+  x[2] = !x[2];
+  const reste = majRoutine();
+  Object.assign(onde, { x: A.x, y: A.y, t: performance.now() });
+  anim.wob = 3;
+  if (!reste) eclat();
+  $(`[data-etape="${n}"]`).focus({ preventScroll: true });
+}
+$("#basculeRepere").style.transform = "translateX(100%)";
+
+let filtre = "tout";
+const bloques = new Set();
+const mesAvis = [];
+const AVAP = `<div class="avap"><div class="peau avant"></div><div class="peau apres"></div><span class="trait"></span><span class="marque-av g">Avant, exemple</span><span class="marque-av d">Après, exemple</span><input type="range" min="0" max="100" value="50" aria-label="Comparer avant et après, image d'exemple"></div>`;
+const carte = p => {
+  const lie = p.produit && parId(p.produit);
+  return `<li class="post" id="post-${p.id}">
+    <div class="auteur"><span class="avatar" aria-hidden="true">${esc([...p.auteur][0])}</span><div><b>${esc(p.auteur)}</b><small>${[p.peau, p.quand].filter(Boolean).map(esc).join(" · ")}</small></div><button class="plus" data-menu="${p.id}" aria-label="Options de l'avis de ${esc(p.auteur)}"><svg class="i" aria-hidden="true"><use href="#i-points"/></svg></button></div>
+    <p class="texte-post">${esc(p.texte)}</p>
+    ${p.avap ? AVAP : ""}
+    ${lie ? `<button class="produit-lie" ${fiche(lie)}><span class="vignette"><svg aria-hidden="true"><use href="#p-${lie.img}"/></svg></span><span class="nom">${esc(lie.nom)}</span>${sg(lie)}</button>` : ""}
+    <div class="actions">
+      <button class="action" data-jaime="${p.id}" aria-pressed="${!!p.aime}" aria-label="Utile, ${nb(p.gouttes)}"><svg class="i" aria-hidden="true"><use href="#i-goutte"/></svg><span>${nb(p.gouttes)}</span></button>
+      <button class="action" data-coms="${p.id}" aria-expanded="false" aria-controls="coms-${p.id}"><svg class="i" aria-hidden="true"><use href="#i-discussion"/></svg>${pluriel(p.coms.length, "réponse")}</button>
+    </div>
+    <ul class="coms" id="coms-${p.id}" hidden>${p.coms.map(([q, t]) => `<li><b>${esc(q)}</b> ${esc(t)}</li>`).join("") || `<li>Pas encore de réponse.</li>`}</ul>
+  </li>`;
+};
+function rendreFil() {
+  const l = POSTS.filter(p => !bloques.has(p.auteur) && !p.masque && (filtre === "tout" || p.tags.includes(filtre)));
+  $("#fil").innerHTML = l.map(carte).join("") || `<li class="vide">Aucun avis ici pour l'instant. Partage le premier.</li>`;
+}
+rendreFil();
+$("#fil").addEventListener("input", e => {
+  const a = e.target.closest(".avap"), v = +e.target.value;
+  a.querySelector(".apres").style.clipPath = `inset(0 0 0 ${v}%)`;
+  a.querySelector(".trait").style.transform = `translateX(${a.clientWidth * v / 100}px)`;
+});
+const poserTraits = () => $$(".avap").forEach(a => { a.querySelector(".trait").style.transform = `translateX(${a.clientWidth * a.querySelector("input").value / 100}px)`; });
+function aimer(b) {
+  const p = POSTS.find(x => x.id === +b.dataset.jaime);
+  p.aime = !p.aime; p.gouttes += p.aime ? 1 : -1;
+  b.setAttribute("aria-pressed", p.aime);
+  b.setAttribute("aria-label", `Utile, ${nb(p.gouttes)}`);
+  b.querySelector("span").textContent = nb(p.gouttes);
+  if (p.aime && !calme) b.querySelector("svg").animate([{ transform: "scale(.72)" }, { transform: "scale(1)" }], { duration: 220, easing: "cubic-bezier(.23, 1, .32, 1)" });
+}
+function choisir(b) {
+  const g = b.parentElement;
+  if (g.hasAttribute("data-unique")) $$(".choix", g).forEach(c => c.setAttribute("aria-pressed", c === b));
+  else b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") !== "true");
+  const faits = $$('.choix[aria-pressed="true"]', $("#profil")).map(c => c.textContent.toLowerCase());
+  $("#profilPeau").textContent = `Peau ${faits.join(faits.length > 2 ? ", " : " et ")}`;
+}
+
+const feuille = $("#feuille"), voile = $("#voile");
+let retourFocus = null, cibleMenu = null;
+function ouvrir(titre, html, source) {
+  retourFocus = source;
+  $("#feuilleTitre").textContent = titre;
+  $("#feuilleCorps").innerHTML = html;
+  feuille.inert = false; feuille.style.transform = "";
+  feuille.classList.add("ouverte"); voile.classList.add("vu");
+  $$(".ecran, .onglets").forEach(e => { e.dataset.etaitInert = e.inert; e.inert = true; });
+  ($("input, textarea, button:not(:disabled)", $("#feuilleCorps")))?.focus({ preventScroll: true });
+}
+function fermer() {
+  if (!feuille.classList.contains("ouverte")) return;
+  feuille.style.transform = "";
+  feuille.classList.remove("ouverte"); voile.classList.remove("vu");
+  feuille.inert = true;
+  $$(".ecran, .onglets").forEach(e => { e.inert = e.dataset.etaitInert === "true"; });
+  retourFocus?.isConnected && retourFocus.focus({ preventScroll: true });
+}
+voile.addEventListener("click", fermer);
+document.addEventListener("keydown", e => { if (e.key === "Escape") fermer(); });
+// Drag the sheet down by its handle: distance or a flick both close it.
+let tire = null;
+feuille.addEventListener("pointerdown", e => {
+  if (!e.target.closest(".poignee, h2")) return;
+  tire = { y: e.clientY, t: performance.now(), dy: 0 };
+  feuille.setPointerCapture(e.pointerId);
+  feuille.style.transition = "none";
+});
+feuille.addEventListener("pointermove", e => {
+  if (!tire) return;
+  const d = e.clientY - tire.y;
+  tire.dy = d;
+  feuille.style.transform = `translateY(${d > 0 ? d : d * 80 / (80 + Math.abs(d))}px)`;
+});
+const lacherFeuille = () => {
+  if (!tire) return;
+  const vite = tire.dy / (performance.now() - tire.t) > .5, loin = tire.dy > 90;
+  tire = null;
+  feuille.style.transition = "";
+  if (vite || loin) fermer(); else feuille.style.transform = "";
+};
+feuille.addEventListener("pointerup", lacherFeuille);
+feuille.addEventListener("pointercancel", lacherFeuille);
+
+const option = (action, icone, texte) => `<button class="reglage" data-action="${action}"><svg class="i" aria-hidden="true"><use href="#${icone}"/></svg><span>${esc(texte)}</span></button>`;
+function menuPost(p, source) {
+  cibleMenu = p;
+  ouvrir(`L'avis de ${p.auteur}`, `<ul class="liste" style="box-shadow:none;padding:0">
+    <li>${option("signaler", "i-drapeau", "Signaler cet avis")}</li>
+    <li>${option("masquer", "i-masquer", "Masquer cet avis")}</li>
+    <li>${option("bloquer", "i-bloquer", `Bloquer ${p.auteur}`)}</li></ul>`, source);
+}
+function agirPost(action) {
+  const p = cibleMenu;
+  if (action === "signaler") annoncer("Merci. L'équipe va relire cet avis.");
+  if (action === "masquer") { p.masque = true; annoncer("Avis masqué."); }
+  if (action === "bloquer") { bloques.add(p.auteur); annoncer(`${p.auteur} est bloqué·e.`); }
+  rendreFil(); poserTraits(); fermer();
+}
+function ouvrirEcrire(source) {
+  ouvrir("Partager mon avis", `<label for="avis">Ton expérience</label>
+    <textarea id="avis" maxlength="500" placeholder="Qu'as-tu remarqué sur ta peau ?"></textarea>
+    <p class="compteur"><span>Tes photos restent privées tant que tu ne les publies pas.</span><span id="reste">0/500</span></p>
+    <button class="cta" id="publier" disabled>Publier</button>`, source);
+  const t = $("#avis");
+  t.addEventListener("input", () => { $("#reste").textContent = `${t.value.length}/500`; $("#publier").disabled = !t.value.trim(); });
+}
+function publier() {
+  const texte = $("#avis").value.trim();
+  if (!texte) return;
+  const p = { id: Date.now(), auteur: $("#profilNom").textContent, peau: $("#profilPeau").textContent, quand: "à l'instant", texte, tags: [], gouttes: 0, coms: [] };
+  POSTS.unshift(p); mesAvis.unshift(p);
+  $("#nbAvis").textContent = mesAvis.length; $("#motAvis").textContent = "avis";
+  filtre = "tout"; $$(".filtre").forEach(f => f.setAttribute("aria-pressed", f.dataset.filtre === "tout"));
+  rendreFil(); poserTraits(); fermer();
+  $("#discussion").scrollTop = 0;
+  annoncer("Ton avis est publié.");
+}
+function ouvrirListe(type, source) {
+  const contenu = type === "avis"
+    ? (mesAvis.map(p => `<li class="vide" style="text-align:left">${esc(p.texte)}</li>`).join("") || `<li class="vide">Tu n'as encore rien publié.</li>`)
+    : ((type === "favoris" ? PRODUITS.slice(0, 2) : PRODUITS).map(ligne).join("") || VIDE_SCAN);
+  ouvrir({ avis: "Mes avis", favoris: "Favoris", historique: "Historique des scans" }[type], `<ul class="liste" style="box-shadow:none;padding:0">${contenu}</ul>${type === "avis" ? "" : '<p class="aide">Information, pas un avis médical.</p>'}`, source);
+}
+
+// EAN-8 and EAN-13: weights 1 and 3 alternate from the right, the total ends in 0.
+const codeValide = c => /^(\d{8}|\d{13})$/.test(c) && [...c].reduce((t, d, i) => t + d * ((c.length - i) % 2 ? 1 : 3), 0) % 10 === 0;
+function ouvrirCode(source) {
+  ouvrir("Saisir le code-barres", `<form id="formCode" novalidate><label for="code">Code EAN</label>
+    <input class="champ" id="code" inputmode="numeric" autocomplete="off" maxlength="13" placeholder="${CODE_DEMO}" aria-describedby="codeAide">
+    <p class="compteur" id="codeAide"><span>Les chiffres sous les barres, sans espace.</span></p>
+    <button class="cta" id="chercher" disabled>Rechercher</button></form>`, source);
+  const c = $("#code");
+  c.addEventListener("input", () => { c.value = c.value.replace(/\D/g, ""); c.removeAttribute("aria-invalid"); $("#codeAide").classList.remove("erreur"); $("#chercher").disabled = !c.value; });
+}
+function chercherCode() {
+  const c = $("#code"), aide = $("#codeAide");
+  const erreur = t => { c.setAttribute("aria-invalid", "true"); aide.classList.add("erreur"); aide.innerHTML = `<span role="alert">${t}</span>`; };
+  if (!codeValide(c.value)) return erreur("Ce code n'est pas valide : 8 ou 13 chiffres attendus.");
+  if (c.value !== CODE_DEMO) return erreur(`Produit absent de la maquette. Essaie ${CODE_DEMO}.`);
+  fermer(); detecter();
+}
+
+const PHASE = '<span class="tag-phase">Phase 2, exemple</span>';
+const verif = (v, titre, texte) => `<li><span class="signe v-${v}"><svg class="vg"><use href="#v-${v}"/></svg></span><div><b>${titre}</b><span>${texte}</span></div></li>`;
+const REPONSES = [
+  ["Puis-je l'utiliser tous les jours ?", "Oui si ta peau le tolère. Comme elle est sensible, commence un soir sur deux à cause du parfum et de l'alcool."],
+  ["Avec quoi éviter de le mélanger ?", "Rien d'interdit dans ta routine. Évite d'ajouter un autre produit parfumé le même soir."],
+  ["Pourquoi Prudence pour ma peau ?", "Le parfum et l'Alcohol Denat. peuvent irriter une peau sensible. La formule reste bonne, d'où le 14 sur 20."],
+];
+const bulleChat = (qui, texte) => { const f = $("#filChat"); f.insertAdjacentHTML("beforeend", `<p class="bulle-chat ${qui}">${esc(texte)}</p>`); f.lastElementChild.scrollIntoView({ block: "nearest" }); };
+function repondre(i) { bulleChat("moi", REPONSES[i][0]); bulleChat("ia", REPONSES[i][1]); }
+function poser() {
+  const c = $("#question"), q = c.value.trim();
+  if (!q) return;
+  c.value = "";
+  bulleChat("moi", q); bulleChat("ia", "Dans la maquette, seules les questions proposées ont une réponse.");
+}
+const PLUS = {
+  authenticite: source => ouvrir("Authenticité", `${PHASE}
+    <div class="verdict-feuille" style="background:var(--bon-fond)"><svg class="vg" style="color:var(--bon)"><use href="#v-bon"/></svg><div><b>Aucun signe de contrefaçon</b><span>Sur ce qu'on a pu vérifier.</span></div></div>
+    <ul class="verifs">${verif("bon", "Code-barres connu", "Il correspond à la marque et au format.")}${verif("bon", "Emballage", "Mentions et langue conformes à la photo.")}${verif("inconnu", "Numéro de lot", "Pas encore vérifié. Photographie-le pour le contrôler.")}</ul>
+    <p class="aide">Indicatif : seule la marque peut confirmer l'origine d'un produit.</p>`, source),
+  carbone: source => ouvrir("Impact carbone", `${PHASE}
+    <p class="chiffre-co2">1,8<small>kg CO₂e</small></p>
+    <p class="fourchette">Estimation, entre 1,4 et 2,2 kg pour ce flacon.</p>
+    <div class="repartition" aria-hidden="true"><i style="flex:45;background:var(--accent)"></i><i style="flex:35;background:var(--peche)"></i><i style="flex:20;background:var(--lilas)"></i></div>
+    <ul class="legende-co2"><li><i style="background:var(--accent)"></i><span>Emballage</span><b>45 %</b></li><li><i style="background:var(--peche)"></i><span>Transport depuis la Corée</span><b>35 %</b></li><li><i style="background:var(--lilas)"></i><span>Formule</span><b>20 %</b></li></ul>
+    <p class="aide">Calculé depuis le poids, l'emballage et le trajet, pas fourni par la marque.</p>`, source),
+  assistant: source => { const produit = source.dataset.produit; ouvrir("Assistant", `${PHASE}
+    <div class="fil-chat" id="filChat"><p class="bulle-chat ia">${produit ? "Je connais Sérum Éclat et ton profil de peau. Que veux-tu savoir ?" : "Pose ta question sur une formule ou un ingrédient. Je réponds selon ton profil de peau."}</p></div>
+    <div class="questions">${REPONSES.map(([q], i) => `<button type="button" class="filtre" data-question="${i}">${esc(q)}</button>`).join("")}</div>
+    <form class="ligne-chat" id="formChat"><input class="champ" id="question" maxlength="300" autocomplete="off" placeholder="Ta question" aria-label="Ta question"><button class="cta">Envoyer</button></form>
+    <p class="aide" style="margin-top:10px">Assistant IA : il peut se tromper, et ce n'est pas un avis médical.</p>`, source); },
+};
+
+const depart = location.hash.slice(1);
+if (depart === "compat") aller("resultat", { compat: true });
+else aller(["accueil", "scanner", "resultat", "routine", "discussion", "profil"].includes(depart) ? depart : "accueil");
+poserTraits();
+document.fonts?.ready.then(viser);
+requestAnimationFrame(image);
+
+// Splash « Le lac » : il joue jusqu'au bout (4,6 s) puis s'efface ; un toucher le passe.
+function ouverture() {
+  const s = $("#splash");
+  if (s.dataset.joue) return;
+  s.dataset.joue = "1"; s.hidden = false;
+  const SORTIE = "cubic-bezier(.23, 1, .32, 1)", DEPART = 4700;
+  const fondu = delay => s.animate([{ opacity: 1 }, { opacity: 0 }], { delay, duration: 420, easing: SORTIE, fill: "forwards" });
+  let fin;
+  if (calme || !window.lacSplash) fin = fondu(900);
+  else {
+    lacSplash($("#splashLac"));
+    fin = fondu(DEPART);
+    s.onclick = () => { fin.currentTime = Math.max(fin.currentTime, DEPART); };
+  }
+  fin.finished.then(() => {
+    fin.cancel();
+    s.hidden = true; delete s.dataset.joue;
+  });
+}
+ouverture();
+$("#rejouer").onclick = ouverture;
+</script>

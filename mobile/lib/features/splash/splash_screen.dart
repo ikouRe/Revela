@@ -1,118 +1,90 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 
-import '../../core/brand/revela_geometry.dart';
-import '../../core/brand/revela_mark.dart';
-import '../../core/brand/revela_wordmark.dart';
 import '../../core/theme/revela_colors.dart';
-import '../../core/theme/revela_motion.dart';
 
-/// "La rencontre": the rings glide together, the lens fills once they meet, the name arrives.
-/// Only on the very first launch (1.1 s, or a 300 ms fade with reduced motion). Later launches go
-/// straight to the app: the native launch screen is already Nuit, and an app opened several
-/// times a day must not make anyone wait.
+/// Splash « Le lac » : dix gouttes tombent dans un lac rose,
+/// la 10e est une goutte d'encre qui dessine « revela ».
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key, required this.next});
-
-  final WidgetBuilder next;
-
-  static const seenKey = 'splash_seen';
+  const SplashScreen({super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
-  late final AnimationController _t = AnimationController(vsync: this);
-  bool _ready = false;
-  bool _full = false;
-  bool _started = false;
+  /// Durée totale de l'animation, la valeur END du shader.
+  static const _duree = 4.6;
+
+  late final AnimationController _temps = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 4600),
+  );
+
+  ui.FragmentProgram? _programme;
+  ui.Image? _logo;
+  ui.Image? _flou;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_started) {
-      _started = true;
-      _run(MediaQuery.disableAnimationsOf(context));
-    }
+  void initState() {
+    super.initState();
+    _charger();
   }
 
-  Future<void> _run(bool reduceMotion) async {
-    final prefs = await SharedPreferences.getInstance();
-    final firstLaunch = !(prefs.getBool(SplashScreen.seenKey) ?? false);
-    await prefs.setBool(SplashScreen.seenKey, true);
+  Future<ui.Image> _image(String chemin) async {
+    final donnees = await rootBundle.load(chemin);
+    final codec = await ui.instantiateImageCodec(donnees.buffer.asUint8List());
+    return (await codec.getNextFrame()).image;
+  }
+
+  Future<void> _charger() async {
+    final programme = await ui.FragmentProgram.fromAsset('shaders/lac.frag');
+    final logo = await _image('assets/splash/revela.png');
+    final flou = await _image('assets/splash/revela-flou.png');
     if (!mounted) return;
-    if (!firstLaunch) return _open(Duration.zero);
     setState(() {
-      _ready = true;
-      _full = !reduceMotion;
+      _programme = programme;
+      _logo = logo;
+      _flou = flou;
     });
-    _t.duration = _full ? RevelaMotion.splashFull : RevelaMotion.splashReduced;
-    await _t.forward();
-    await Future<void>.delayed(RevelaMotion.splashHold);
-    if (mounted) _open(RevelaMotion.routeFade);
+
+    // Animations désactivées dans le téléphone (accessibilité) : on montre le nom tout de suite.
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _temps.value = 1;
+      await Future<void>.delayed(const Duration(milliseconds: 900));
+      _continuer();
+      return;
+    }
+    _temps.forward().whenComplete(_continuer);
   }
 
-  void _open(Duration fade) {
-    Navigator.of(context).pushReplacement(
-      PageRouteBuilder<void>(
-        pageBuilder: (context, _, _) => widget.next(context),
-        transitionDuration: fade,
-        transitionsBuilder: (_, animation, _, child) => FadeTransition(
-          opacity: CurvedAnimation(parent: animation, curve: RevelaMotion.easeOut),
-          child: child,
-        ),
-      ),
-    );
+  void _continuer() {
+    if (mounted) context.go('/home');
   }
 
   @override
   void dispose() {
-    _t.dispose();
+    _temps.dispose();
     super.dispose();
   }
 
-  /// A phase of the full splash; with reduced motion every phase is already complete.
-  Animation<double> _phase((double, double) range) => _full
-      ? CurvedAnimation(
-          parent: _t,
-          curve: Interval(range.$1, range.$2, curve: RevelaMotion.easeOut),
-        )
-      : kAlwaysCompleteAnimation;
-
   @override
   Widget build(BuildContext context) {
-    if (!_ready) return const Scaffold(backgroundColor: RevelaColors.nuit);
-    final width = MediaQuery.sizeOf(context).width * 0.42;
-    final name = _phase(RevelaMotion.splashName);
+    final programme = _programme;
     return Scaffold(
-      backgroundColor: RevelaColors.nuit,
-      body: Center(
-        child: FadeTransition(
-          // Reduced motion: the finished mark fades in as a whole.
-          opacity: _full ? kAlwaysCompleteAnimation : CurvedAnimation(parent: _t, curve: RevelaMotion.easeOut),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              FadeTransition(
-                opacity: _phase(RevelaMotion.splashRings), // the rings never pop in from the launch screen
-                child: CustomPaint(
-                  size: Size(
-                    width,
-                    width * (2 * RevelaGeometry.r2 + 7) / RevelaGeometry.pairWidth(RevelaGeometry.logoDistance, 7),
-                  ),
-                  painter: _SplashMarkPainter(_phase(RevelaMotion.splashMeet), _phase(RevelaMotion.splashLens), _t),
-                ),
-              ),
-              const SizedBox(height: 40),
-              FadeTransition(
-                opacity: name,
-                child: ScaleTransition(
-                  scale: Tween(begin: RevelaMotion.splashNameScaleFrom, end: 1.0).animate(name),
-                  child: const RevelaWordmark(height: 18, color: RevelaColors.nacre),
-                ),
-              ),
-            ],
+      backgroundColor: RevelaColors.perle,
+      body: GestureDetector(
+        onTap: _continuer,
+        child: programme == null
+            ? const SizedBox.expand()
+            : AnimatedBuilder(
+          animation: _temps,
+          builder: (context, _) => CustomPaint(
+            size: Size.infinite,
+            painter: _LacPainter(programme, _logo!, _flou!, _temps.value * _duree),
           ),
         ),
       ),
@@ -120,28 +92,28 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   }
 }
 
-/// Repaints from the controller: no widget rebuild per frame.
-class _SplashMarkPainter extends RevelaMarkPainter {
-  _SplashMarkPainter(this.meet, this.lens, Listenable repaint)
-    : super(
-        distance: RevelaGeometry.logoDistance,
-        maxDistance: RevelaGeometry.logoDistance,
-        ringColor: RevelaColors.nacre,
-        lensColor: RevelaColors.uv,
-        repaint: repaint,
-      );
+/// Dessine le shader du lac sur tout l'écran.
+class _LacPainter extends CustomPainter {
+  _LacPainter(this.programme, this.logo, this.flou, this.t);
 
-  final Animation<double> meet;
-  final Animation<double> lens;
+  final ui.FragmentProgram programme;
+  final ui.Image logo;
+  final ui.Image flou;
+  final double t;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final d =
-        RevelaMotion.splashStartDistance +
-        (RevelaGeometry.logoDistance - RevelaMotion.splashStartDistance) * meet.value;
-    paintAt(canvas, size, d, lensColor, lens.value);
+    // Les index suivent l'ordre des uniforms dans shaders/lac.frag.
+    final shader = programme.fragmentShader()
+      ..setFloat(0, size.width) // uSize.x
+      ..setFloat(1, size.height) // uSize.y
+      ..setFloat(2, t) // uT
+      ..setFloat(3, logo.width / logo.height) // uAsp
+      ..setImageSampler(0, logo) // uLogo
+      ..setImageSampler(1, flou); // uBlur
+    canvas.drawRect(Offset.zero & size, Paint()..shader = shader);
   }
 
   @override
-  bool shouldRepaint(_SplashMarkPainter old) => old.meet != meet || old.lens != lens;
+  bool shouldRepaint(_LacPainter old) => old.t != t;
 }
