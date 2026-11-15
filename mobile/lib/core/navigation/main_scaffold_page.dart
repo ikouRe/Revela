@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+
+import 'dart:ui' as ui;
+
+import '../theme/revela_colors.dart';
 
 class MainScaffoldPage extends StatefulWidget {
   const MainScaffoldPage({super.key, required this.navigationShell});
@@ -11,22 +16,226 @@ class MainScaffoldPage extends StatefulWidget {
 }
 
 class _MainScaffoldPageState extends State<MainScaffoldPage> {
+  ui.FragmentProgram? _programme;
+
+  @override
+  void initState() {
+    super.initState();
+    _charger();
+  }
+
+  Future<void> _charger() async {
+    final programme = await ui.FragmentProgram.fromAsset('shaders/bulle.frag');
+    if (!mounted) return;
+    setState(() => _programme = programme);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: widget.navigationShell,
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Accueil'),
-          BottomNavigationBarItem(icon: Icon(Icons.event_note_outlined), label: 'Routine'),
-          BottomNavigationBarItem(icon: Icon(Icons.qr_code_scanner), label: 'Scanner'),
-          BottomNavigationBarItem(icon: Icon(Icons.forum_outlined), label: 'Discussion'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profil'),
-        ],
-        currentIndex: widget.navigationShell.currentIndex,
-        onTap: (int index)=> widget.navigationShell.goBranch(index),
+      bottomNavigationBar: _BarreOnglet(
+        programme: _programme,
+        index: widget.navigationShell.currentIndex,
+        onTap: (int index) => widget.navigationShell.goBranch(index),
       ),
     );
   }
+}
+
+class _BarreOnglet extends StatelessWidget {
+  static const _onglets = [
+    (icone: 'assets/icon/accueil.svg', libelle: 'Accueil'),
+    (icone: 'assets/icon/routine.svg', libelle: 'Routine'),
+    (icone: 'assets/icon/scan.svg', libelle: 'Scanner'),
+    (icone: 'assets/icon/discussion.svg', libelle: 'Discussion'),
+    (icone: 'assets/icon/profil.svg', libelle: 'Profil'),
+  ];
+
+  const _BarreOnglet({
+    required this.programme,
+    required this.index,
+    required this.onTap,
+  });
+
+  final ui.FragmentProgram? programme;
+  final int index;
+  final ValueChanged<int> onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final prog = programme;
+    return LayoutBuilder(
+      builder: (context, contraints) {
+        final x = contraints.maxWidth / _onglets.length * (index + .5);
+        // La maquette est dessinée pour un écran de 390 px de large : tout se met à l'échelle.
+        final e = (contraints.maxWidth / 390).clamp(.85, 1.25);
+        return SizedBox(
+          height: 130 * e,
+          child: Stack(
+            children: [
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: CustomPaint(
+                  painter: _FormeBarre(x: x, echelle: e),
+                  child: SizedBox(
+                    height: 86 * e,
+
+                    child: Row(
+                      children: [
+                        for (final (i, onglet) in _onglets.indexed)
+                          Expanded(
+                            child: GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+                              onTap: () => onTap(i),
+                              child: Padding(
+                                padding: EdgeInsets.only(bottom: 14 * e),
+
+                                child: Column(
+                                  children: [
+                                    Opacity(
+                                      opacity: i == index ? 0 : 1,
+                                      child: SvgPicture.asset(
+                                        onglet.icone,
+                                        width: 24 * e,
+                                        height: 24 * e,
+                                        colorFilter: const ColorFilter.mode(
+                                          RevelaColors.encre2,
+                                          BlendMode.srcIn,
+                                        ),
+                                      ),
+                                    ),
+
+                                    SizedBox(height: 3 * e),
+                                    Text(
+                                      onglet.libelle,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: i == index
+                                            ? FontWeight.w700
+                                            : FontWeight.w500,
+                                        color: i == index
+                                            ? RevelaColors.accentFort
+                                            : RevelaColors.encre2,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              if (prog != null)
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: CustomPaint(
+                      painter: _BullePainter(programme: prog, x: x, echelle: e),
+                    ),
+                  ),
+                ),
+              Positioned(
+                left: x - 27 * e,
+                top: 20 * e,
+                width: 54 * e,
+                height: 54 * e,
+                child: IgnorePointer(
+                  child: Center(
+                    child: SvgPicture.asset(
+                      _onglets[index].icone,
+                      width: 24 * e,
+                      height: 24 * e,
+                      colorFilter: const ColorFilter.mode(
+                        Colors.white,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _FormeBarre extends CustomPainter {
+  const _FormeBarre({required this.x, required this.echelle});
+
+  final double x;
+  final double echelle;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final forme = Path()
+      ..moveTo(-1000, 0)
+      ..lineTo(-50, 0)
+      ..cubicTo(-36, 0, -33, 7, -28, 17)
+      ..cubicTo(-21, 33, -12, 39, 0, 39)
+      ..cubicTo(12, 39, 21, 33, 28, 17)
+      ..cubicTo(33, 7, 36, 0, 50, 0)
+      ..lineTo(1000, 0)
+      ..lineTo(1000, size.height / echelle)
+      ..lineTo(-1000, size.height / echelle)
+      ..close();
+    canvas.clipRect(Offset.zero & size);
+    canvas.translate(x, 0);
+    canvas.scale(echelle);
+    canvas.drawPath(forme, Paint()..color = RevelaColors.blanc);
+  }
+
+  @override
+  bool shouldRepaint(_FormeBarre oldDelegate) =>
+      oldDelegate.x != x || oldDelegate.echelle != echelle;
+}
+
+class _BullePainter extends CustomPainter {
+  _BullePainter({
+    required this.programme,
+    required this.x,
+    required this.echelle,
+  });
+
+  final ui.FragmentProgram programme;
+  final double x; // centre de l'onglet actif
+  final double echelle;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // Repère de la maquette : y compté depuis le bas, centre à 47 px du haut.
+    final y = size.height - 47 * echelle;
+    final shader = programme.fragmentShader()
+      ..setFloat(0, size.height) // uH
+      ..setFloat(1, 0) // uT
+      ..setFloat(2, .1) // uIri
+      ..setFloat(3, 1) // uK
+      ..setFloat(4, .6) // uWob
+      ..setFloat(5, 0) // uLum
+      ..setFloat(6, 1) // uTeinte
+      ..setFloat(7, x) // uA.x
+      ..setFloat(8, y) // uA.y
+      ..setFloat(9, 27 * echelle) // uA.rayon
+      ..setFloat(10, .75) // uA.pointe
+      ..setFloat(11, x) // uB.x
+      ..setFloat(12, y - 2 * echelle) // uB.y
+      ..setFloat(13, 0) // uB.rayon : pas de deuxième goutte au repos
+      ..setFloat(14, 0) // uB.pointe
+      ..setFloat(15, 0) // uDoigt.x
+      ..setFloat(16, 0) // uDoigt.y
+      ..setFloat(17, 0) // uDoigt.force
+      ..setFloat(18, x) // uOnde.x
+      ..setFloat(19, y) // uOnde.y
+      ..setFloat(20, 9); // uOnde.âge : > 2.5, donc pas d'onde
+    canvas.drawRect(Offset.zero & size, Paint()..shader = shader);
+  }
+
+  @override
+  bool shouldRepaint(_BullePainter old) => old.x != x || old.echelle != echelle;
 }
