@@ -1,8 +1,9 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-
-import 'dart:ui' as ui;
 
 import '../theme/revela_colors.dart';
 
@@ -15,19 +16,50 @@ class MainScaffoldPage extends StatefulWidget {
   State<MainScaffoldPage> createState() => _MainScaffoldPageState();
 }
 
-class _MainScaffoldPageState extends State<MainScaffoldPage> {
+class _MainScaffoldPageState extends State<MainScaffoldPage>
+    with SingleTickerProviderStateMixin {
   ui.FragmentProgram? _programme;
 
   @override
   void initState() {
     super.initState();
     _charger();
+    _ticker.start();
   }
 
   Future<void> _charger() async {
     final programme = await ui.FragmentProgram.fromAsset('shaders/bulle.frag');
     if (!mounted) return;
     setState(() => _programme = programme);
+  }
+
+  final _temps = ValueNotifier<double>(0);
+  late final _position = ValueNotifier<double>(
+    widget.navigationShell.currentIndex.toDouble(),
+  );
+  double _vitesse = 0;
+  Duration _avant = Duration.zero;
+  late final Ticker _ticker = createTicker((ecoule) {
+    _temps.value = ecoule.inMicroseconds / 1e6;
+
+    var reste = (ecoule - _avant).inMicroseconds / 1e6;
+    if (reste > .5) reste = .5;
+    _avant = ecoule;
+    final vise = widget.navigationShell.currentIndex.toDouble();
+    while (reste > 0) {
+      final dt = reste < 1 / 60 ? reste : 1 / 60;
+      _vitesse += (240 * (vise - _position.value) - 25 * _vitesse) * dt;
+      _position.value += _vitesse * dt;
+      reste -= dt;
+    }
+  });
+
+  @override
+  void dispose() {
+    _temps.dispose();
+    _ticker.dispose();
+    _position.dispose();
+    super.dispose();
   }
 
   @override
@@ -38,6 +70,8 @@ class _MainScaffoldPageState extends State<MainScaffoldPage> {
         programme: _programme,
         index: widget.navigationShell.currentIndex,
         onTap: (int index) => widget.navigationShell.goBranch(index),
+        temps: _temps,
+        position: _position,
       ),
     );
   }
@@ -56,110 +90,144 @@ class _BarreOnglet extends StatelessWidget {
     required this.programme,
     required this.index,
     required this.onTap,
+    required this.temps,
+    required this.position,
   });
 
   final ui.FragmentProgram? programme;
   final int index;
   final ValueChanged<int> onTap;
 
+  final ValueNotifier<double> temps;
+  final ValueNotifier<double> position;
+
   @override
   Widget build(BuildContext context) {
     final prog = programme;
     return LayoutBuilder(
       builder: (context, contraints) {
-        final x = contraints.maxWidth / _onglets.length * (index + .5);
         // La maquette est dessinée pour un écran de 390 px de large : tout se met à l'échelle.
         final e = (contraints.maxWidth / 390).clamp(.85, 1.25);
-        return SizedBox(
-          height: 130 * e,
-          child: Stack(
-            children: [
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: CustomPaint(
-                  painter: _FormeBarre(x: x, echelle: e),
-                  child: SizedBox(
-                    height: 86 * e,
+        final largeurOnglet =
+            (contraints.maxWidth - 2 * 14 * e) / _onglets.length;
 
-                    child: Row(
-                      children: [
-                        for (final (i, onglet) in _onglets.indexed)
-                          Expanded(
-                            child: GestureDetector(
-                              behavior: HitTestBehavior.opaque,
-                              onTap: () => onTap(i),
-                              child: Padding(
-                                padding: EdgeInsets.only(bottom: 14 * e),
+        // Les icônes et les textes ne bougent pas avec le temps : construits une fois, passés en child.
+        final icones = SizedBox(
+          height: 86 * e,
 
-                                child: Column(
-                                  children: [
-                                    Opacity(
-                                      opacity: i == index ? 0 : 1,
-                                      child: SvgPicture.asset(
-                                        onglet.icone,
-                                        width: 24 * e,
-                                        height: 24 * e,
-                                        colorFilter: const ColorFilter.mode(
-                                          RevelaColors.encre2,
-                                          BlendMode.srcIn,
-                                        ),
-                                      ),
-                                    ),
+          child: Padding(
+            padding: EdgeInsetsGeometry.symmetric(horizontal: 14 * e),
+            child: Row(
+              children: [
+                for (final (i, onglet) in _onglets.indexed)
+                  Expanded(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () => onTap(i),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 14 * e),
 
-                                    SizedBox(height: 3 * e),
-                                    Text(
-                                      onglet.libelle,
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: i == index
-                                            ? FontWeight.w700
-                                            : FontWeight.w500,
-                                        color: i == index
-                                            ? RevelaColors.accentFort
-                                            : RevelaColors.encre2,
-                                      ),
-                                    ),
-                                  ],
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            AnimatedBuilder(
+                              animation: position,
+                              child: SvgPicture.asset(
+                                onglet.icone,
+                                width: 24 * e,
+                                height: 24 * e,
+                                colorFilter: const ColorFilter.mode(
+                                  RevelaColors.encre2,
+                                  BlendMode.srcIn,
                                 ),
                               ),
+                              builder: (context, icone) => Opacity(
+                                opacity: ((position.value - i).abs() * 2).clamp(
+                                  0.0,
+                                  1.0,
+                                ),
+                                child: icone,
+                              ),
                             ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              if (prog != null)
-                Positioned.fill(
-                  child: IgnorePointer(
-                    child: CustomPaint(
-                      painter: _BullePainter(programme: prog, x: x, echelle: e),
-                    ),
-                  ),
-                ),
-              Positioned(
-                left: x - 27 * e,
-                top: 20 * e,
-                width: 54 * e,
-                height: 54 * e,
-                child: IgnorePointer(
-                  child: Center(
-                    child: SvgPicture.asset(
-                      _onglets[index].icone,
-                      width: 24 * e,
-                      height: 24 * e,
-                      colorFilter: const ColorFilter.mode(
-                        Colors.white,
-                        BlendMode.srcIn,
+
+                            SizedBox(height: 3 * e),
+                            Text(
+                              onglet.libelle,
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: i == index
+                                    ? FontWeight.w700
+                                    : FontWeight.w500,
+                                color: i == index
+                                    ? RevelaColors.accentFort
+                                    : RevelaColors.encre2,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
+        );
+
+        return AnimatedBuilder(
+          animation: Listenable.merge([temps, position]),
+          child: icones,
+          builder: (context, icones) {
+            // position compte en onglets (1.6 = entre Routine et Scanner) : on la traduit en pixels.
+            final x = 14 * e + largeurOnglet * (position.value + .5);
+            return SizedBox(
+              height: 130 * e,
+              child: Stack(
+                children: [
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: CustomPaint(
+                      painter: _FormeBarre(x: x, echelle: e),
+                      child: icones,
+                    ),
+                  ),
+                  if (prog != null)
+                    Positioned.fill(
+                      child: IgnorePointer(
+                        child: CustomPaint(
+                          painter: _BullePainter(
+                            programme: prog,
+                            x: x,
+                            echelle: e,
+                            t: temps.value,
+                          ),
+                        ),
+                      ),
+                    ),
+                  Positioned(
+                    left: x - 27 * e,
+                    top: 20 * e,
+                    width: 54 * e,
+                    height: 54 * e,
+                    child: IgnorePointer(
+                      child: Center(
+                        child: SvgPicture.asset(
+                          _onglets[index].icone,
+                          width: 24 * e,
+                          height: 24 * e,
+                          colorFilter: const ColorFilter.mode(
+                            Colors.white,
+                            BlendMode.srcIn,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
         );
       },
     );
@@ -201,11 +269,13 @@ class _BullePainter extends CustomPainter {
     required this.programme,
     required this.x,
     required this.echelle,
+    required this.t,
   });
 
   final ui.FragmentProgram programme;
   final double x; // centre de l'onglet actif
   final double echelle;
+  final double t;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -213,7 +283,7 @@ class _BullePainter extends CustomPainter {
     final y = size.height - 47 * echelle;
     final shader = programme.fragmentShader()
       ..setFloat(0, size.height) // uH
-      ..setFloat(1, 0) // uT
+      ..setFloat(1, t) // uT
       ..setFloat(2, .1) // uIri
       ..setFloat(3, 1) // uK
       ..setFloat(4, .6) // uWob
@@ -237,5 +307,6 @@ class _BullePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_BullePainter old) => old.x != x || old.echelle != echelle;
+  bool shouldRepaint(_BullePainter old) =>
+      old.x != x || old.echelle != echelle || old.t != t;
 }
