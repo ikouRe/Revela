@@ -130,8 +130,8 @@ class _BarreOnglet extends StatelessWidget {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            Opacity(
-                              opacity: i == index ? 0 : 1,
+                            AnimatedBuilder(
+                              animation: position,
                               child: SvgPicture.asset(
                                 onglet.icone,
                                 width: 24 * e,
@@ -140,6 +140,13 @@ class _BarreOnglet extends StatelessWidget {
                                   RevelaColors.encre2,
                                   BlendMode.srcIn,
                                 ),
+                              ),
+                              builder: (context, icone) => Opacity(
+                                opacity: ((position.value - i).abs() * 2).clamp(
+                                  0.0,
+                                  1.0,
+                                ),
+                                child: icone,
                               ),
                             ),
 
