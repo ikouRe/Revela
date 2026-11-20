@@ -1,8 +1,9 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-
-import 'dart:ui' as ui;
 
 import '../theme/revela_colors.dart';
 
@@ -15,19 +16,33 @@ class MainScaffoldPage extends StatefulWidget {
   State<MainScaffoldPage> createState() => _MainScaffoldPageState();
 }
 
-class _MainScaffoldPageState extends State<MainScaffoldPage> {
+class _MainScaffoldPageState extends State<MainScaffoldPage>
+    with SingleTickerProviderStateMixin {
   ui.FragmentProgram? _programme;
 
   @override
   void initState() {
     super.initState();
     _charger();
+    _ticker.start();
   }
 
   Future<void> _charger() async {
     final programme = await ui.FragmentProgram.fromAsset('shaders/bulle.frag');
     if (!mounted) return;
     setState(() => _programme = programme);
+  }
+
+  final _temps = ValueNotifier<double>(0);
+  late final Ticker _ticker = createTicker((ecoule) {
+    _temps.value = ecoule.inMicroseconds / 1e6;
+  });
+
+  @override
+  void dispose() {
+    _temps.dispose();
+    _ticker.dispose();
+    super.dispose();
   }
 
   @override
@@ -38,6 +53,7 @@ class _MainScaffoldPageState extends State<MainScaffoldPage> {
         programme: _programme,
         index: widget.navigationShell.currentIndex,
         onTap: (int index) => widget.navigationShell.goBranch(index),
+        temps: _temps,
       ),
     );
   }
@@ -56,11 +72,13 @@ class _BarreOnglet extends StatelessWidget {
     required this.programme,
     required this.index,
     required this.onTap,
+    required this.temps,
   });
 
   final ui.FragmentProgram? programme;
   final int index;
   final ValueChanged<int> onTap;
+  final ValueNotifier<double> temps;
 
   @override
   Widget build(BuildContext context) {
@@ -133,9 +151,17 @@ class _BarreOnglet extends StatelessWidget {
               ),
               if (prog != null)
                 Positioned.fill(
-                  child: IgnorePointer(
-                    child: CustomPaint(
-                      painter: _BullePainter(programme: prog, x: x, echelle: e),
+                  child: AnimatedBuilder(
+                    animation: temps,
+                    builder: (context, _) => IgnorePointer(
+                      child: CustomPaint(
+                        painter: _BullePainter(
+                          programme: prog,
+                          x: x,
+                          echelle: e,
+                          t: temps.value,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -201,11 +227,13 @@ class _BullePainter extends CustomPainter {
     required this.programme,
     required this.x,
     required this.echelle,
+    required this.t,
   });
 
   final ui.FragmentProgram programme;
   final double x; // centre de l'onglet actif
   final double echelle;
+  final double t;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -213,7 +241,7 @@ class _BullePainter extends CustomPainter {
     final y = size.height - 47 * echelle;
     final shader = programme.fragmentShader()
       ..setFloat(0, size.height) // uH
-      ..setFloat(1, 0) // uT
+      ..setFloat(1, t) // uT
       ..setFloat(2, .1) // uIri
       ..setFloat(3, 1) // uK
       ..setFloat(4, .6) // uWob
@@ -237,5 +265,6 @@ class _BullePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_BullePainter old) => old.x != x || old.echelle != echelle;
+  bool shouldRepaint(_BullePainter old) =>
+      old.x != x || old.echelle != echelle || old.t != t;
 }
