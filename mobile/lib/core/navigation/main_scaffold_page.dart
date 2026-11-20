@@ -85,9 +85,11 @@ class _BarreOnglet extends StatelessWidget {
     final prog = programme;
     return LayoutBuilder(
       builder: (context, contraints) {
-        final x = contraints.maxWidth / _onglets.length * (index + .5);
         // La maquette est dessinée pour un écran de 390 px de large : tout se met à l'échelle.
         final e = (contraints.maxWidth / 390).clamp(.85, 1.25);
+        final largeurOnglet =
+            (contraints.maxWidth - 2 * 14 * e) / _onglets.length;
+        final x = 14 * e + largeurOnglet * (index + .5);
         return SizedBox(
           height: 130 * e,
           child: Stack(
@@ -101,50 +103,56 @@ class _BarreOnglet extends StatelessWidget {
                   child: SizedBox(
                     height: 86 * e,
 
-                    child: Row(
-                      children: [
-                        for (final (i, onglet) in _onglets.indexed)
-                          Expanded(
-                            child: GestureDetector(
-                              behavior: HitTestBehavior.opaque,
-                              onTap: () => onTap(i),
-                              child: Padding(
-                                padding: EdgeInsets.only(bottom: 14 * e),
+                    child: Padding(
+                      padding: EdgeInsetsGeometry.symmetric(horizontal: 14 * e),
+                      child: Row(
+                        children: [
+                          for (final (i, onglet) in _onglets.indexed)
+                            Expanded(
+                              child: GestureDetector(
+                                behavior: HitTestBehavior.opaque,
+                                onTap: () => onTap(i),
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 14 * e,
+                                  ),
 
-                                child: Column(
-                                  children: [
-                                    Opacity(
-                                      opacity: i == index ? 0 : 1,
-                                      child: SvgPicture.asset(
-                                        onglet.icone,
-                                        width: 24 * e,
-                                        height: 24 * e,
-                                        colorFilter: const ColorFilter.mode(
-                                          RevelaColors.encre2,
-                                          BlendMode.srcIn,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Opacity(
+                                        opacity: i == index ? 0 : 1,
+                                        child: SvgPicture.asset(
+                                          onglet.icone,
+                                          width: 24 * e,
+                                          height: 24 * e,
+                                          colorFilter: const ColorFilter.mode(
+                                            RevelaColors.encre2,
+                                            BlendMode.srcIn,
+                                          ),
                                         ),
                                       ),
-                                    ),
 
-                                    SizedBox(height: 3 * e),
-                                    Text(
-                                      onglet.libelle,
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: i == index
-                                            ? FontWeight.w700
-                                            : FontWeight.w500,
-                                        color: i == index
-                                            ? RevelaColors.accentFort
-                                            : RevelaColors.encre2,
+                                      SizedBox(height: 3 * e),
+                                      Text(
+                                        onglet.libelle,
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: i == index
+                                              ? FontWeight.w700
+                                              : FontWeight.w500,
+                                          color: i == index
+                                              ? RevelaColors.accentFort
+                                              : RevelaColors.encre2,
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
